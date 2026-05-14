@@ -68,4 +68,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function officeredCompanies()
+    {
+        return $this->belongsToMany(Company::class, 'company_officer')->withPivot('rank')->withTimestamps();
+    }
 }

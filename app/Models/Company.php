@@ -21,4 +21,23 @@ class Company extends Model
     {
         return $this->belongsTo(Battalion::class);
     }
+
+    public function officers()
+    {
+        return $this->belongsToMany(User::class, 'company_officer')->withPivot('rank')->withTimestamps();
+    }
+
+    public function members()
+    {
+        return $this->hasMany(Member::class);
+    }
+
+    public function getContributionPercentageAttribute(): float
+    {
+        $total = $this->members()->count();
+        if ($total === 0) return 0;
+        
+        $paid = $this->members()->where('registration_fee_paid', true)->count();
+        return round(($paid / $total) * 100, 2);
+    }
 }

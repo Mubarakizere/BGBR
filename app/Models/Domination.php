@@ -16,4 +16,25 @@ class Domination extends Model
     {
         static::addGlobalScope(new TenantScope);
     }
+
+    public function battalions()
+    {
+        return $this->hasMany(Battalion::class);
+    }
+
+    public function getContributionPercentageAttribute(): float
+    {
+        $totalMembers = 0;
+        $paidMembers = 0;
+
+        foreach ($this->battalions as $battalion) {
+            foreach ($battalion->companies as $company) {
+                $totalMembers += $company->members()->count();
+                $paidMembers += $company->members()->where('registration_fee_paid', true)->count();
+            }
+        }
+
+        if ($totalMembers === 0) return 0;
+        return round(($paidMembers / $totalMembers) * 100, 2);
+    }
 }
