@@ -25,7 +25,8 @@ class DatabaseSeeder extends Seeder
             'manage companies', 'approve company reports', 'create battalion announcements',
             'register members', 'register company info', 'submit activity participation', 'generate company reports', 'create company announcements',
             'view members', 'update members', 'participate in activities', 'view company announcements',
-            'view own profile', 'view announcements', 'view activity participation history'
+            'view own profile', 'view announcements', 'view activity participation history',
+            'manage activities',
         ];
 
         foreach ($permissions as $permission) {
@@ -53,7 +54,7 @@ class DatabaseSeeder extends Seeder
 
         $companyOfficer = Role::findOrCreate('Company Officer');
         $companyOfficer->givePermissionTo([
-            'view members', 'update members', 'participate in activities', 'view company announcements'
+            'view members', 'update members', 'participate in activities', 'view company announcements', 'submit activity participation'
         ]);
 
         $member = Role::findOrCreate('Member');

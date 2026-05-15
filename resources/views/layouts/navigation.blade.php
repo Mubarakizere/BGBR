@@ -167,6 +167,28 @@
             </div>
             @endcan
 
+            {{-- Activities Section --}}
+            @if(auth()->user()->can('manage activities') || auth()->user()->can('submit activity participation'))
+            <div>
+                <h4 class="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-white/30">Activities</h4>
+                <div class="space-y-0.5">
+                    @php $isAct = request()->routeIs('activities.*'); @endphp
+                    <a href="{{ route('activities.index') }}"
+                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
+                              {{ $isAct ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
+                        @if($isAct)
+                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
+                        @endif
+                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
+                                     {{ $isAct ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
+                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </span>
+                        Activities
+                    </a>
+                </div>
+            </div>
+            @endif
+
             {{-- Members Section --}}
             @can('register members')
             <div>

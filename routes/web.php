@@ -7,6 +7,8 @@ use App\Http\Controllers\BattalionController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\UserApprovalController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\ParticipationController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -44,6 +46,18 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
 
     // Members
     Route::resource('members', MemberController::class);
+
+    // Activities
+    Route::resource('activities', ActivityController::class);
+
+    // Participation
+    Route::post('activities/{activity}/participants', [ParticipationController::class, 'store'])
+        ->name('activities.participants.store');
+    Route::patch('activities/{activity}/participants/{member}/pay', [ParticipationController::class, 'markPaid'])
+        ->name('activities.participants.pay');
+    Route::delete('activities/{activity}/participants/{member}', [ParticipationController::class, 'remove'])
+        ->name('activities.participants.remove');
 });
 
 require __DIR__.'/auth.php';
+

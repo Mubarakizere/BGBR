@@ -32,4 +32,14 @@ class Member extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    /**
+     * Activities this member is participating in.
+     */
+    public function activities()
+    {
+        return $this->belongsToMany(Activity::class, 'activity_member')
+            ->withPivot('fee_paid', 'payment_date', 'eligible', 'eligibility_notes', 'registered_by')
+            ->withTimestamps();
+    }
 }
