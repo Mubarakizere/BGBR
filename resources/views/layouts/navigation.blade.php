@@ -211,6 +211,28 @@
             </div>
             @endcan
 
+            {{-- Reports Section --}}
+            @if(auth()->user()->hasRole(['Company Captain', 'Company Officer', 'Battalion Commander', 'Domination Admin', 'Super Admin']))
+            <div>
+                <h4 class="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-white/30">Reporting</h4>
+                <div class="space-y-0.5">
+                    @php $isReports = request()->routeIs('reports.*'); @endphp
+                    <a href="{{ route('reports.index') }}"
+                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
+                              {{ $isReports ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
+                        @if($isReports)
+                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
+                        @endif
+                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
+                                     {{ $isReports ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
+                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </span>
+                        Reports
+                    </a>
+                </div>
+            </div>
+            @endif
+
         </nav>
 
         {{-- ═══════════ USER PROFILE FOOTER ═══════════ --}}

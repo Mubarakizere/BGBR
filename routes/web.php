@@ -50,6 +50,14 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
     // Activities
     Route::resource('activities', ActivityController::class);
 
+    // Reports
+    Route::resource('reports', \App\Http\Controllers\ReportController::class)->except(['edit', 'update']);
+    Route::post('reports/{report}/submit', [\App\Http\Controllers\ReportController::class, 'submit'])->name('reports.submit');
+    Route::post('reports/{report}/approve', [\App\Http\Controllers\ReportController::class, 'approve'])->name('reports.approve');
+    Route::post('reports/{report}/reject', [\App\Http\Controllers\ReportController::class, 'reject'])->name('reports.reject');
+    Route::get('reports/{report}/pdf', [\App\Http\Controllers\ReportController::class, 'downloadPdf'])->name('reports.pdf');
+    Route::get('reports/{report}/excel', [\App\Http\Controllers\ReportController::class, 'downloadExcel'])->name('reports.excel');
+
     // Participation
     Route::post('activities/{activity}/participants', [ParticipationController::class, 'store'])
         ->name('activities.participants.store');
