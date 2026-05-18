@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
 
         $dominationAdmin = Role::findOrCreate('Domination Admin');
         $dominationAdmin->givePermissionTo([
-            'manage battalions', 'approve battalion reports', 'create domination announcements', 'view all reports'
+            'manage battalions', 'approve battalion reports', 'create domination announcements', 'view all reports', 'manage users'
         ]);
 
         $battalionCommander = Role::findOrCreate('Battalion Commander');

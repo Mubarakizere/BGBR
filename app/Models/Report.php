@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use App\Models\Scopes\TenantScope;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Report extends Model
 {
-    use HasUuids;
+    use HasUuids, LogsActivity;
 
     protected $fillable = [
         'title',
@@ -26,6 +28,12 @@ class Report extends Model
     protected $casts = [
         'content' => 'array',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logFillable()->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Report was {$eventName}");
+    }
 
     protected static function booted(): void
     {

@@ -6,9 +6,12 @@ use App\Http\Controllers\DominationController;
 use App\Http\Controllers\BattalionController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\UserApprovalController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ParticipationController;
+use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\AuditLogController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -65,6 +68,17 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
         ->name('activities.participants.pay');
     Route::delete('activities/{activity}/participants/{member}', [ParticipationController::class, 'remove'])
         ->name('activities.participants.remove');
+
+    // Announcements
+    Route::resource('announcements', AnnouncementController::class);
+
+    // User Management (Super Admin + Domination Admin)
+    Route::get('/admin/users', [UserController::class, 'index'])->name('users.index')->middleware('can:manage users');
+    Route::patch('/admin/users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active')->middleware('can:manage users');
+    Route::patch('/admin/users/{user}/update-role', [UserController::class, 'updateRole'])->name('users.update-role')->middleware('can:manage users');
+
+    // Audit Logs (Super Admin only)
+    Route::get('/admin/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index')->middleware('can:view audit logs');
 });
 
 require __DIR__.'/auth.php';

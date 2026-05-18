@@ -5,12 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use App\Models\Scopes\TenantScope;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Domination extends Model
 {
-    use HasUuids;
+    use HasUuids, LogsActivity;
 
     protected $guarded = [];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logUnguarded()->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Domination was {$eventName}");
+    }
 
     protected static function booted(): void
     {

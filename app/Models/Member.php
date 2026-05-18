@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use App\Models\Scopes\TenantScope;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Member extends Model
 {
-    use HasUuids;
+    use HasUuids, LogsActivity;
 
     protected $fillable = [
         'name',
@@ -22,6 +24,12 @@ class Member extends Model
     protected $casts = [
         'registration_fee_paid' => 'boolean',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()->logFillable()->logOnlyDirty()
+            ->setDescriptionForEvent(fn(string $eventName) => "Member was {$eventName}");
+    }
 
     protected static function booted(): void
     {
