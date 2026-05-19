@@ -8,27 +8,73 @@ use Illuminate\Support\Facades\Gate;
 
 class MaterialsRequestController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         Gate::authorize('viewAny', MaterialsRequest::class);
-        $requests = MaterialsRequest::with('company')->latest()->get();
-        return view('materials_requests.index', compact('requests'));
+
+        $user = $request->user();
+
+        // ── 1. Role-Based Scoping ──────────────────────────────
+        $query = MaterialsRequest::query();
+
+        if ($user->hasRole('Domination Admin') && !$user->hasRole('Super Admin')) {
+            $query->whereHas('company.battalion', function ($q) use ($user) {
+                $q->where('domination_id', $user->domination_id);
+            });
+        } elseif ($user->hasRole('Battalion Commander') && !$user->hasRole('Super Admin')) {
+            $query->whereHas('company', function ($q) use ($user) {
+                $q->where('battalion_id', $user->battalion_id);
+            });
+        } elseif ($user->hasRole('Company Captain') && !$user->hasRole('Super Admin')) {
+            $query->where('company_id', $user->company_id);
+        }
+
+        // ── 2. Calculate Aggregates (respecting role scopes) ──
+        $statsQuery = clone $query;
+        $totalCount    = $statsQuery->count();
+        $pendingCount  = (clone $statsQuery)->where('status', 'pending')->count();
+        $approvedCount = (clone $statsQuery)->whereIn('status', ['approved', 'fulfilled'])->count();
+        $rejectedCount = (clone $statsQuery)->where('status', 'rejected')->count();
+
+        // ── 3. Apply Server-Side Filters ───────────────────────
+        if ($request->filled('search')) {
+            $query->where('item_name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // ── 4. Retrieve Paginated Results ──────────────────────
+        $requests = $query->with('company.battalion')
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('materials_requests.index', compact(
+            'requests',
+            'totalCount',
+            'pendingCount',
+            'approvedCount',
+            'rejectedCount'
+        ));
     }
 
     public function store(Request $request)
     {
         Gate::authorize('create', MaterialsRequest::class);
+        
         $request->validate([
             'item_name' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:1',
+            'quantity'  => 'required|integer|min:1',
         ]);
 
         // Automatically assign company based on the captain's company
         MaterialsRequest::create([
             'company_id' => $request->user()->company_id,
-            'item_name' => $request->item_name,
-            'quantity' => $request->quantity,
-            'status' => 'pending',
+            'item_name'  => $request->item_name,
+            'quantity'   => $request->quantity,
+            'status'     => 'pending',
         ]);
 
         return back()->with('success', 'Materials request submitted successfully.');
@@ -37,6 +83,7 @@ class MaterialsRequestController extends Controller
     public function update(Request $request, MaterialsRequest $materialsRequest)
     {
         Gate::authorize('update', $materialsRequest);
+        
         $request->validate([
             'status' => 'required|in:pending,approved,rejected,fulfilled',
         ]);
@@ -45,7 +92,7 @@ class MaterialsRequestController extends Controller
             'status' => $request->status,
         ]);
 
-        return back()->with('success', 'Materials request updated successfully.');
+        return back()->with('success', 'Materials request status updated successfully.');
     }
 
     public function destroy(MaterialsRequest $materialsRequest)

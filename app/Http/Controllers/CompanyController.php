@@ -22,11 +22,29 @@ class CompanyController extends Controller
     public function store(Request $request)
     {
         Gate::authorize('create', Company::class);
+        
+        $user = $request->user();
+
         $request->validate([
             'name' => 'required|string|max:255',
             'battalion_id' => 'required|exists:battalions,id',
             'date_started' => 'nullable|date',
         ]);
+
+        if (!$user->hasRole('Super Admin')) {
+            if ($user->hasRole('Domination Admin') && $user->domination_id) {
+                $battalion = Battalion::find($request->battalion_id);
+                if (!$battalion || $battalion->domination_id !== $user->domination_id) {
+                    return back()->with('error', 'Unauthorized to assign this company to a battalion outside your domination.');
+                }
+            } elseif ($user->hasRole('Battalion Commander') && $user->battalion_id) {
+                if ($request->battalion_id !== $user->battalion_id) {
+                    return back()->with('error', 'Unauthorized to assign this company to another battalion.');
+                }
+            } else {
+                return back()->with('error', 'Unauthorized.');
+            }
+        }
 
         Company::create($request->all());
 
@@ -36,11 +54,29 @@ class CompanyController extends Controller
     public function update(Request $request, Company $company)
     {
         Gate::authorize('update', $company);
+        
+        $user = $request->user();
+
         $request->validate([
             'name' => 'required|string|max:255',
             'battalion_id' => 'required|exists:battalions,id',
             'date_started' => 'nullable|date',
         ]);
+
+        if (!$user->hasRole('Super Admin')) {
+            if ($user->hasRole('Domination Admin') && $user->domination_id) {
+                $battalion = Battalion::find($request->battalion_id);
+                if (!$battalion || $battalion->domination_id !== $user->domination_id) {
+                    return back()->with('error', 'Unauthorized to assign this company to a battalion outside your domination.');
+                }
+            } elseif ($user->hasRole('Battalion Commander') && $user->battalion_id) {
+                if ($request->battalion_id !== $user->battalion_id) {
+                    return back()->with('error', 'Unauthorized to assign this company to another battalion.');
+                }
+            } else {
+                return back()->with('error', 'Unauthorized.');
+            }
+        }
 
         $company->update($request->all());
 

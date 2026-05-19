@@ -24,6 +24,7 @@ class ReportController extends Controller
 
     public function index()
     {
+        \Illuminate\Support\Facades\Gate::authorize('viewAny', Report::class);
         $user = Auth::user();
         $query = Report::latest();
 
@@ -51,6 +52,7 @@ class ReportController extends Controller
 
     public function store(Request $request)
     {
+        \Illuminate\Support\Facades\Gate::authorize('create', Report::class);
         $user = Auth::user();
         $type = $request->input('type');
 
@@ -87,11 +89,13 @@ class ReportController extends Controller
 
     public function show(Report $report)
     {
+        \Illuminate\Support\Facades\Gate::authorize('view', $report);
         return view('reports.show', compact('report'));
     }
 
     public function submit(Report $report)
     {
+        \Illuminate\Support\Facades\Gate::authorize('submit', $report);
         $report->update([
             'status' => 'submitted',
             'submitted_by' => Auth::id(),
@@ -101,6 +105,7 @@ class ReportController extends Controller
 
     public function approve(Request $request, Report $report)
     {
+        \Illuminate\Support\Facades\Gate::authorize('review', $report);
         $report->update([
             'status' => 'approved',
             'approved_by' => Auth::id(),
@@ -111,6 +116,7 @@ class ReportController extends Controller
 
     public function reject(Request $request, Report $report)
     {
+        \Illuminate\Support\Facades\Gate::authorize('review', $report);
         $report->update([
             'status' => 'rejected',
             'approved_by' => Auth::id(),
@@ -121,6 +127,7 @@ class ReportController extends Controller
 
     public function downloadPdf(Report $report)
     {
+        \Illuminate\Support\Facades\Gate::authorize('view', $report);
         $view = 'reports.pdf.' . str_replace('_summary', '', $report->type);
         $pdf = Pdf::loadView($view, ['report' => $report]);
         return $pdf->download(Str::slug($report->title) . '.pdf');
@@ -128,11 +135,13 @@ class ReportController extends Controller
 
     public function downloadExcel(Report $report)
     {
+        \Illuminate\Support\Facades\Gate::authorize('view', $report);
         return Excel::download(new ReportExport($report), Str::slug($report->title) . '.xlsx');
     }
 
     public function destroy(Report $report)
     {
+        \Illuminate\Support\Facades\Gate::authorize('delete', $report);
         if (in_array($report->status, ['draft', 'rejected'])) {
             $report->delete();
             return redirect()->route('reports.index')->with('success', 'Report deleted successfully.');

@@ -11,7 +11,35 @@ class MemberRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->hasPermissionTo('register members');
+        $user = $this->user();
+        if (!$user->hasPermissionTo('register members')) {
+            return false;
+        }
+
+        if ($user->hasRole('Super Admin')) {
+            return true;
+        }
+
+        $companyId = $this->input('company_id');
+        if (!$companyId) {
+            return false;
+        }
+
+        if ($user->hasRole('Domination Admin') && $user->domination_id) {
+            $company = \App\Models\Company::find($companyId);
+            return $company && $company->battalion && $company->battalion->domination_id === $user->domination_id;
+        }
+
+        if ($user->hasRole('Battalion Commander') && $user->battalion_id) {
+            $company = \App\Models\Company::find($companyId);
+            return $company && $company->battalion_id === $user->battalion_id;
+        }
+
+        if (($user->hasRole('Company Captain') || $user->hasRole('Company Officer')) && $user->company_id) {
+            return $companyId === $user->company_id;
+        }
+
+        return false;
     }
 
     /**

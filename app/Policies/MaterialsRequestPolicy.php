@@ -29,7 +29,15 @@ class MaterialsRequestPolicy
 
     public function update(User $user, MaterialsRequest $materialsRequest): bool
     {
-        return $user->hasRole('Super Admin') || $user->hasRole('Battalion Commander');
+        if ($user->hasRole('Super Admin')) {
+            return true;
+        }
+
+        if ($user->hasRole('Battalion Commander') && $user->battalion_id) {
+            return $materialsRequest->company && $materialsRequest->company->battalion_id === $user->battalion_id;
+        }
+
+        return false;
     }
 
     public function delete(User $user, MaterialsRequest $materialsRequest): bool

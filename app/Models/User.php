@@ -31,6 +31,7 @@ class User extends Authenticatable
         'domination_id',
         'battalion_id',
         'company_id',
+        'photo_path',
     ];
 
     /**
@@ -59,7 +60,7 @@ class User extends Authenticatable
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'email', 'is_approved', 'domination_id', 'battalion_id', 'company_id'])
+            ->logOnly(['name', 'email', 'is_approved', 'domination_id', 'battalion_id', 'company_id', 'photo_path'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "User was {$eventName}");
     }

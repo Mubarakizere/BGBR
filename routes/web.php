@@ -77,6 +77,11 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
     Route::patch('/admin/users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active')->middleware('can:manage users');
     Route::patch('/admin/users/{user}/update-role', [UserController::class, 'updateRole'])->name('users.update-role')->middleware('can:manage users');
 
+    // Role & Permission Management (Super Admin only)
+    Route::get('/admin/roles', [App\Http\Controllers\RoleController::class, 'index'])->name('roles.index')->middleware('can:manage system settings');
+    Route::post('/admin/roles', [App\Http\Controllers\RoleController::class, 'store'])->name('roles.store')->middleware('can:manage system settings');
+    Route::put('/admin/roles/{role}/permissions', [App\Http\Controllers\RoleController::class, 'updatePermissions'])->name('roles.permissions.update')->middleware('can:manage system settings');
+
     // Audit Logs (Super Admin only)
     Route::get('/admin/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index')->middleware('can:view audit logs');
 });

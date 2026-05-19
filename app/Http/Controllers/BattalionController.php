@@ -20,10 +20,19 @@ class BattalionController extends Controller
     public function store(Request $request)
     {
         Gate::authorize('create', Battalion::class);
+        
+        $user = $request->user();
+
         $request->validate([
             'name' => 'required|string|max:255',
             'domination_id' => 'required|exists:dominations,id',
         ]);
+
+        if (!$user->hasRole('Super Admin')) {
+            if ($request->domination_id !== $user->domination_id) {
+                return back()->with('error', 'Unauthorized to assign this battalion to another domination.');
+            }
+        }
 
         Battalion::create($request->all());
 
@@ -33,10 +42,19 @@ class BattalionController extends Controller
     public function update(Request $request, Battalion $battalion)
     {
         Gate::authorize('update', $battalion);
+        
+        $user = $request->user();
+
         $request->validate([
             'name' => 'required|string|max:255',
             'domination_id' => 'required|exists:dominations,id',
         ]);
+
+        if (!$user->hasRole('Super Admin')) {
+            if ($request->domination_id !== $user->domination_id) {
+                return back()->with('error', 'Unauthorized to assign this battalion to another domination.');
+            }
+        }
 
         $battalion->update($request->all());
 

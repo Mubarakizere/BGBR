@@ -16,6 +16,7 @@ class AnnouncementController extends Controller
      */
     public function index(Request $request)
     {
+        \Illuminate\Support\Facades\Gate::authorize('viewAny', Announcement::class);
         $user = Auth::user();
         $query = Announcement::with('creator')->latest();
 
@@ -93,6 +94,7 @@ class AnnouncementController extends Controller
      */
     public function create()
     {
+        \Illuminate\Support\Facades\Gate::authorize('create', Announcement::class);
         $user = Auth::user();
         $levels = $this->getAllowedLevels($user);
         $dominations = Domination::orderBy('name')->get();
@@ -107,6 +109,7 @@ class AnnouncementController extends Controller
      */
     public function store(Request $request)
     {
+        \Illuminate\Support\Facades\Gate::authorize('create', Announcement::class);
         $user = Auth::user();
         $levels = $this->getAllowedLevels($user);
 
@@ -156,6 +159,7 @@ class AnnouncementController extends Controller
      */
     public function show(Announcement $announcement)
     {
+        \Illuminate\Support\Facades\Gate::authorize('view', $announcement);
         $announcement->load('creator');
         return view('announcements.show', compact('announcement'));
     }
@@ -165,6 +169,7 @@ class AnnouncementController extends Controller
      */
     public function edit(Announcement $announcement)
     {
+        \Illuminate\Support\Facades\Gate::authorize('update', $announcement);
         $user = Auth::user();
         $levels = $this->getAllowedLevels($user);
         $dominations = Domination::orderBy('name')->get();
@@ -179,6 +184,7 @@ class AnnouncementController extends Controller
      */
     public function update(Request $request, Announcement $announcement)
     {
+        \Illuminate\Support\Facades\Gate::authorize('update', $announcement);
         $user = Auth::user();
         $levels = $this->getAllowedLevels($user);
 
@@ -215,6 +221,7 @@ class AnnouncementController extends Controller
      */
     public function destroy(Announcement $announcement)
     {
+        \Illuminate\Support\Facades\Gate::authorize('delete', $announcement);
         $announcement->delete();
         return redirect()->route('announcements.index')->with('success', 'Announcement deleted successfully.');
     }
