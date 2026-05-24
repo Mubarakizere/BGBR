@@ -12,7 +12,7 @@ class BattalionController extends Controller
     public function index()
     {
         Gate::authorize('viewAny', Battalion::class);
-        $battalions = Battalion::with('domination')->orderBy('name')->get();
+        $battalions = Battalion::with('domination')->orderBy('name')->paginate(15)->withQueryString();
         $dominations = Domination::orderBy('name')->get();
         return view('battalions.index', compact('battalions', 'dominations'));
     }

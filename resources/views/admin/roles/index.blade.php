@@ -72,6 +72,11 @@
                         </div>
                     @endforeach
                 </div>
+                @if($roles->hasPages())
+                    <div class="mt-6">
+                        {{ $roles->links() }}
+                    </div>
+                @endif
             </div>
 
             {{-- Create Role Form Sidebar --}}

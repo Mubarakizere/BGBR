@@ -45,6 +45,8 @@ class RegisteredUserController extends Controller
         $user->assignRole('Member');
 
         event(new Registered($user));
+        
+        $user->notify(new \App\Notifications\RegistrationConfirmation());
 
         Auth::login($user);
 

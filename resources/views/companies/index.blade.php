@@ -159,6 +159,11 @@
                         </tbody>
                     </table>
                 </div>
+                @if($companies->hasPages())
+                    <div class="px-6 py-4 border-t border-border bg-background">
+                        {{ $companies->links() }}
+                    </div>
+                @endif
             </div>
         </div>
 

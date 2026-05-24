@@ -11,7 +11,7 @@ class DominationController extends Controller
     public function index()
     {
         Gate::authorize('viewAny', Domination::class);
-        $dominations = Domination::orderBy('name')->get();
+        $dominations = Domination::orderBy('name')->paginate(15)->withQueryString();
         return view('dominations.index', compact('dominations'));
     }
 

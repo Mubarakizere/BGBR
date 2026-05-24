@@ -45,6 +45,9 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="mt-4">
+                            {{ $pendingUsers->links() }}
+                        </div>
                     @endif
 
                 </div>

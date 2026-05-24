@@ -6,8 +6,11 @@ use App\Models\Announcement;
 use App\Models\Domination;
 use App\Models\Battalion;
 use App\Models\Company;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\NewAnnouncementNotification;
 
 class AnnouncementController extends Controller
 {
@@ -143,13 +146,25 @@ class AnnouncementController extends Controller
             }
         }
 
-        Announcement::create([
+        $announcement = Announcement::create([
             'title' => $request->title,
             'content' => $request->content,
             'visibility_level' => $level,
             'entity_id' => $entityId,
             'created_by' => $user->id,
         ]);
+
+        // Send Notification
+        $usersQuery = User::query()->where('is_approved', true);
+        if ($level === 'domination') {
+            $usersQuery->where('domination_id', $entityId);
+        } elseif ($level === 'battalion') {
+            $usersQuery->where('battalion_id', $entityId);
+        } elseif ($level === 'company') {
+            $usersQuery->where('company_id', $entityId);
+        }
+
+        Notification::send($usersQuery->get(), new NewAnnouncementNotification($announcement));
 
         return redirect()->route('announcements.index')->with('success', 'Announcement created successfully.');
     }

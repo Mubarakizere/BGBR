@@ -13,7 +13,7 @@ class UserApprovalController extends Controller
 {
     public function index()
     {
-        $pendingUsers = User::where('is_approved', false)->latest()->get();
+        $pendingUsers = User::where('is_approved', false)->latest()->paginate(15)->withQueryString();
         $roles = Role::where('name', '!=', 'Super Admin')->get(); // Don't allow assigning Super Admin via this UI
         $dominations = Domination::orderBy('name')->get();
         $battalions = Battalion::with('domination')->orderBy('name')->get();

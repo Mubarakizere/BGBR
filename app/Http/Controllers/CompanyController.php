@@ -13,7 +13,7 @@ class CompanyController extends Controller
     public function index()
     {
         Gate::authorize('viewAny', Company::class);
-        $companies = Company::with(['battalion', 'officers'])->orderBy('name')->get();
+        $companies = Company::with(['battalion', 'officers'])->orderBy('name')->paginate(15)->withQueryString();
         $battalions = Battalion::with('domination')->orderBy('name')->get();
         $users = User::orderBy('name')->get();
         return view('companies.index', compact('companies', 'battalions', 'users'));

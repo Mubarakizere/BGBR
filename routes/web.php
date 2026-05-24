@@ -72,6 +72,10 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
     // Announcements
     Route::resource('announcements', AnnouncementController::class);
 
+    // Notifications
+    Route::patch('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::patch('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+
     // User Management (Super Admin + Domination Admin)
     Route::get('/admin/users', [UserController::class, 'index'])->name('users.index')->middleware('can:manage users');
     Route::patch('/admin/users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active')->middleware('can:manage users');

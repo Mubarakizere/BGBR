@@ -15,11 +15,27 @@ class MemberController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         Gate::authorize('viewAny', Member::class);
-        $members = Member::with('company')->latest()->paginate(10);
-        return view('members.index', compact('members'));
+        
+        $search = $request->input('search');
+        
+        $members = Member::with('company')
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('rank', 'like', "%{$search}%")
+                      ->orWhereHas('company', function ($q) use ($search) {
+                          $q->where('name', 'like', "%{$search}%");
+                      });
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('members.index', compact('members', 'search'));
     }
 
     /**

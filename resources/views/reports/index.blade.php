@@ -43,6 +43,57 @@
             </div>
         </div>
 
+        {{-- Filters --}}
+        <div class="mb-8 bg-surface rounded-2xl shadow-sm border border-border p-6">
+            <form action="{{ route('reports.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                <div>
+                    <label for="date_from" class="block text-sm font-medium text-text mb-1">Date From</label>
+                    <input type="date" name="date_from" id="date_from" value="{{ request('date_from') }}" class="w-full rounded-xl border-border bg-background focus:ring-primary focus:border-primary text-sm">
+                </div>
+                <div>
+                    <label for="date_to" class="block text-sm font-medium text-text mb-1">Date To</label>
+                    <input type="date" name="date_to" id="date_to" value="{{ request('date_to') }}" class="w-full rounded-xl border-border bg-background focus:ring-primary focus:border-primary text-sm">
+                </div>
+                
+                @if($battalions->count() > 0)
+                <div>
+                    <label for="battalion_id" class="block text-sm font-medium text-text mb-1">Battalion</label>
+                    <select name="battalion_id" id="battalion_id" class="w-full rounded-xl border-border bg-background focus:ring-primary focus:border-primary text-sm">
+                        <option value="">All Battalions</option>
+                        @foreach($battalions as $battalion)
+                            <option value="{{ $battalion->id }}" {{ request('battalion_id') == $battalion->id ? 'selected' : '' }}>
+                                {{ $battalion->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
+
+                @if($companies->count() > 0)
+                <div>
+                    <label for="company_id" class="block text-sm font-medium text-text mb-1">Company</label>
+                    <select name="company_id" id="company_id" class="w-full rounded-xl border-border bg-background focus:ring-primary focus:border-primary text-sm">
+                        <option value="">All Companies</option>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->id }}" {{ request('company_id') == $company->id ? 'selected' : '' }}>
+                                {{ $company->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
+
+                <div class="flex gap-2">
+                    <button type="submit" class="bg-secondary hover:bg-secondary/90 text-white font-bold py-2.5 px-4 rounded-xl transition-all shadow-lg shadow-secondary/20 flex-1">
+                        Filter
+                    </button>
+                    <a href="{{ route('reports.index') }}" class="bg-background hover:bg-gray-100 text-text font-bold py-2.5 px-4 rounded-xl transition-all border border-border text-center flex-1">
+                        Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+
         {{-- Reports List --}}
         <div class="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
             <div class="overflow-x-auto">

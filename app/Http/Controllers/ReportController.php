@@ -22,12 +22,13 @@ class ReportController extends Controller
         $this->reportService = $reportService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         \Illuminate\Support\Facades\Gate::authorize('viewAny', Report::class);
         $user = Auth::user();
         $query = Report::latest();
 
+        // Scoping based on user role
         if ($user->hasRole('Company Captain') || $user->hasRole('Company Officer')) {
             $query->where('level', 'company')->where('entity_id', $user->company_id);
         } elseif ($user->hasRole('Battalion Commander')) {
@@ -46,8 +47,47 @@ class ReportController extends Controller
             $query->where('id', null);
         }
 
-        $reports = $query->paginate(15);
-        return view('reports.index', compact('reports'));
+        // Apply filters
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        if ($request->filled('battalion_id')) {
+            $battalionId = $request->battalion_id;
+            $query->where(function($q) use ($battalionId) {
+                $q->where(function($q2) use ($battalionId) {
+                    $q2->where('level', 'battalion')->where('entity_id', $battalionId);
+                })->orWhere(function($q2) use ($battalionId) {
+                    $companyIds = Company::where('battalion_id', $battalionId)->pluck('id');
+                    $q2->where('level', 'company')->whereIn('entity_id', $companyIds);
+                });
+            });
+        }
+
+        if ($request->filled('company_id')) {
+            $query->where('level', 'company')->where('entity_id', $request->company_id);
+        }
+
+        $reports = $query->paginate(15)->withQueryString();
+
+        // Prepare data for filter dropdowns based on permissions
+        $battalions = collect();
+        $companies = collect();
+
+        if ($user->hasRole('Domination Admin') || $user->hasRole('Super Admin')) {
+            $battalions = Battalion::orderBy('name')->get();
+            $companies = Company::orderBy('name')->get();
+        } elseif ($user->hasRole('Battalion Commander')) {
+            $battalions = Battalion::where('id', $user->battalion_id)->get();
+            $companies = Company::where('battalion_id', $user->battalion_id)->orderBy('name')->get();
+        } elseif ($user->hasRole('Company Captain') || $user->hasRole('Company Officer')) {
+            $companies = Company::where('id', $user->company_id)->get();
+        }
+
+        return view('reports.index', compact('reports', 'battalions', 'companies'));
     }
 
     public function store(Request $request)
@@ -111,6 +151,11 @@ class ReportController extends Controller
             'approved_by' => Auth::id(),
             'reviewer_notes' => $request->input('reviewer_notes'),
         ]);
+
+        if ($report->submitter) {
+            $report->submitter->notify(new \App\Notifications\ReportApprovedNotification($report));
+        }
+
         return back()->with('success', 'Report approved.');
     }
 
