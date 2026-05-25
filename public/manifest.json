@@ -1,0 +1,25 @@
+{
+    "name": "BGBR Rwanda - Management System",
+    "short_name": "BGBR",
+    "description": "Boys' and Girls' Brigade Rwanda Management System - Sure & Steadfast",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#1E2FA3",
+    "theme_color": "#1E2FA3",
+    "categories": ["business", "productivity"],
+    "icons": [
+        {
+            "src": "/images/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/images/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

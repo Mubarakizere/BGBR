@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1E2FA3">
+    <title>Offline - BGBR Rwanda</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f1a6e 0%, #1E2FA3 40%, #2a3cb5 100%);
+            color: #ffffff;
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+
+        /* Floating background orbs */
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::before {
+            width: 500px; height: 500px;
+            top: -150px; right: -100px;
+            background: rgba(244, 197, 66, 0.12);
+            filter: blur(80px);
+            animation: float 8s ease-in-out infinite;
+        }
+        body::after {
+            width: 400px; height: 400px;
+            bottom: -120px; left: -80px;
+            background: rgba(255, 255, 255, 0.08);
+            filter: blur(60px);
+            animation: float 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -20px); }
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.9); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.2; }
+            100% { transform: scale(0.9); opacity: 0.5; }
+        }
+
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 440px;
+            width: 100%;
+            padding: 3rem 2.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+            animation: fade-in-up 0.6s ease-out;
+        }
+
+        .icon-container {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+
+        .icon-container::before {
+            content: '';
+            position: absolute;
+            inset: -12px;
+            border-radius: 50%;
+            border: 2px solid rgba(244, 197, 66, 0.3);
+            animation: pulse-ring 3s ease-in-out infinite;
+        }
+
+        .icon-bg {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(244, 197, 66, 0.25), rgba(244, 197, 66, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-bg svg {
+            width: 48px;
+            height: 48px;
+            color: #F4C542;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 2rem;
+        }
+
+        .retry-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 2rem;
+            background: linear-gradient(135deg, #F4C542, #e6b530);
+            color: #1E2FA3;
+            font-weight: 700;
+            font-size: 0.925rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(244, 197, 66, 0.3);
+            text-decoration: none;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(244, 197, 66, 0.4);
+            background: linear-gradient(135deg, #f5cc5a, #F4C542);
+        }
+
+        .retry-btn:active {
+            transform: translateY(0);
+        }
+
+        .retry-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .brand {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="icon-container">
+            <div class="icon-bg">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                          d="M18.364 5.636a9 9 0 11-12.728 0M12 2v6m-4.5 2.5L12 8l4.5 2.5"/>
+                </svg>
+            </div>
+        </div>
+
+        <h1>You're Offline</h1>
+        <p class="subtitle">
+            It seems you've lost your internet connection. Please check your network and try again.
+        </p>
+
+        <button class="retry-btn" onclick="window.location.reload()">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Try Again
+        </button>
+
+        <div class="brand">BGBR Rwanda • Sure &amp; Steadfast</div>
+    </div>
+</body>
+</html>
