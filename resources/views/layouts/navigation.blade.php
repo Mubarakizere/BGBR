@@ -15,317 +15,262 @@
 
     {{-- Sidebar --}}
     <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
-           class="fixed md:sticky top-0 left-0 w-72 h-screen flex flex-col bg-gradient-to-b from-[#0F1847] via-[#141E55] to-[#0C1339] text-white transition-transform duration-300 ease-in-out shadow-2xl md:shadow-lg z-50">
+           class="fixed md:sticky top-0 left-0 w-[270px] h-screen flex flex-col bg-[#0E1538] text-white transition-transform duration-300 ease-in-out shadow-2xl md:shadow-lg z-50"
+           x-data="{
+               adminOpen: {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('audit-logs.*') || request()->routeIs('users.pending') ? 'true' : 'false' }},
+               orgOpen: {{ request()->routeIs('battalions.*') || request()->routeIs('companies.*') || request()->routeIs('members.*') || request()->routeIs('materials-requests.*') ? 'true' : 'false' }},
+               opsOpen: {{ request()->routeIs('dominations.*') || request()->routeIs('account-deposits.*') || request()->routeIs('reports.*') ? 'true' : 'false' }}
+           }">
 
-        {{-- ═══════════ LOGO / BRAND ═══════════ --}}
-        <div class="h-16 flex items-center justify-between px-5 border-b border-white/[0.06]">
+        {{-- Brand --}}
+        <div class="h-[60px] flex items-center justify-between px-5 border-b border-white/[0.05]">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
-                <div class="w-9 h-9 bg-gradient-to-br from-primary to-[#3B4FD4] rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 group-hover:shadow-primary/50 transition-shadow duration-300">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                <div class="w-9 h-9 bg-white rounded-lg flex items-center justify-center shadow-md p-0.5">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="BGBR Logo" class="w-full h-full object-contain rounded-[5px]" />
                 </div>
-                <span class="text-lg font-extrabold tracking-tight bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
-                    BGBR Portal
-                </span>
+                <div class="leading-none">
+                    <span class="text-[15px] font-bold tracking-tight text-white">BGBR</span>
+                    <span class="block text-[10px] font-medium text-white/35 tracking-wide">Management Portal</span>
+                </div>
             </a>
-            {{-- Mobile close button --}}
-            <button @click="sidebarOpen = false" class="md:hidden text-white/50 hover:text-white transition-colors">
+            <button @click="sidebarOpen = false" class="md:hidden text-white/40 hover:text-white transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
 
-        {{-- ═══════════ NAVIGATION LINKS ═══════════ --}}
-        <nav class="flex-1 overflow-y-auto py-5 px-3 space-y-6 scrollbar-hide">
+        {{-- Navigation --}}
+        <nav class="flex-1 overflow-y-auto py-4 px-3 scrollbar-hide">
 
-            {{-- Main --}}
-            <div>
-                <div class="space-y-0.5">
-                    @php $isDash = request()->routeIs('dashboard'); @endphp
-                    <a href="{{ route('dashboard') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isDash ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        {{-- Active indicator pill --}}
-                        @if($isDash)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isDash ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                        </span>
-                        Dashboard
-                    </a>
-                </div>
-            </div>
+            {{-- ── Dashboard ── --}}
+            @php $isDash = request()->routeIs('dashboard'); @endphp
+            <a href="{{ route('dashboard') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150
+                      {{ $isDash ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isDash ? 'bg-blue-500/20 text-blue-400' : 'text-white/40' }}">
+                    <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v5a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v2a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 12a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1v-7z"></path></svg>
+                </span>
+                Dashboard
+            </a>
 
-            {{-- Super Admin Section --}}
-            @can('manage dominations')
-            <div>
-                <h4 class="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-white/30">Super Admin</h4>
-                <div class="space-y-0.5">
-                    {{-- Pending Approvals --}}
-                    @php $isPending = request()->routeIs('users.pending'); @endphp
-                    <a href="{{ route('users.pending') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isPending ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        @if($isPending)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isPending ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        </span>
-                        Pending Approvals
-                    </a>
+            {{-- ── Announcements ── --}}
+            @php $isAnn = request()->routeIs('announcements.*'); @endphp
+            <a href="{{ route('announcements.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                      {{ $isAnn ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isAnn ? 'bg-amber-500/20 text-amber-400' : 'text-white/40' }}">
+                    <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                </span>
+                Announcements
+            </a>
 
-                    {{-- Dominations --}}
-                    @php $isDom = request()->routeIs('dominations.*'); @endphp
-                    <a href="{{ route('dominations.index') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isDom ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        @if($isDom)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isDom ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </span>
-                        Dominations
-                    </a>
-
-                    {{-- Account Deposits --}}
-                    @php $isDeposits = request()->routeIs('account-deposits.*'); @endphp
-                    <a href="{{ route('account-deposits.index') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isDeposits ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        @if($isDeposits)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isDeposits ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </span>
-                        Account Deposits
-                    </a>
-                </div>
-            </div>
-            @endcan
-
-            {{-- Battalion Section --}}
-            @can('manage battalions')
-            <div>
-                <h4 class="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-white/30">Battalion</h4>
-                <div class="space-y-0.5">
-                    @php $isBatt = request()->routeIs('battalions.*'); @endphp
-                    <a href="{{ route('battalions.index') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isBatt ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        @if($isBatt)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isBatt ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                        </span>
-                        Battalions
-                    </a>
-                </div>
-            </div>
-            @endcan
-
-            {{-- Company Section --}}
-            @can('manage companies')
-            <div>
-                <h4 class="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-white/30">Company</h4>
-                <div class="space-y-0.5">
-                    @php $isComp = request()->routeIs('companies.*'); @endphp
-                    <a href="{{ route('companies.index') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isComp ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        @if($isComp)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isComp ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                        </span>
-                        Companies
-                    </a>
-
-                    @php $isMat = request()->routeIs('materials-requests.*'); @endphp
-                    <a href="{{ route('materials-requests.index') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isMat ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        @if($isMat)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isMat ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                        </span>
-                        Material Requests
-                    </a>
-                </div>
-            </div>
-            @endcan
-
-            {{-- Activities Section --}}
+            {{-- ── Activities ── --}}
             @if(auth()->user()->can('manage activities') || auth()->user()->can('submit activity participation'))
-            <div>
-                <h4 class="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-white/30">Activities</h4>
-                <div class="space-y-0.5">
-                    @php $isAct = request()->routeIs('activities.*'); @endphp
-                    <a href="{{ route('activities.index') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isAct ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        @if($isAct)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isAct ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        </span>
-                        Activities
-                    </a>
-                </div>
-            </div>
+                @php $isAct = request()->routeIs('activities.*'); @endphp
+                <a href="{{ route('activities.index') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                          {{ $isAct ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                    <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isAct ? 'bg-emerald-500/20 text-emerald-400' : 'text-white/40' }}">
+                        <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </span>
+                    Activities
+                </a>
             @endif
 
-            {{-- Members Section --}}
-            @can('register members')
-            <div>
-                <h4 class="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-white/30">Members</h4>
-                <div class="space-y-0.5">
-                    @php $isMem = request()->routeIs('members.*'); @endphp
-                    <a href="{{ route('members.index') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isMem ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        @if($isMem)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isMem ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        </span>
-                        Members List
-                    </a>
+            {{-- ── ORGANIZATION GROUP (collapsible) ── --}}
+            @if(auth()->user()->can('manage battalions') || auth()->user()->can('manage companies') || auth()->user()->can('register members'))
+                <div class="mt-5 mb-1">
+                    <button @click="orgOpen = !orgOpen"
+                            class="w-full flex items-center justify-between px-3 group">
+                        <span class="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25 group-hover:text-white/40 transition-colors">Organization</span>
+                        <svg :class="orgOpen ? 'rotate-0' : '-rotate-90'"
+                             class="w-3 h-3 text-white/20 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
                 </div>
-            </div>
-            @endcan
 
-            {{-- Reports Section --}}
-            @if(auth()->user()->hasRole(['Company Captain', 'Company Officer', 'Battalion Commander', 'Domination Admin', 'Super Admin']))
-            <div>
-                <h4 class="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-white/30">Reporting</h4>
-                <div class="space-y-0.5">
-                    @php $isReports = request()->routeIs('reports.*'); @endphp
-                    <a href="{{ route('reports.index') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isReports ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        @if($isReports)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isReports ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        </span>
-                        Reports
-                    </a>
+                <div x-show="orgOpen" x-collapse>
+                    @can('manage battalions')
+                        @php $isBatt = request()->routeIs('battalions.*'); @endphp
+                        <a href="{{ route('battalions.index') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150
+                                  {{ $isBatt ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                            <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isBatt ? 'bg-violet-500/20 text-violet-400' : 'text-white/40' }}">
+                                <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                            </span>
+                            Battalions
+                        </a>
+                    @endcan
+
+                    @can('manage companies')
+                        @php $isComp = request()->routeIs('companies.*'); @endphp
+                        <a href="{{ route('companies.index') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                                  {{ $isComp ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                            <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isComp ? 'bg-violet-500/20 text-violet-400' : 'text-white/40' }}">
+                                <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
+                            </span>
+                            Companies
+                        </a>
+
+                        @php $isMat = request()->routeIs('materials-requests.*'); @endphp
+                        <a href="{{ route('materials-requests.index') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                                  {{ $isMat ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                            <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isMat ? 'bg-violet-500/20 text-violet-400' : 'text-white/40' }}">
+                                <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                            </span>
+                            Material Requests
+                        </a>
+                    @endcan
+
+                    @can('register members')
+                        @php $isMem = request()->routeIs('members.*'); @endphp
+                        <a href="{{ route('members.index') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                                  {{ $isMem ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                            <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isMem ? 'bg-violet-500/20 text-violet-400' : 'text-white/40' }}">
+                                <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            </span>
+                            Members
+                        </a>
+                    @endcan
                 </div>
-            </div>
             @endif
 
-            {{-- Announcements Section --}}
-            <div>
-                <h4 class="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-white/30">Announcements</h4>
-                <div class="space-y-0.5">
-                    @php $isAnn = request()->routeIs('announcements.*'); @endphp
-                    <a href="{{ route('announcements.index') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isAnn ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        @if($isAnn)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isAnn ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
-                        </span>
-                        Announcements
-                    </a>
+            {{-- ── OPERATIONS GROUP (collapsible) ── --}}
+            @if(auth()->user()->can('manage dominations') ||
+                auth()->user()->hasRole(['Company Captain', 'Company Officer', 'Battalion Commander', 'Domination Admin', 'Super Admin']))
+                <div class="mt-5 mb-1">
+                    <button @click="opsOpen = !opsOpen"
+                            class="w-full flex items-center justify-between px-3 group">
+                        <span class="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25 group-hover:text-white/40 transition-colors">Operations</span>
+                        <svg :class="opsOpen ? 'rotate-0' : '-rotate-90'"
+                             class="w-3 h-3 text-white/20 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
                 </div>
-            </div>
 
-            {{-- Administration Section --}}
-            @can('manage users')
-            <div>
-                <h4 class="px-3 mb-2 text-[10px] font-bold uppercase tracking-[0.15em] text-white/30">Administration</h4>
-                <div class="space-y-0.5">
-                    @php $isUsers = request()->routeIs('users.index'); @endphp
-                    {{-- User Management --}}
-                    @php $isUsers = request()->routeIs('users.index'); @endphp
-                    <a href="{{ route('users.index') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isUsers ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        @if($isUsers)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isUsers ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        </span>
-                        User Management
-                    </a>
+                <div x-show="opsOpen" x-collapse>
+                    @can('manage dominations')
+                        @php $isDom = request()->routeIs('dominations.*'); @endphp
+                        <a href="{{ route('dominations.index') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150
+                                  {{ $isDom ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                            <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isDom ? 'bg-cyan-500/20 text-cyan-400' : 'text-white/40' }}">
+                                <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </span>
+                            Dominations
+                        </a>
+
+                        @php $isDeposits = request()->routeIs('account-deposits.*'); @endphp
+                        <a href="{{ route('account-deposits.index') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                                  {{ $isDeposits ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                            <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isDeposits ? 'bg-cyan-500/20 text-cyan-400' : 'text-white/40' }}">
+                                <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </span>
+                            Account Deposits
+                        </a>
+                    @endcan
+
+                    {{-- Reports --}}
+                    @if(auth()->user()->hasRole(['Company Captain', 'Company Officer', 'Battalion Commander', 'Domination Admin', 'Super Admin']))
+                        @php $isReports = request()->routeIs('reports.*'); @endphp
+                        <a href="{{ route('reports.index') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                                  {{ $isReports ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                            <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isReports ? 'bg-cyan-500/20 text-cyan-400' : 'text-white/40' }}">
+                                <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </span>
+                            Reports
+                        </a>
+                    @endif
+                </div>
+            @endif
+
+            {{-- ── SYSTEM GROUP (collapsible) ── --}}
+            @if(auth()->user()->can('manage users') || auth()->user()->can('manage dominations'))
+                <div class="mt-5 mb-1.5">
+                    <button @click="adminOpen = !adminOpen"
+                            class="w-full flex items-center justify-between px-3 group">
+                        <span class="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25 group-hover:text-white/40 transition-colors">System</span>
+                        <svg :class="adminOpen ? 'rotate-0' : '-rotate-90'"
+                             class="w-3 h-3 text-white/20 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div x-show="adminOpen" x-collapse>
+                    @can('manage dominations')
+                        @php $isPending = request()->routeIs('users.pending'); @endphp
+                        <a href="{{ route('users.pending') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150
+                                  {{ $isPending ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                            <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isPending ? 'bg-orange-500/20 text-orange-400' : 'text-white/40' }}">
+                                <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </span>
+                            Pending Approvals
+                        </a>
+                    @endcan
+
+                    @can('manage users')
+                        @php $isUsers = request()->routeIs('users.index'); @endphp
+                        <a href="{{ route('users.index') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                                  {{ $isUsers ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                            <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isUsers ? 'bg-orange-500/20 text-orange-400' : 'text-white/40' }}">
+                                <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                            </span>
+                            User Management
+                        </a>
+                    @endcan
 
                     @can('manage system settings')
-                    @php $isRoles = request()->routeIs('roles.*'); @endphp
-                    <a href="{{ route('roles.index') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isRoles ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        @if($isRoles)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isRoles ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        </span>
-                        Role Management
-                    </a>
+                        @php $isRoles = request()->routeIs('roles.*'); @endphp
+                        <a href="{{ route('roles.index') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                                  {{ $isRoles ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                            <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isRoles ? 'bg-orange-500/20 text-orange-400' : 'text-white/40' }}">
+                                <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            </span>
+                            Roles & Permissions
+                        </a>
                     @endcan
 
                     @can('view audit logs')
-                    @php $isAudit = request()->routeIs('audit-logs.*'); @endphp
-                    <a href="{{ route('audit-logs.index') }}"
-                       class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-semibold transition-all duration-200
-                              {{ $isAudit ? 'bg-white/[0.12] text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/[0.06]' }}">
-                        @if($isAudit)
-                            <span class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-secondary rounded-r-full"></span>
-                        @endif
-                        <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200
-                                     {{ $isAudit ? 'bg-primary/60 text-white' : 'bg-white/[0.06] text-white/50 group-hover:bg-white/[0.1] group-hover:text-white/80' }}">
-                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
-                        </span>
-                        Audit Logs
-                    </a>
+                        @php $isAudit = request()->routeIs('audit-logs.*'); @endphp
+                        <a href="{{ route('audit-logs.index') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                                  {{ $isAudit ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                            <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isAudit ? 'bg-orange-500/20 text-orange-400' : 'text-white/40' }}">
+                                <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                            </span>
+                            Audit Logs
+                        </a>
                     @endcan
                 </div>
-            </div>
-            @endcan
+            @endif
 
         </nav>
 
-        {{-- ═══════════ USER PROFILE FOOTER ═══════════ --}}
-        <div class="p-3 border-t border-white/[0.06]">
-            <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/[0.06] transition-all duration-200 group">
+        {{-- User Profile Footer --}}
+        <div class="p-3 border-t border-white/[0.05]">
+            <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 p-2 rounded-lg hover:bg-white/[0.04] transition-all duration-150 group">
                 @if(Auth::user()->photo_path)
-                    <img src="{{ asset('storage/' . Auth::user()->photo_path) }}" alt="{{ Auth::user()->name }}" class="w-10 h-10 rounded-full object-cover shadow-lg shadow-secondary/10 border border-white/10 shrink-0">
+                    <img src="{{ asset('storage/' . Auth::user()->photo_path) }}" alt="{{ Auth::user()->name }}" class="w-8 h-8 rounded-full object-cover ring-1 ring-white/10 shrink-0">
                 @else
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-secondary/80 to-secondary flex items-center justify-center text-[#0F1847] font-bold text-sm shadow-lg shadow-secondary/20 shrink-0">
+                    <div class="w-8 h-8 rounded-full bg-white/[0.08] flex items-center justify-center text-white/60 font-semibold text-xs shrink-0">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
                 @endif
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-white/90 truncate group-hover:text-white transition-colors">{{ Auth::user()->name }}</p>
-                    <p class="text-[11px] text-white/40 truncate">{{ Auth::user()->roles->pluck('name')->first() ?? 'Member' }}</p>
+                    <p class="text-[13px] font-medium text-white/80 truncate group-hover:text-white transition-colors">{{ Auth::user()->name }}</p>
+                    <p class="text-[10px] text-white/30 truncate">{{ Auth::user()->roles->pluck('name')->first() ?? 'Member' }}</p>
                 </div>
-                <svg class="w-4 h-4 text-white/20 group-hover:text-white/50 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                <svg class="w-3.5 h-3.5 text-white/15 group-hover:text-white/40 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
             </a>
         </div>
 

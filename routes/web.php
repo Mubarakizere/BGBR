@@ -46,6 +46,7 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
     // User Approvals
     Route::get('/admin/users/pending', [UserApprovalController::class, 'index'])->name('users.pending')->middleware('can:manage users');
     Route::patch('/admin/users/{user}/approve', [UserApprovalController::class, 'update'])->name('users.approve')->middleware('can:manage users');
+    Route::delete('/admin/users/{user}/reject', [UserApprovalController::class, 'reject'])->name('users.reject')->middleware('can:manage users');
 
     // Members
     Route::resource('members', MemberController::class);

@@ -11,9 +11,19 @@ use Spatie\Permission\Models\Role;
 
 class UserApprovalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pendingUsers = User::where('is_approved', false)->latest()->paginate(15)->withQueryString();
+        $query = User::where('is_approved', false);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $pendingUsers = $query->latest()->paginate(15)->withQueryString();
         $roles = Role::where('name', '!=', 'Super Admin')->get(); // Don't allow assigning Super Admin via this UI
         $dominations = Domination::orderBy('name')->get();
         $battalions = Battalion::with('domination')->orderBy('name')->get();
@@ -46,5 +56,13 @@ class UserApprovalController extends Controller
         $user->save();
 
         return back()->with('success', "User {$user->name} has been approved and assigned to the {$request->role} role.");
+    }
+
+    public function reject(User $user)
+    {
+        $name = $user->name;
+        $user->delete();
+
+        return back()->with('success', "User {$name} has been rejected and removed from the system.");
     }
 }

@@ -8,22 +8,26 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            <!-- Hero Welcome Banner (System Colors) -->
-            <div class="bg-primary rounded-3xl shadow-xl mb-8 overflow-hidden relative group">
+            <!-- Hero Welcome Banner -->
+            <div class="bg-primary rounded-3xl shadow-xl mb-8 overflow-hidden relative">
                 <!-- Decorative elements -->
-                <div class="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-surface rounded-full mix-blend-overlay opacity-10 group-hover:scale-110 transition-transform duration-700 ease-in-out"></div>
-                <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-surface rounded-full mix-blend-overlay opacity-10 group-hover:scale-110 transition-transform duration-700 ease-in-out"></div>
+                <div class="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-surface rounded-full mix-blend-overlay opacity-10"></div>
+                <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-40 h-40 bg-surface rounded-full mix-blend-overlay opacity-10"></div>
                 
-                <div class="px-8 py-12 relative z-10 text-surface backdrop-blur-sm">
-                    <div class="flex items-center space-x-4 mb-4">
-                        <div class="p-3 bg-surface/20 rounded-2xl backdrop-blur-md border border-surface/30 shadow-sm">
-                            <svg class="w-8 h-8 text-surface" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <div class="px-8 py-10 relative z-10 text-surface">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div>
+                            <p class="text-surface/50 text-sm font-medium uppercase tracking-wider mb-1">{{ now()->format('l, d M Y') }}</p>
+                            <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight">{{ Auth::user()->name }}</h3>
+                            <p class="text-surface/60 text-base font-medium mt-1">{{ Auth::user()->roles->pluck('name')->first() ?? 'Member' }}</p>
                         </div>
-                        <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight">Welcome back, {{ Auth::user()->name }}! 👋</h3>
+                        <div class="flex items-center gap-3">
+                            <a href="{{ route('profile.edit') }}" class="px-5 py-2.5 bg-surface/10 hover:bg-surface/20 border border-surface/20 rounded-xl text-sm font-semibold text-surface transition-colors duration-200">
+                                <svg class="w-4 h-4 inline-block mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                My Profile
+                            </a>
+                        </div>
                     </div>
-                    <p class="text-surface/80 max-w-2xl text-lg font-medium leading-relaxed">
-                        Here is your personalized BGBR Rwanda command center. Your view is tailored based on your active permissions and scope of command.
-                    </p>
                 </div>
             </div>
 

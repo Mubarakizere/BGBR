@@ -46,13 +46,11 @@
                         Excel
                     </a>
                     @if(in_array($report->status, ['draft', 'rejected']))
-                    <form action="{{ route('reports.destroy', $report) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this report?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-danger/10 text-danger hover:bg-danger/20 font-bold text-sm transition-colors">
-                            Delete
-                        </button>
-                    </form>
+                    <button type="button" 
+                        @click="$dispatch('open-delete-modal', { action: '{{ route('reports.destroy', $report) }}', message: 'Are you sure you want to delete this report? This action cannot be undone.' })"
+                        class="flex items-center gap-2 px-4 py-2 rounded-lg bg-danger/10 text-danger hover:bg-danger/20 font-bold text-sm transition-colors">
+                        Delete
+                    </button>
                     @endif
                 </div>
             </div>

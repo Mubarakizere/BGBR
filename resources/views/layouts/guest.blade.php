@@ -48,25 +48,25 @@
             </div>
 
             <!-- Right Pane (Form Area) -->
-            <div class="w-full lg:w-7/12 flex flex-col justify-center items-center p-6 sm:p-12 relative bg-background">
+            <div class="w-full lg:w-7/12 flex flex-col justify-center items-center p-4 sm:p-6 lg:p-8 relative bg-background">
                 <!-- Background decorative blob on right side -->
                 <div class="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
                 
                 <!-- Mobile Only Header -->
-                <div class="lg:hidden w-full max-w-md mb-8 text-center relative z-10">
-                    <img src="{{ asset('images/logo.jpg') }}" alt="BGBR Logo" class="w-32 h-auto object-contain mx-auto drop-shadow-md rounded-2xl bg-white p-2" />
+                <div class="lg:hidden w-full max-w-md mb-6 text-center relative z-10">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="BGBR Logo" class="w-20 h-auto object-contain mx-auto drop-shadow-sm rounded-2xl bg-white p-2" />
                 </div>
 
                 <div class="w-full max-w-md relative z-10">
                     <!-- Desktop Logo -->
-                    <div class="hidden lg:flex justify-center mb-10">
-                        <div class="bg-white p-3 rounded-2xl shadow-md border border-gray-100">
-                            <img src="{{ asset('images/logo.jpg') }}" alt="BGBR Logo" class="w-40 h-auto object-contain drop-shadow-sm" />
+                    <div class="hidden lg:flex justify-center mb-6">
+                        <div class="bg-white/90 backdrop-blur-sm p-2 rounded-2xl shadow-sm border border-gray-100">
+                            <img src="{{ asset('images/logo.jpg') }}" alt="BGBR Logo" class="w-20 h-auto object-contain drop-shadow-sm" />
                         </div>
                     </div>
 
                     <!-- Card Wrapper -->
-                    <div class="bg-surface p-8 sm:p-10 rounded-3xl shadow-xl border border-border backdrop-blur-sm relative overflow-hidden">
+                    <div class="bg-surface p-6 sm:p-8 rounded-3xl shadow-xl border border-border backdrop-blur-sm relative overflow-hidden">
                         <!-- Top subtle gradient line -->
                         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-primary"></div>
                         

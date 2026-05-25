@@ -19,6 +19,7 @@ export default {
                 secondary: '#F4C542',
                 success: '#22C55E',
                 danger: '#D62828',
+                warning: '#F59E0B',
                 accent: '#8BC665',
                 background: '#F8FAFC',
                 surface: '#FFFFFF',

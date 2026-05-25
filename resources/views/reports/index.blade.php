@@ -135,11 +135,9 @@
                                     <a href="{{ route('reports.show', $report) }}" class="font-bold text-secondary hover:text-secondary/80 transition-colors">View</a>
                                     <a href="{{ route('reports.pdf', $report) }}" class="font-bold text-muted hover:text-text transition-colors">PDF</a>
                                     @if(in_array($report->status, ['draft', 'rejected']))
-                                    <form action="{{ route('reports.destroy', $report) }}" method="POST" class="inline-block ml-3" onsubmit="return confirm('Are you sure you want to delete this report?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="font-bold text-danger hover:text-danger/80 transition-colors">Delete</button>
-                                    </form>
+                                    <button type="button" 
+                                        @click="$dispatch('open-delete-modal', { action: '{{ route('reports.destroy', $report) }}', message: 'Are you sure you want to delete this report? This action cannot be undone.' })"
+                                        class="font-bold text-danger hover:text-danger/80 transition-colors ml-3">Delete</button>
                                     @endif
                                 </td>
                             </tr>
