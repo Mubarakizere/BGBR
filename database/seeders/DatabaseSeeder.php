@@ -74,5 +74,8 @@ class DatabaseSeeder extends Seeder
         if (!$admin->hasRole('Super Admin')) {
             $admin->assignRole('Super Admin');
         }
+
+        // Seed default website content (public site pages & FAQs)
+        $this->call(WebsiteContentSeeder::class);
     }
 }
