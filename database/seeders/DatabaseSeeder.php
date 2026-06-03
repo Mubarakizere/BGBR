@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             'view members', 'update members', 'participate in activities', 'view company announcements',
             'view own profile', 'view announcements', 'view activity participation history',
             'manage activities',
+            'manage website',
         ];
 
         foreach ($permissions as $permission) {

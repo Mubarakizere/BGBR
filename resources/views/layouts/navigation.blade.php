@@ -19,7 +19,8 @@
            x-data="{
                adminOpen: {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('audit-logs.*') || request()->routeIs('users.pending') ? 'true' : 'false' }},
                orgOpen: {{ request()->routeIs('battalions.*') || request()->routeIs('companies.*') || request()->routeIs('members.*') || request()->routeIs('materials-requests.*') ? 'true' : 'false' }},
-               opsOpen: {{ request()->routeIs('dominations.*') || request()->routeIs('account-deposits.*') || request()->routeIs('reports.*') ? 'true' : 'false' }}
+               opsOpen: {{ request()->routeIs('dominations.*') || request()->routeIs('account-deposits.*') || request()->routeIs('reports.*') ? 'true' : 'false' }},
+               websiteOpen: {{ request()->routeIs('admin.website.*') ? 'true' : 'false' }}
            }">
 
         {{-- Brand --}}
@@ -253,6 +254,106 @@
                     @endcan
                 </div>
             @endif
+
+            {{-- ── WEBSITE CMS GROUP (collapsible) ── --}}
+            @can('manage website')
+                <div class="mt-5 mb-1.5">
+                    <button @click="websiteOpen = !websiteOpen"
+                            class="w-full flex items-center justify-between px-3 group">
+                        <span class="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25 group-hover:text-white/40 transition-colors">Website CMS</span>
+                        <svg :class="websiteOpen ? 'rotate-0' : '-rotate-90'"
+                             class="w-3 h-3 text-white/20 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div x-show="websiteOpen" x-collapse>
+                    @php $isWDash = request()->routeIs('admin.website.dashboard'); @endphp
+                    <a href="{{ route('admin.website.dashboard') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150
+                              {{ $isWDash ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                        <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isWDash ? 'bg-pink-500/20 text-pink-400' : 'text-white/40' }}">
+                            <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                        </span>
+                        Overview
+                    </a>
+
+                    @php $isWPages = request()->routeIs('admin.website.pages.*'); @endphp
+                    <a href="{{ route('admin.website.pages.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                              {{ $isWPages ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                        <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isWPages ? 'bg-pink-500/20 text-pink-400' : 'text-white/40' }}">
+                            <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </span>
+                        Pages
+                    </a>
+
+                    @php $isWLeaders = request()->routeIs('admin.website.leaders.*'); @endphp
+                    <a href="{{ route('admin.website.leaders.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                              {{ $isWLeaders ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                        <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isWLeaders ? 'bg-pink-500/20 text-pink-400' : 'text-white/40' }}">
+                            <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        </span>
+                        Leadership
+                    </a>
+
+                    @php $isWEvents = request()->routeIs('admin.website.events.*'); @endphp
+                    <a href="{{ route('admin.website.events.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                              {{ $isWEvents ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                        <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isWEvents ? 'bg-pink-500/20 text-pink-400' : 'text-white/40' }}">
+                            <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </span>
+                        Events
+                    </a>
+
+                    @php $isWNews = request()->routeIs('admin.website.news.*'); @endphp
+                    <a href="{{ route('admin.website.news.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                              {{ $isWNews ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                        <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isWNews ? 'bg-pink-500/20 text-pink-400' : 'text-white/40' }}">
+                            <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                        </span>
+                        News
+                    </a>
+
+                    @php $isWGallery = request()->routeIs('admin.website.gallery.*'); @endphp
+                    <a href="{{ route('admin.website.gallery.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                              {{ $isWGallery ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                        <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isWGallery ? 'bg-pink-500/20 text-pink-400' : 'text-white/40' }}">
+                            <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </span>
+                        Gallery
+                    </a>
+
+                    @php $isWFaqs = request()->routeIs('admin.website.faqs.*'); @endphp
+                    <a href="{{ route('admin.website.faqs.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                              {{ $isWFaqs ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                        <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isWFaqs ? 'bg-pink-500/20 text-pink-400' : 'text-white/40' }}">
+                            <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </span>
+                        FAQs
+                    </a>
+
+                    @php $isWContacts = request()->routeIs('admin.website.contacts.*'); @endphp
+                    <a href="{{ route('admin.website.contacts.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                              {{ $isWContacts ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                        <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isWContacts ? 'bg-pink-500/20 text-pink-400' : 'text-white/40' }}">
+                            <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </span>
+                        Contact Messages
+                        @php $unreadContacts = \App\Models\SiteContact::unread()->count(); @endphp
+                        @if($unreadContacts > 0)
+                            <span class="ml-auto px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-danger text-white min-w-[18px] text-center">{{ $unreadContacts }}</span>
+                        @endif
+                    </a>
+                </div>
+            @endcan
 
         </nav>
 
