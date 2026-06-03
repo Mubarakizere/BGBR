@@ -11,9 +11,8 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-            // Public website routes — served on the main domain (e.g. bgbr.rw)
+            // Public website routes — no domain constraint (single-domain setup)
             Route::middleware('web')
-                ->domain(config('site.public_domain'))
                 ->group(base_path('routes/public.php'));
         },
     )
