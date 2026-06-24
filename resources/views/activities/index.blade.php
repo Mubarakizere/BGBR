@@ -91,6 +91,22 @@
                         </div>
                         @endif
 
+                        {{-- Target Audience Badge --}}
+                        <div class="mb-4">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider
+                                @if($activity->target_audience === 'national') bg-primary/10 text-primary
+                                @elseif($activity->target_audience === 'domination') bg-secondary/10 text-secondary
+                                @elseif($activity->target_audience === 'battalion') bg-success/10 text-success
+                                @else bg-danger/10 text-danger @endif">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                @if($activity->target_audience === 'national')
+                                    National
+                                @else
+                                    {{ ucfirst($activity->target_audience) }}: {{ $activity->entity?->name ?? '—' }}
+                                @endif
+                            </span>
+                        </div>
+
                         {{-- Stats Row --}}
                         <div class="grid grid-cols-2 gap-3 mb-4">
                             <div class="bg-background rounded-xl p-3 text-center">

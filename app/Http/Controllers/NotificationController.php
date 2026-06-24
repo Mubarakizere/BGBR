@@ -20,6 +20,11 @@ class NotificationController extends Controller
             return redirect()->route('announcements.show', $notification->data['announcement_id']);
         }
 
+        // If the notification has an activity_id, redirect there
+        if (isset($notification->data['activity_id'])) {
+            return redirect()->route('activities.show', $notification->data['activity_id']);
+        }
+
         return back();
     }
 
