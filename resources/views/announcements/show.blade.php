@@ -32,10 +32,15 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $style['icon'] }}"></path></svg>
                         {{ $announcement->visibility_level }}
                     </span>
-                    @if($announcement->entity)
+                    @php $entities = $announcement->entities; @endphp
+                    @if($entities->count() > 0)
                         <span class="text-sm text-muted font-bold flex items-center gap-1.5 bg-surface px-3 py-1.5 rounded-lg border border-border shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                            {{ $announcement->entity->name ?? '' }}
+                            @if($entities->count() > 1)
+                                <span class="cursor-help border-b border-dashed border-muted" title="{{ $entities->pluck('name')->join(', ') }}">{{ $entities->count() }} Selected</span>
+                            @else
+                                {{ $entities->first()->name }}
+                            @endif
                         </span>
                     @endif
                 </div>

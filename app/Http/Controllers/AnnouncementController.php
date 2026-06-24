@@ -9,6 +9,7 @@ use App\Models\Company;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\NewAnnouncementNotification;
 
@@ -19,63 +20,101 @@ class AnnouncementController extends Controller
      */
     public function index(Request $request)
     {
-        \Illuminate\Support\Facades\Gate::authorize('viewAny', Announcement::class);
+        Gate::authorize('viewAny', Announcement::class);
         $user = Auth::user();
         $query = Announcement::with('creator')->latest();
 
         if ($user->hasRole('Super Admin')) {
             // Sees everything
         } elseif ($user->hasRole('Domination Admin') && $user->domination_id) {
-            $query->where(function ($q) use ($user) {
+            $domId = $user->domination_id;
+            $query->where(function ($q) use ($domId) {
                 $q->where('visibility_level', 'national')
-                  ->orWhere(function ($q2) use ($user) {
+                  ->orWhere(function ($q2) use ($domId) {
                       $q2->where('visibility_level', 'domination')
-                         ->where('entity_id', $user->domination_id);
+                         ->where(function ($q3) use ($domId) {
+                             $q3->whereJsonContains('entity_ids', $domId)
+                                ->orWhere('entity_id', $domId);
+                         });
                   })
-                  ->orWhere(function ($q2) use ($user) {
-                      $battalionIds = Battalion::where('domination_id', $user->domination_id)->pluck('id');
+                  ->orWhere(function ($q2) use ($domId) {
+                      $battalionIds = Battalion::where('domination_id', $domId)->pluck('id')->toArray();
                       $q2->where('visibility_level', 'battalion')
-                         ->whereIn('entity_id', $battalionIds);
+                         ->where(function ($q3) use ($battalionIds) {
+                             foreach ($battalionIds as $bid) {
+                                 $q3->orWhereJsonContains('entity_ids', $bid);
+                             }
+                             $q3->orWhereIn('entity_id', $battalionIds); // legacy
+                         });
                   });
             });
         } elseif ($user->hasRole('Battalion Commander') && $user->battalion_id) {
-            $query->where(function ($q) use ($user) {
+            $btnId = $user->battalion_id;
+            $battalion = Battalion::find($btnId);
+            $domId = $battalion?->domination_id;
+            
+            $query->where(function ($q) use ($btnId, $domId) {
                 $q->where('visibility_level', 'national')
-                  ->orWhere(function ($q2) use ($user) {
-                      $battalion = Battalion::find($user->battalion_id);
-                      $q2->where('visibility_level', 'domination')
-                         ->where('entity_id', $battalion?->domination_id);
+                  ->orWhere(function ($q2) use ($domId) {
+                      if ($domId) {
+                          $q2->where('visibility_level', 'domination')
+                             ->where(function ($q3) use ($domId) {
+                                 $q3->whereJsonContains('entity_ids', $domId)
+                                    ->orWhere('entity_id', $domId);
+                             });
+                      }
                   })
-                  ->orWhere(function ($q2) use ($user) {
+                  ->orWhere(function ($q2) use ($btnId) {
                       $q2->where('visibility_level', 'battalion')
-                         ->where('entity_id', $user->battalion_id);
+                         ->where(function ($q3) use ($btnId) {
+                             $q3->whereJsonContains('entity_ids', $btnId)
+                                ->orWhere('entity_id', $btnId);
+                         });
                   })
-                  ->orWhere(function ($q2) use ($user) {
-                      $companyIds = Company::where('battalion_id', $user->battalion_id)->pluck('id');
+                  ->orWhere(function ($q2) use ($btnId) {
+                      $companyIds = Company::where('battalion_id', $btnId)->pluck('id')->toArray();
                       $q2->where('visibility_level', 'company')
-                         ->whereIn('entity_id', $companyIds);
+                         ->where(function ($q3) use ($companyIds) {
+                             foreach ($companyIds as $cid) {
+                                 $q3->orWhereJsonContains('entity_ids', $cid);
+                             }
+                             $q3->orWhereIn('entity_id', $companyIds); // legacy
+                         });
                   });
             });
         } elseif (($user->hasRole('Company Captain') || $user->hasRole('Company Officer') || $user->hasRole('Member')) && $user->company_id) {
             $company = Company::find($user->company_id);
             $battalion = $company?->battalion;
-            $query->where(function ($q) use ($user, $company, $battalion) {
+            $domId = $battalion?->domination_id;
+            $btnId = $company?->battalion_id;
+            $cmpId = $user->company_id;
+
+            $query->where(function ($q) use ($domId, $btnId, $cmpId) {
                 $q->where('visibility_level', 'national')
-                  ->orWhere(function ($q2) use ($battalion) {
-                      if ($battalion) {
+                  ->orWhere(function ($q2) use ($domId) {
+                      if ($domId) {
                           $q2->where('visibility_level', 'domination')
-                             ->where('entity_id', $battalion->domination_id);
+                             ->where(function ($q3) use ($domId) {
+                                 $q3->whereJsonContains('entity_ids', $domId)
+                                    ->orWhere('entity_id', $domId);
+                             });
                       }
                   })
-                  ->orWhere(function ($q2) use ($user, $company) {
-                      if ($company) {
+                  ->orWhere(function ($q2) use ($btnId) {
+                      if ($btnId) {
                           $q2->where('visibility_level', 'battalion')
-                             ->where('entity_id', $company->battalion_id);
+                             ->where(function ($q3) use ($btnId) {
+                                 $q3->whereJsonContains('entity_ids', $btnId)
+                                    ->orWhere('entity_id', $btnId);
+                             });
                       }
                   })
-                  ->orWhere(function ($q2) use ($user) {
+                  ->orWhere(function ($q2) use ($cmpId) {
                       $q2->where('visibility_level', 'company')
-                         ->where('entity_id', $user->company_id);
+                         ->where(function ($q3) use ($cmpId) {
+                             $q3->whereJsonContains('entity_ids', $cmpId)
+                                ->orWhere('entity_id', $cmpId);
+                         });
                   });
             });
         } else {
@@ -97,7 +136,7 @@ class AnnouncementController extends Controller
      */
     public function create()
     {
-        \Illuminate\Support\Facades\Gate::authorize('create', Announcement::class);
+        Gate::authorize('create', Announcement::class);
         $user = Auth::user();
         $levels = $this->getAllowedLevels($user);
         $dominations = Domination::orderBy('name')->get();
@@ -112,56 +151,68 @@ class AnnouncementController extends Controller
      */
     public function store(Request $request)
     {
-        \Illuminate\Support\Facades\Gate::authorize('create', Announcement::class);
+        Gate::authorize('create', Announcement::class);
         $user = Auth::user();
         $levels = $this->getAllowedLevels($user);
 
-        $request->validate([
+        $data = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'visibility_level' => 'required|in:' . implode(',', $levels),
-            'entity_id' => 'nullable|uuid',
+            'entity_ids' => 'nullable|array',
+            'entity_ids.*' => 'uuid',
         ]);
 
-        // Validate entity_id matches the level
-        $entityId = null;
-        $level = $request->visibility_level;
+        $level = $data['visibility_level'];
+        $entityIds = [];
 
-        if ($level === 'national') {
-            $entityId = null;
-        } elseif ($level === 'domination') {
-            $entityId = $request->entity_id;
-            if (!$entityId && $user->domination_id) {
-                $entityId = $user->domination_id;
-            }
-        } elseif ($level === 'battalion') {
-            $entityId = $request->entity_id;
-            if (!$entityId && $user->battalion_id) {
-                $entityId = $user->battalion_id;
-            }
-        } elseif ($level === 'company') {
-            $entityId = $request->entity_id;
-            if (!$entityId && $user->company_id) {
-                $entityId = $user->company_id;
+        if ($level !== 'national') {
+            $submitted = $request->input('entity_ids', []);
+
+            if (!empty($submitted)) {
+                $entityIds = $submitted;
+            } else {
+                // Auto-fill with user's own entity
+                $auto = match ($level) {
+                    'domination' => $user->domination_id,
+                    'battalion'  => $user->battalion_id,
+                    'company'    => $user->company_id,
+                    default      => null,
+                };
+                if ($auto) {
+                    $entityIds = [$auto];
+                }
             }
         }
 
         $announcement = Announcement::create([
-            'title' => $request->title,
-            'content' => $request->content,
+            'title' => $data['title'],
+            'content' => $data['content'],
             'visibility_level' => $level,
-            'entity_id' => $entityId,
+            'entity_ids' => !empty($entityIds) ? $entityIds : null,
+            'entity_id' => $entityIds[0] ?? null,
             'created_by' => $user->id,
         ]);
 
-        // Send Notification
+        // Send Notification (includes email if properly queued)
         $usersQuery = User::query()->where('is_approved', true);
-        if ($level === 'domination') {
-            $usersQuery->where('domination_id', $entityId);
-        } elseif ($level === 'battalion') {
-            $usersQuery->where('battalion_id', $entityId);
-        } elseif ($level === 'company') {
-            $usersQuery->where('company_id', $entityId);
+        
+        if ($level === 'national') {
+            // notify everyone
+        } elseif (!empty($entityIds)) {
+            $usersQuery->where(function ($q) use ($level, $entityIds) {
+                foreach ($entityIds as $id) {
+                    $column = match ($level) {
+                        'domination' => 'domination_id',
+                        'battalion'  => 'battalion_id',
+                        'company'    => 'company_id',
+                        default      => null,
+                    };
+                    if ($column) {
+                        $q->orWhere($column, $id);
+                    }
+                }
+            });
         }
 
         Notification::send($usersQuery->get(), new NewAnnouncementNotification($announcement));
@@ -174,7 +225,7 @@ class AnnouncementController extends Controller
      */
     public function show(Announcement $announcement)
     {
-        \Illuminate\Support\Facades\Gate::authorize('view', $announcement);
+        Gate::authorize('view', $announcement);
         $announcement->load('creator');
         return view('announcements.show', compact('announcement'));
     }
@@ -184,7 +235,7 @@ class AnnouncementController extends Controller
      */
     public function edit(Announcement $announcement)
     {
-        \Illuminate\Support\Facades\Gate::authorize('update', $announcement);
+        Gate::authorize('update', $announcement);
         $user = Auth::user();
         $levels = $this->getAllowedLevels($user);
         $dominations = Domination::orderBy('name')->get();
@@ -199,33 +250,45 @@ class AnnouncementController extends Controller
      */
     public function update(Request $request, Announcement $announcement)
     {
-        \Illuminate\Support\Facades\Gate::authorize('update', $announcement);
+        Gate::authorize('update', $announcement);
         $user = Auth::user();
         $levels = $this->getAllowedLevels($user);
 
-        $request->validate([
+        $data = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'visibility_level' => 'required|in:' . implode(',', $levels),
-            'entity_id' => 'nullable|uuid',
+            'entity_ids' => 'nullable|array',
+            'entity_ids.*' => 'uuid',
         ]);
 
-        $entityId = null;
-        $level = $request->visibility_level;
+        $level = $data['visibility_level'];
+        $entityIds = [];
 
-        if ($level === 'domination') {
-            $entityId = $request->entity_id ?: $user->domination_id;
-        } elseif ($level === 'battalion') {
-            $entityId = $request->entity_id ?: $user->battalion_id;
-        } elseif ($level === 'company') {
-            $entityId = $request->entity_id ?: $user->company_id;
+        if ($level !== 'national') {
+            $submitted = $request->input('entity_ids', []);
+
+            if (!empty($submitted)) {
+                $entityIds = $submitted;
+            } else {
+                $auto = match ($level) {
+                    'domination' => $user->domination_id,
+                    'battalion'  => $user->battalion_id,
+                    'company'    => $user->company_id,
+                    default      => null,
+                };
+                if ($auto) {
+                    $entityIds = [$auto];
+                }
+            }
         }
 
         $announcement->update([
-            'title' => $request->title,
-            'content' => $request->content,
+            'title' => $data['title'],
+            'content' => $data['content'],
             'visibility_level' => $level,
-            'entity_id' => $entityId,
+            'entity_ids' => !empty($entityIds) ? $entityIds : null,
+            'entity_id' => $entityIds[0] ?? null,
         ]);
 
         return redirect()->route('announcements.show', $announcement)->with('success', 'Announcement updated successfully.');
@@ -236,7 +299,7 @@ class AnnouncementController extends Controller
      */
     public function destroy(Announcement $announcement)
     {
-        \Illuminate\Support\Facades\Gate::authorize('delete', $announcement);
+        Gate::authorize('delete', $announcement);
         $announcement->delete();
         return redirect()->route('announcements.index')->with('success', 'Announcement deleted successfully.');
     }

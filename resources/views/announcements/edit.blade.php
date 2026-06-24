@@ -57,37 +57,103 @@
                     </div>
 
                     {{-- Entity Selection (conditional) --}}
-                    <div x-show="level === 'domination'" x-cloak x-transition.opacity class="space-y-2 bg-surface border border-border p-5 rounded-2xl">
-                        <label class="block text-sm font-black text-text">Select Domination</label>
-                        <p class="text-xs text-muted mb-3">Leave as auto to target your own domination.</p>
-                        <select name="entity_id" class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text font-medium focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all shadow-sm">
-                            <option value="">-- Auto (your domination) --</option>
-                            @foreach($dominations as $dom)
-                                <option value="{{ $dom->id }}" {{ old('entity_id', $announcement->entity_id) == $dom->id ? 'selected' : '' }}>{{ $dom->name }}</option>
-                            @endforeach
-                        </select>
+                    {{-- Domination multi-select --}}
+                    <div x-show="level === 'domination'" x-cloak x-transition.opacity
+                         x-data="multiSelect({{ $dominations->map(fn($d) => ['id' => $d->id, 'label' => $d->name])->toJson() }}, {{ json_encode(old('entity_ids', $announcement->entity_ids ?? ($announcement->entity_id ? [$announcement->entity_id] : []))) }})"
+                         class="space-y-2 bg-surface border border-border p-5 rounded-2xl">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-sm font-black text-text">Select Zone(s) <span class="text-danger">*</span></label>
+                            <div class="flex gap-2 text-xs">
+                                <button type="button" @click="selectAll()" class="text-primary hover:underline font-semibold">Select All</button>
+                                <span class="text-muted">·</span>
+                                <button type="button" @click="clearAll()" class="text-muted hover:text-danger font-semibold">Clear</button>
+                            </div>
+                        </div>
+                        <p class="text-xs text-muted mb-3">
+                            <span x-text="selected.length"></span> selected
+                        </p>
+                        <input type="text" x-model="search" placeholder="Search zones…"
+                               class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text font-medium focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all shadow-sm mb-3">
+                        <div class="space-y-1 max-h-48 overflow-y-auto pr-1">
+                            <template x-for="item in filtered" :key="item.id">
+                                <label class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface cursor-pointer transition-colors"
+                                       :class="selected.includes(item.id) ? 'bg-primary/10 border border-primary/30' : ''">
+                                    <input type="checkbox" name="entity_ids[]" :value="item.id"
+                                           :checked="selected.includes(item.id)"
+                                           @change="toggle(item.id)"
+                                           class="rounded border-border text-primary focus:ring-primary/30">
+                                    <span class="text-sm font-medium text-text" x-text="item.label"></span>
+                                </label>
+                            </template>
+                            <p x-show="filtered.length === 0" class="text-xs text-muted text-center py-4">No zones found.</p>
+                        </div>
+                        @error('entity_ids') <p class="text-danger text-xs mt-2">{{ $message }}</p> @enderror
                     </div>
 
-                    <div x-show="level === 'battalion'" x-cloak x-transition.opacity class="space-y-2 bg-surface border border-border p-5 rounded-2xl">
-                        <label class="block text-sm font-black text-text">Select Battalion</label>
-                        <p class="text-xs text-muted mb-3">Leave as auto to target your own battalion.</p>
-                        <select name="entity_id" class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text font-medium focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all shadow-sm">
-                            <option value="">-- Auto (your battalion) --</option>
-                            @foreach($battalions as $btn)
-                                <option value="{{ $btn->id }}" {{ old('entity_id', $announcement->entity_id) == $btn->id ? 'selected' : '' }}>{{ $btn->name }} ({{ $btn->domination?->name ?? '—' }})</option>
-                            @endforeach
-                        </select>
+                    {{-- Battalion multi-select --}}
+                    <div x-show="level === 'battalion'" x-cloak x-transition.opacity
+                         x-data="multiSelect({{ $battalions->map(fn($b) => ['id' => $b->id, 'label' => $b->name . ' (' . ($b->domination?->name ?? '—') . ')'])->toJson() }}, {{ json_encode(old('entity_ids', $announcement->entity_ids ?? ($announcement->entity_id ? [$announcement->entity_id] : []))) }})"
+                         class="space-y-2 bg-surface border border-border p-5 rounded-2xl">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-sm font-black text-text">Select Battalion(s) <span class="text-danger">*</span></label>
+                            <div class="flex gap-2 text-xs">
+                                <button type="button" @click="selectAll()" class="text-primary hover:underline font-semibold">Select All</button>
+                                <span class="text-muted">·</span>
+                                <button type="button" @click="clearAll()" class="text-muted hover:text-danger font-semibold">Clear</button>
+                            </div>
+                        </div>
+                        <p class="text-xs text-muted mb-3">
+                            <span x-text="selected.length"></span> selected
+                        </p>
+                        <input type="text" x-model="search" placeholder="Search battalions…"
+                               class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text font-medium focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all shadow-sm mb-3">
+                        <div class="space-y-1 max-h-48 overflow-y-auto pr-1">
+                            <template x-for="item in filtered" :key="item.id">
+                                <label class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface cursor-pointer transition-colors"
+                                       :class="selected.includes(item.id) ? 'bg-primary/10 border border-primary/30' : ''">
+                                    <input type="checkbox" name="entity_ids[]" :value="item.id"
+                                           :checked="selected.includes(item.id)"
+                                           @change="toggle(item.id)"
+                                           class="rounded border-border text-primary focus:ring-primary/30">
+                                    <span class="text-sm font-medium text-text" x-text="item.label"></span>
+                                </label>
+                            </template>
+                            <p x-show="filtered.length === 0" class="text-xs text-muted text-center py-4">No battalions found.</p>
+                        </div>
+                        @error('entity_ids') <p class="text-danger text-xs mt-2">{{ $message }}</p> @enderror
                     </div>
 
-                    <div x-show="level === 'company'" x-cloak x-transition.opacity class="space-y-2 bg-surface border border-border p-5 rounded-2xl">
-                        <label class="block text-sm font-black text-text">Select Company</label>
-                        <p class="text-xs text-muted mb-3">Leave as auto to target your own company.</p>
-                        <select name="entity_id" class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text font-medium focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all shadow-sm">
-                            <option value="">-- Auto (your company) --</option>
-                            @foreach($companies as $company)
-                                <option value="{{ $company->id }}" {{ old('entity_id', $announcement->entity_id) == $company->id ? 'selected' : '' }}>{{ $company->name }} ({{ $company->battalion?->name ?? '—' }})</option>
-                            @endforeach
-                        </select>
+                    {{-- Company multi-select --}}
+                    <div x-show="level === 'company'" x-cloak x-transition.opacity
+                         x-data="multiSelect({{ $companies->map(fn($c) => ['id' => $c->id, 'label' => $c->name . ' (' . ($c->battalion?->name ?? '—') . ')'])->toJson() }}, {{ json_encode(old('entity_ids', $announcement->entity_ids ?? ($announcement->entity_id ? [$announcement->entity_id] : []))) }})"
+                         class="space-y-2 bg-surface border border-border p-5 rounded-2xl">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-sm font-black text-text">Select Company/ies <span class="text-danger">*</span></label>
+                            <div class="flex gap-2 text-xs">
+                                <button type="button" @click="selectAll()" class="text-primary hover:underline font-semibold">Select All</button>
+                                <span class="text-muted">·</span>
+                                <button type="button" @click="clearAll()" class="text-muted hover:text-danger font-semibold">Clear</button>
+                            </div>
+                        </div>
+                        <p class="text-xs text-muted mb-3">
+                            <span x-text="selected.length"></span> selected
+                        </p>
+                        <input type="text" x-model="search" placeholder="Search companies…"
+                               class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text font-medium focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all shadow-sm mb-3">
+                        <div class="space-y-1 max-h-48 overflow-y-auto pr-1">
+                            <template x-for="item in filtered" :key="item.id">
+                                <label class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface cursor-pointer transition-colors"
+                                       :class="selected.includes(item.id) ? 'bg-primary/10 border border-primary/30' : ''">
+                                    <input type="checkbox" name="entity_ids[]" :value="item.id"
+                                           :checked="selected.includes(item.id)"
+                                           @change="toggle(item.id)"
+                                           class="rounded border-border text-primary focus:ring-primary/30">
+                                    <span class="text-sm font-medium text-text" x-text="item.label"></span>
+                                </label>
+                            </template>
+                            <p x-show="filtered.length === 0" class="text-xs text-muted text-center py-4">No companies found.</p>
+                        </div>
+                        @error('entity_ids') <p class="text-danger text-xs mt-2">{{ $message }}</p> @enderror
                     </div>
 
                     {{-- Content --}}
@@ -113,4 +179,32 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function multiSelect(items, preselected) {
+            return {
+                items: items,
+                selected: preselected || [],
+                search: '',
+                get filtered() {
+                    const q = this.search.toLowerCase();
+                    return q ? this.items.filter(i => i.label.toLowerCase().includes(q)) : this.items;
+                },
+                toggle(id) {
+                    const idx = this.selected.indexOf(id);
+                    if (idx === -1) this.selected.push(id);
+                    else this.selected.splice(idx, 1);
+                },
+                selectAll() {
+                    this.filtered.forEach(i => {
+                        if (!this.selected.includes(i.id)) this.selected.push(i.id);
+                    });
+                },
+                clearAll() {
+                    const filteredIds = this.filtered.map(i => i.id);
+                    this.selected = this.selected.filter(id => !filteredIds.includes(id));
+                },
+            };
+        }
+    </script>
 </x-app-layout>
