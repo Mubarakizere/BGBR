@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Battalion;
 use App\Models\Domination;
+use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -12,9 +13,10 @@ class BattalionController extends Controller
     public function index()
     {
         Gate::authorize('viewAny', Battalion::class);
-        $battalions = Battalion::with('domination')->orderBy('name')->paginate(15)->withQueryString();
+        $battalions = Battalion::with(['domination', 'zone'])->orderBy('name')->paginate(15)->withQueryString();
         $dominations = Domination::orderBy('name')->get();
-        return view('battalions.index', compact('battalions', 'dominations'));
+        $zones = Zone::orderBy('name')->get();
+        return view('battalions.index', compact('battalions', 'dominations', 'zones'));
     }
 
     public function store(Request $request)
@@ -26,6 +28,7 @@ class BattalionController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'domination_id' => 'required|exists:dominations,id',
+            'zone_id' => 'nullable|exists:zones,id',
         ]);
 
         if (!$user->hasRole('Super Admin')) {
@@ -48,6 +51,7 @@ class BattalionController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'domination_id' => 'required|exists:dominations,id',
+            'zone_id' => 'nullable|exists:zones,id',
         ]);
 
         if (!$user->hasRole('Super Admin')) {

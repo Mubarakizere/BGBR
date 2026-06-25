@@ -30,6 +30,11 @@ class Battalion extends Model
         return $this->belongsTo(Domination::class);
     }
 
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class);
+    }
+
     public function companies()
     {
         return $this->hasMany(Company::class);

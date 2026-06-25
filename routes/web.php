@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DominationController;
 use App\Http\Controllers\BattalionController;
+use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\UserApprovalController;
 use App\Http\Controllers\UserController;
@@ -40,6 +41,7 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
 
     // Hierarchy Management
     Route::resource('dominations', DominationController::class)->middleware('can:manage dominations');
+    Route::resource('zones', ZoneController::class)->middleware('can:manage dominations');
     Route::resource('battalions', BattalionController::class)->middleware('can:manage battalions');
     Route::resource('companies', CompanyController::class)->middleware('can:manage companies');
     Route::post('companies/{company}/officers', [CompanyController::class, 'assignOfficer'])->name('companies.officers.assign');

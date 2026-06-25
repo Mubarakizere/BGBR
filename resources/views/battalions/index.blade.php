@@ -27,6 +27,7 @@
                             <tr class="bg-background">
                                 <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted">Battalion</th>
                                 <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted">Domination</th>
+                                <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted">Zone</th>
                                 <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted">Contribution</th>
                                 <th class="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-widest text-muted">Actions</th>
                             </tr>
@@ -46,6 +47,16 @@
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-background border border-border text-text">
                                         {{ $battalion->domination->name ?? '—' }}
                                     </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if($battalion->zone)
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-teal-500/10 border border-teal-500/20 text-teal-600">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                            {{ $battalion->zone->name }}
+                                        </span>
+                                    @else
+                                        <span class="text-xs text-muted italic">Not assigned</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="w-32">
@@ -73,7 +84,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-16 text-center">
+                                <td colspan="5" class="px-6 py-16 text-center">
                                     <div class="flex flex-col items-center">
                                         <div class="w-16 h-16 rounded-full bg-primary/5 flex items-center justify-center mb-4">
                                             <svg class="w-8 h-8 text-muted/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path></svg>
@@ -130,6 +141,16 @@
                                 <option value="">— Select Domination —</option>
                                 @foreach($dominations as $dom)
                                     <option value="{{ $dom->id }}">{{ $dom->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-text mb-1.5">Zone</label>
+                            <select name="zone_id" x-init="$watch('editing', val => { if(val) $el.value = val.zone_id || ''; else $el.value = ''; })"
+                                    class="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-text text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                <option value="">— No Zone —</option>
+                                @foreach($zones as $zone)
+                                    <option value="{{ $zone->id }}">{{ $zone->name }}</option>
                                 @endforeach
                             </select>
                         </div>
