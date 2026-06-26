@@ -25,9 +25,9 @@ class Battalion extends Model
         static::addGlobalScope(new TenantScope);
     }
 
-    public function domination()
+    public function denomination()
     {
-        return $this->belongsTo(Domination::class);
+        return $this->belongsTo(Denomination::class);
     }
 
     public function zone()

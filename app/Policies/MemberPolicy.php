@@ -29,7 +29,7 @@ class MemberPolicy
             return true;
         }
 
-        if ($user->hasRole('Domination Admin') && $user->domination_id === $member->company->battalion->domination_id) {
+        if ($user->hasRole('Denomination Admin') && $user->denomination_id === $member->company->battalion->denomination_id) {
             return true;
         }
 

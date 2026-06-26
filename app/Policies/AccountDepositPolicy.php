@@ -10,22 +10,22 @@ class AccountDepositPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('Super Admin') || $user->hasRole('Domination Admin');
+        return $user->hasRole('Super Admin') || $user->hasRole('Denomination Admin');
     }
 
     public function view(User $user, AccountDeposit $accountDeposit): bool
     {
         if ($user->hasRole('Super Admin')) return true;
-        if ($user->hasRole('Domination Admin') && $accountDeposit->level === 'battalion') {
+        if ($user->hasRole('Denomination Admin') && $accountDeposit->level === 'battalion') {
             $battalion = \App\Models\Battalion::find($accountDeposit->entity_id);
-            if ($battalion && $battalion->domination_id === $user->domination_id) return true;
+            if ($battalion && $battalion->denomination_id === $user->denomination_id) return true;
         }
         return false;
     }
 
     public function create(User $user): bool
     {
-        return $user->hasRole('Super Admin') || $user->hasRole('Domination Admin');
+        return $user->hasRole('Super Admin') || $user->hasRole('Denomination Admin');
     }
 
     public function update(User $user, AccountDeposit $accountDeposit): bool

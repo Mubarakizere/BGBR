@@ -78,16 +78,16 @@
                             <select name="target_audience" id="target_audience" x-model="audience" required
                                     class="w-full rounded-xl border-border bg-background text-text px-4 py-3 focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
                                 <option value="national">National (Everyone)</option>
-                                <option value="domination">Zone (Domination)</option>
+                                <option value="denomination">Zone (Denomination)</option>
                                 <option value="battalion">Battalion</option>
                                 <option value="company">Company</option>
                             </select>
                             @error('target_audience') <p class="text-danger text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        {{-- Domination multi-select --}}
-                        <div x-show="audience === 'domination'" x-cloak x-transition.opacity
-                             x-data="multiSelect({{ $dominations->map(fn($d) => ['id' => $d->id, 'label' => $d->name])->toJson() }}, {{ json_encode(old('entity_ids', $activity->entity_ids ?? ($activity->entity_id ? [$activity->entity_id] : []))) }})"
+                        {{-- Denomination multi-select --}}
+                        <div x-show="audience === 'denomination'" x-cloak x-transition.opacity
+                             x-data="multiSelect({{ $denominations->map(fn($d) => ['id' => $d->id, 'label' => $d->name])->toJson() }}, {{ json_encode(old('entity_ids', $activity->entity_ids ?? ($activity->entity_id ? [$activity->entity_id] : []))) }})"
                              class="bg-background rounded-xl p-4 border border-border">
                             <div class="flex items-center justify-between mb-2">
                                 <label class="block text-sm font-bold text-text">Select Zone(s) <span class="text-danger">*</span></label>
@@ -120,7 +120,7 @@
 
                         {{-- Battalion multi-select --}}
                         <div x-show="audience === 'battalion'" x-cloak x-transition.opacity
-                             x-data="multiSelect({{ $battalions->map(fn($b) => ['id' => $b->id, 'label' => $b->name . ' (' . ($b->domination?->name ?? '—') . ')'])->toJson() }}, {{ json_encode(old('entity_ids', $activity->entity_ids ?? ($activity->entity_id ? [$activity->entity_id] : []))) }})"
+                             x-data="multiSelect({{ $battalions->map(fn($b) => ['id' => $b->id, 'label' => $b->name . ' (' . ($b->denomination?->name ?? '—') . ')'])->toJson() }}, {{ json_encode(old('entity_ids', $activity->entity_ids ?? ($activity->entity_id ? [$activity->entity_id] : []))) }})"
                              class="bg-background rounded-xl p-4 border border-border">
                             <div class="flex items-center justify-between mb-2">
                                 <label class="block text-sm font-bold text-text">Select Battalion(s) <span class="text-danger">*</span></label>

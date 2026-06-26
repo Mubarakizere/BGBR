@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('title');
             $table->text('content');
-            $table->enum('visibility_level', ['national', 'domination', 'battalion', 'company']);
+            $table->enum('visibility_level', ['national', 'denomination', 'battalion', 'company']);
             $table->uuid('entity_id')->nullable();
             $table->timestamps();
         });

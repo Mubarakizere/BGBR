@@ -77,7 +77,7 @@
             @php
                 $canApprove = false;
                 if ($report->level === 'company' && auth()->user()->hasRole('Battalion Commander')) $canApprove = true;
-                if ($report->level === 'battalion' && auth()->user()->hasRole(['Domination Admin', 'Super Admin'])) $canApprove = true;
+                if ($report->level === 'battalion' && auth()->user()->hasRole(['Denomination Admin', 'Super Admin'])) $canApprove = true;
                 if ($report->level === 'financial' && auth()->user()->hasRole(['Super Admin'])) $canApprove = true;
             @endphp
             @if($canApprove)

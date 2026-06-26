@@ -16,7 +16,7 @@ class ReportPolicy
     {
         // Only roles with explicit reporting duties can access reports
         return $user->hasRole('Super Admin')
-            || $user->hasRole('Domination Admin')
+            || $user->hasRole('Denomination Admin')
             || $user->hasRole('Battalion Commander')
             || $user->hasRole('Company Captain')
             || $user->hasRole('Company Officer');
@@ -31,8 +31,8 @@ class ReportPolicy
             return true;
         }
 
-        if ($user->hasRole('Domination Admin')) {
-            // Domination Admins can view everything except other dominations if scoped (though here dominations can view all)
+        if ($user->hasRole('Denomination Admin')) {
+            // Denomination Admins can view everything except other denominations if scoped (though here denominations can view all)
             return true;
         }
 
@@ -109,11 +109,11 @@ class ReportPolicy
             return true;
         }
 
-        // Domination Admin can approve/reject battalion reports
-        if ($user->hasRole('Domination Admin') && $user->domination_id) {
+        // Denomination Admin can approve/reject battalion reports
+        if ($user->hasRole('Denomination Admin') && $user->denomination_id) {
             if ($report->level === 'battalion') {
                 $battalion = Battalion::find($report->entity_id);
-                return $battalion && $battalion->domination_id === $user->domination_id;
+                return $battalion && $battalion->denomination_id === $user->denomination_id;
             }
         }
 

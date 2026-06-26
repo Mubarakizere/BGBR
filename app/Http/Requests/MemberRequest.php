@@ -25,9 +25,9 @@ class MemberRequest extends FormRequest
             return false;
         }
 
-        if ($user->hasRole('Domination Admin') && $user->domination_id) {
+        if ($user->hasRole('Denomination Admin') && $user->denomination_id) {
             $company = \App\Models\Company::find($companyId);
-            return $company && $company->battalion && $company->battalion->domination_id === $user->domination_id;
+            return $company && $company->battalion && $company->battalion->denomination_id === $user->denomination_id;
         }
 
         if ($user->hasRole('Battalion Commander') && $user->battalion_id) {

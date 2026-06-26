@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Announcement;
-use App\Models\Domination;
+use App\Models\Denomination;
 use App\Models\Battalion;
 use App\Models\Company;
 use App\Models\User;
@@ -26,19 +26,19 @@ class AnnouncementController extends Controller
 
         if ($user->hasRole('Super Admin')) {
             // Sees everything
-        } elseif ($user->hasRole('Domination Admin') && $user->domination_id) {
-            $domId = $user->domination_id;
+        } elseif ($user->hasRole('Denomination Admin') && $user->denomination_id) {
+            $domId = $user->denomination_id;
             $query->where(function ($q) use ($domId) {
                 $q->where('visibility_level', 'national')
                   ->orWhere(function ($q2) use ($domId) {
-                      $q2->where('visibility_level', 'domination')
+                      $q2->where('visibility_level', 'denomination')
                          ->where(function ($q3) use ($domId) {
                              $q3->whereJsonContains('entity_ids', $domId)
                                 ->orWhere('entity_id', $domId);
                          });
                   })
                   ->orWhere(function ($q2) use ($domId) {
-                      $battalionIds = Battalion::where('domination_id', $domId)->pluck('id')->toArray();
+                      $battalionIds = Battalion::where('denomination_id', $domId)->pluck('id')->toArray();
                       $q2->where('visibility_level', 'battalion')
                          ->where(function ($q3) use ($battalionIds) {
                              foreach ($battalionIds as $bid) {
@@ -51,13 +51,13 @@ class AnnouncementController extends Controller
         } elseif ($user->hasRole('Battalion Commander') && $user->battalion_id) {
             $btnId = $user->battalion_id;
             $battalion = Battalion::find($btnId);
-            $domId = $battalion?->domination_id;
+            $domId = $battalion?->denomination_id;
             
             $query->where(function ($q) use ($btnId, $domId) {
                 $q->where('visibility_level', 'national')
                   ->orWhere(function ($q2) use ($domId) {
                       if ($domId) {
-                          $q2->where('visibility_level', 'domination')
+                          $q2->where('visibility_level', 'denomination')
                              ->where(function ($q3) use ($domId) {
                                  $q3->whereJsonContains('entity_ids', $domId)
                                     ->orWhere('entity_id', $domId);
@@ -85,7 +85,7 @@ class AnnouncementController extends Controller
         } elseif (($user->hasRole('Company Captain') || $user->hasRole('Company Officer') || $user->hasRole('Member')) && $user->company_id) {
             $company = Company::find($user->company_id);
             $battalion = $company?->battalion;
-            $domId = $battalion?->domination_id;
+            $domId = $battalion?->denomination_id;
             $btnId = $company?->battalion_id;
             $cmpId = $user->company_id;
 
@@ -93,7 +93,7 @@ class AnnouncementController extends Controller
                 $q->where('visibility_level', 'national')
                   ->orWhere(function ($q2) use ($domId) {
                       if ($domId) {
-                          $q2->where('visibility_level', 'domination')
+                          $q2->where('visibility_level', 'denomination')
                              ->where(function ($q3) use ($domId) {
                                  $q3->whereJsonContains('entity_ids', $domId)
                                     ->orWhere('entity_id', $domId);
@@ -139,11 +139,11 @@ class AnnouncementController extends Controller
         Gate::authorize('create', Announcement::class);
         $user = Auth::user();
         $levels = $this->getAllowedLevels($user);
-        $dominations = Domination::orderBy('name')->get();
-        $battalions = Battalion::with('domination')->orderBy('name')->get();
+        $denominations = Denomination::orderBy('name')->get();
+        $battalions = Battalion::with('denomination')->orderBy('name')->get();
         $companies = Company::with('battalion')->orderBy('name')->get();
 
-        return view('announcements.create', compact('levels', 'dominations', 'battalions', 'companies'));
+        return view('announcements.create', compact('levels', 'denominations', 'battalions', 'companies'));
     }
 
     /**
@@ -174,7 +174,7 @@ class AnnouncementController extends Controller
             } else {
                 // Auto-fill with user's own entity
                 $auto = match ($level) {
-                    'domination' => $user->domination_id,
+                    'denomination' => $user->denomination_id,
                     'battalion'  => $user->battalion_id,
                     'company'    => $user->company_id,
                     default      => null,
@@ -203,7 +203,7 @@ class AnnouncementController extends Controller
             $usersQuery->where(function ($q) use ($level, $entityIds) {
                 foreach ($entityIds as $id) {
                     $column = match ($level) {
-                        'domination' => 'domination_id',
+                        'denomination' => 'denomination_id',
                         'battalion'  => 'battalion_id',
                         'company'    => 'company_id',
                         default      => null,
@@ -238,11 +238,11 @@ class AnnouncementController extends Controller
         Gate::authorize('update', $announcement);
         $user = Auth::user();
         $levels = $this->getAllowedLevels($user);
-        $dominations = Domination::orderBy('name')->get();
-        $battalions = Battalion::with('domination')->orderBy('name')->get();
+        $denominations = Denomination::orderBy('name')->get();
+        $battalions = Battalion::with('denomination')->orderBy('name')->get();
         $companies = Company::with('battalion')->orderBy('name')->get();
 
-        return view('announcements.edit', compact('announcement', 'levels', 'dominations', 'battalions', 'companies'));
+        return view('announcements.edit', compact('announcement', 'levels', 'denominations', 'battalions', 'companies'));
     }
 
     /**
@@ -272,7 +272,7 @@ class AnnouncementController extends Controller
                 $entityIds = $submitted;
             } else {
                 $auto = match ($level) {
-                    'domination' => $user->domination_id,
+                    'denomination' => $user->denomination_id,
                     'battalion'  => $user->battalion_id,
                     'company'    => $user->company_id,
                     default      => null,
@@ -310,9 +310,9 @@ class AnnouncementController extends Controller
     private function getAllowedLevels($user): array
     {
         if ($user->hasRole('Super Admin')) {
-            return ['national', 'domination', 'battalion', 'company'];
-        } elseif ($user->hasRole('Domination Admin')) {
-            return ['domination', 'battalion'];
+            return ['national', 'denomination', 'battalion', 'company'];
+        } elseif ($user->hasRole('Denomination Admin')) {
+            return ['denomination', 'battalion'];
         } elseif ($user->hasRole('Battalion Commander')) {
             return ['battalion', 'company'];
         } elseif ($user->hasRole('Company Captain')) {

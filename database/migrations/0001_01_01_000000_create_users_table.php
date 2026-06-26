@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->uuid('domination_id')->nullable();
+            $table->uuid('denomination_id')->nullable();
             $table->uuid('battalion_id')->nullable();
             $table->uuid('company_id')->nullable();
             $table->rememberToken();

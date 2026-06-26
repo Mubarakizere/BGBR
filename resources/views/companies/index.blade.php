@@ -202,7 +202,7 @@
                                     class="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-text text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                                 <option value="">— Select Battalion —</option>
                                 @foreach($battalions as $btn)
-                                    <option value="{{ $btn->id }}">{{ $btn->name }} ({{ $btn->domination->name ?? 'No Dom' }})</option>
+                                    <option value="{{ $btn->id }}">{{ $btn->name }} ({{ $btn->denomination->name ?? 'No Dom' }})</option>
                                 @endforeach
                             </select>
                         </div>

@@ -99,8 +99,8 @@
                             <span class="text-sm font-semibold text-text">{{ $member->company->battalion->name ?? 'N/A' }}</span>
                         </div>
                         <div class="flex items-center justify-between py-3">
-                            <span class="text-sm text-muted">Domination</span>
-                            <span class="text-sm font-semibold text-text">{{ $member->company->battalion->domination->name ?? 'N/A' }}</span>
+                            <span class="text-sm text-muted">Denomination</span>
+                            <span class="text-sm font-semibold text-text">{{ $member->company->battalion->denomination->name ?? 'N/A' }}</span>
                         </div>
                     </div>
                 </div>

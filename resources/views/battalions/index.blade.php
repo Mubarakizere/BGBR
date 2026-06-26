@@ -26,7 +26,7 @@
                         <thead>
                             <tr class="bg-background">
                                 <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted">Battalion</th>
-                                <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted">Domination</th>
+                                <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted">Denomination</th>
                                 <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted">Zone</th>
                                 <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted">Contribution</th>
                                 <th class="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-widest text-muted">Actions</th>
@@ -45,7 +45,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-background border border-border text-text">
-                                        {{ $battalion->domination->name ?? '—' }}
+                                        {{ $battalion->denomination->name ?? '—' }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -135,11 +135,11 @@
                                    placeholder="Enter battalion name">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-text mb-1.5">Domination <span class="text-danger">*</span></label>
-                            <select name="domination_id" required x-init="$watch('editing', val => { if(val) $el.value = val.domination_id })"
+                            <label class="block text-sm font-semibold text-text mb-1.5">Denomination <span class="text-danger">*</span></label>
+                            <select name="denomination_id" required x-init="$watch('editing', val => { if(val) $el.value = val.denomination_id })"
                                     class="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-text text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
-                                <option value="">— Select Domination —</option>
-                                @foreach($dominations as $dom)
+                                <option value="">— Select Denomination —</option>
+                                @foreach($denominations as $dom)
                                     <option value="{{ $dom->id }}">{{ $dom->name }}</option>
                                 @endforeach
                             </select>

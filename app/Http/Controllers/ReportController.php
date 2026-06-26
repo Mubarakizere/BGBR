@@ -40,7 +40,7 @@ class ReportController extends Controller
                     $q2->where('level', 'company')->whereIn('entity_id', $companyIds);
                 });
             });
-        } elseif ($user->hasRole('Domination Admin') || $user->hasRole('Super Admin')) {
+        } elseif ($user->hasRole('Denomination Admin') || $user->hasRole('Super Admin')) {
             // Can see everything generally, or filter as needed.
         } else {
             // Regular members shouldn't see reports.
@@ -77,7 +77,7 @@ class ReportController extends Controller
         $battalions = collect();
         $companies = collect();
 
-        if ($user->hasRole('Domination Admin') || $user->hasRole('Super Admin')) {
+        if ($user->hasRole('Denomination Admin') || $user->hasRole('Super Admin')) {
             $battalions = Battalion::orderBy('name')->get();
             $companies = Company::orderBy('name')->get();
         } elseif ($user->hasRole('Battalion Commander')) {
@@ -113,7 +113,7 @@ class ReportController extends Controller
             $report->entity_id = $battalion->id;
             $report->type = 'battalion_summary';
             $report->content = $this->reportService->generateBattalionSnapshot($battalion);
-        } elseif ($type === 'financial' && ($user->hasRole('Super Admin') || $user->hasRole('Domination Admin'))) {
+        } elseif ($type === 'financial' && ($user->hasRole('Super Admin') || $user->hasRole('Denomination Admin'))) {
             $report->title = 'Global Financial Report';
             $report->level = 'financial';
             $report->entity_id = $user->id; // Placeholder

@@ -70,7 +70,7 @@ class MemberController extends Controller
     public function show(Member $member)
     {
         Gate::authorize('view', $member);
-        $member->load('company.battalion.domination');
+        $member->load('company.battalion.denomination');
         return view('members.show', compact('member'));
     }
 

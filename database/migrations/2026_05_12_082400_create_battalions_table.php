@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('battalions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
-            $table->uuid('domination_id');
+            $table->uuid('denomination_id');
             $table->timestamps();
         });
     }

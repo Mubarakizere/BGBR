@@ -8,7 +8,7 @@ use App\Models\Scopes\TenantScope;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
-class Domination extends Model
+class Denomination extends Model
 {
     use HasUuids, LogsActivity;
 
@@ -17,7 +17,7 @@ class Domination extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()->logUnguarded()->logOnlyDirty()
-            ->setDescriptionForEvent(fn(string $eventName) => "Domination was {$eventName}");
+            ->setDescriptionForEvent(fn(string $eventName) => "Denomination was {$eventName}");
     }
 
     protected static function booted(): void

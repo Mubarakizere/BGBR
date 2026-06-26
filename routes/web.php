@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\DominationController;
+use App\Http\Controllers\DenominationController;
 use App\Http\Controllers\BattalionController;
 use App\Http\Controllers\ZoneController;
 use App\Http\Controllers\CompanyController;
@@ -40,8 +40,8 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Hierarchy Management
-    Route::resource('dominations', DominationController::class)->middleware('can:manage dominations');
-    Route::resource('zones', ZoneController::class)->middleware('can:manage dominations');
+    Route::resource('denominations', DenominationController::class)->middleware('can:manage denominations');
+    Route::resource('zones', ZoneController::class)->middleware('can:manage denominations');
     Route::resource('battalions', BattalionController::class)->middleware('can:manage battalions');
     Route::resource('companies', CompanyController::class)->middleware('can:manage companies');
     Route::post('companies/{company}/officers', [CompanyController::class, 'assignOfficer'])->name('companies.officers.assign');
@@ -85,7 +85,7 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
     Route::patch('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
     Route::patch('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
 
-    // User Management (Super Admin + Domination Admin)
+    // User Management (Super Admin + Denomination Admin)
     Route::get('/admin/users', [UserController::class, 'index'])->name('users.index')->middleware('can:manage users');
     Route::patch('/admin/users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('users.toggle-active')->middleware('can:manage users');
     Route::patch('/admin/users/{user}/update-role', [UserController::class, 'updateRole'])->name('users.update-role')->middleware('can:manage users');

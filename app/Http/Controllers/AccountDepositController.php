@@ -18,9 +18,9 @@ class AccountDepositController extends Controller
         // ── Build a role-scoped base query ──────────────────────
         $query = AccountDeposit::query();
 
-        if ($user->hasRole('Domination Admin') && !$user->hasRole('Super Admin')) {
-            // Only show deposits linked to battalions within the user's domination
-            $battalionIds = Battalion::where('domination_id', $user->domination_id)->pluck('id');
+        if ($user->hasRole('Denomination Admin') && !$user->hasRole('Super Admin')) {
+            // Only show deposits linked to battalions within the user's denomination
+            $battalionIds = Battalion::where('denomination_id', $user->denomination_id)->pluck('id');
             $query->where(function ($q) use ($battalionIds) {
                 $q->where('level', 'battalion')->whereIn('entity_id', $battalionIds);
             });
@@ -53,7 +53,7 @@ class AccountDepositController extends Controller
         if ($user->hasRole('Super Admin')) {
             $battalions = Battalion::orderBy('name')->get();
         } else {
-            $battalions = Battalion::where('domination_id', $user->domination_id)->orderBy('name')->get();
+            $battalions = Battalion::where('denomination_id', $user->denomination_id)->orderBy('name')->get();
         }
 
         return view('account_deposits.index', compact(
@@ -85,7 +85,7 @@ class AccountDepositController extends Controller
             }
 
             $battalion = Battalion::find($request->entity_id);
-            if (!$battalion || $battalion->domination_id !== $user->domination_id) {
+            if (!$battalion || $battalion->denomination_id !== $user->denomination_id) {
                 return back()->with('error', 'Unauthorized to record deposits for this battalion.');
             }
         }

@@ -199,11 +199,11 @@
                             </div>
 
                             {{-- Dynamic Fields --}}
-                            <div x-show="selectedRole === 'Domination Admin'" x-cloak x-transition>
-                                <label class="block text-sm font-bold text-text mb-2">Select Domination</label>
-                                <select name="domination_id" class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm">
-                                    <option value="">-- Select Domination --</option>
-                                    @foreach($dominations as $dom)
+                            <div x-show="selectedRole === 'Denomination Admin'" x-cloak x-transition>
+                                <label class="block text-sm font-bold text-text mb-2">Select Denomination</label>
+                                <select name="denomination_id" class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm">
+                                    <option value="">-- Select Denomination --</option>
+                                    @foreach($denominations as $dom)
                                         <option value="{{ $dom->id }}">{{ $dom->name }}</option>
                                     @endforeach
                                 </select>
@@ -214,7 +214,7 @@
                                 <select name="battalion_id" class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm">
                                     <option value="">-- Select Battalion --</option>
                                     @foreach($battalions as $btn)
-                                        <option value="{{ $btn->id }}">{{ $btn->name }} ({{ $btn->domination?->name ?? '—' }})</option>
+                                        <option value="{{ $btn->id }}">{{ $btn->name }} ({{ $btn->denomination?->name ?? '—' }})</option>
                                     @endforeach
                                 </select>
                             </div>

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
-use App\Models\Domination;
+use App\Models\Denomination;
 use App\Models\Battalion;
 use App\Models\Company;
 use App\Models\User;
@@ -28,20 +28,20 @@ class ActivityController extends Controller
         // Scope visibility by target audience
         if ($user->hasRole('Super Admin')) {
             // Sees everything
-        } elseif ($user->hasRole('Domination Admin') && $user->domination_id) {
-            $domId = $user->domination_id;
+        } elseif ($user->hasRole('Denomination Admin') && $user->denomination_id) {
+            $domId = $user->denomination_id;
             $query->where(function ($q) use ($domId) {
                 $q->where('target_audience', 'national')
                   ->orWhere(function ($q2) use ($domId) {
-                      // entity_ids JSON contains this domination
-                      $q2->where('target_audience', 'domination')
+                      // entity_ids JSON contains this denomination
+                      $q2->where('target_audience', 'denomination')
                          ->where(function ($q3) use ($domId) {
                              $q3->whereJsonContains('entity_ids', $domId)
                                 ->orWhere('entity_id', $domId); // legacy fallback
                          });
                   })
                   ->orWhere(function ($q2) use ($domId) {
-                      $battalionIds = Battalion::where('domination_id', $domId)->pluck('id')->toArray();
+                      $battalionIds = Battalion::where('denomination_id', $domId)->pluck('id')->toArray();
                       $q2->where('target_audience', 'battalion')
                          ->where(function ($q3) use ($battalionIds) {
                              foreach ($battalionIds as $bid) {
@@ -54,12 +54,12 @@ class ActivityController extends Controller
         } elseif ($user->hasRole('Battalion Commander') && $user->battalion_id) {
             $btnId = $user->battalion_id;
             $battalion = Battalion::find($btnId);
-            $domId = $battalion?->domination_id;
+            $domId = $battalion?->denomination_id;
             $query->where(function ($q) use ($btnId, $domId) {
                 $q->where('target_audience', 'national')
                   ->orWhere(function ($q2) use ($domId) {
                       if ($domId) {
-                          $q2->where('target_audience', 'domination')
+                          $q2->where('target_audience', 'denomination')
                              ->where(function ($q3) use ($domId) {
                                  $q3->whereJsonContains('entity_ids', $domId)
                                     ->orWhere('entity_id', $domId);
@@ -87,7 +87,7 @@ class ActivityController extends Controller
         } elseif (($user->hasRole('Company Captain') || $user->hasRole('Company Officer') || $user->hasRole('Member')) && $user->company_id) {
             $company  = Company::find($user->company_id);
             $battalion = $company?->battalion;
-            $domId    = $battalion?->domination_id;
+            $domId    = $battalion?->denomination_id;
             $btnId    = $company?->battalion_id;
             $cmpId    = $user->company_id;
 
@@ -95,7 +95,7 @@ class ActivityController extends Controller
                 $q->where('target_audience', 'national')
                   ->orWhere(function ($q2) use ($domId) {
                       if ($domId) {
-                          $q2->where('target_audience', 'domination')
+                          $q2->where('target_audience', 'denomination')
                              ->where(function ($q3) use ($domId) {
                                  $q3->whereJsonContains('entity_ids', $domId)
                                     ->orWhere('entity_id', $domId);
@@ -145,11 +145,11 @@ class ActivityController extends Controller
     {
         Gate::authorize('create', Activity::class);
 
-        $dominations = Domination::orderBy('name')->get();
-        $battalions  = Battalion::with('domination')->orderBy('name')->get();
+        $denominations = Denomination::orderBy('name')->get();
+        $battalions  = Battalion::with('denomination')->orderBy('name')->get();
         $companies   = Company::with('battalion')->orderBy('name')->get();
 
-        return view('activities.create', compact('dominations', 'battalions', 'companies'));
+        return view('activities.create', compact('denominations', 'battalions', 'companies'));
     }
 
     /**
@@ -169,7 +169,7 @@ class ActivityController extends Controller
             'date'             => 'required|date',
             'status'           => 'required|in:upcoming,ongoing,completed,cancelled',
             'location'         => 'nullable|string|max:255',
-            'target_audience'  => 'required|in:national,domination,battalion,company',
+            'target_audience'  => 'required|in:national,denomination,battalion,company',
             'entity_ids'       => 'nullable|array',
             'entity_ids.*'     => 'uuid',
         ]);
@@ -185,7 +185,7 @@ class ActivityController extends Controller
             } else {
                 // Auto-fill with user's own entity
                 $auto = match ($level) {
-                    'domination' => $user->domination_id,
+                    'denomination' => $user->denomination_id,
                     'battalion'  => $user->battalion_id,
                     'company'    => $user->company_id,
                     default      => null,
@@ -210,7 +210,7 @@ class ActivityController extends Controller
             $usersQuery->where(function ($q) use ($level, $entityIds) {
                 foreach ($entityIds as $id) {
                     $column = match ($level) {
-                        'domination' => 'domination_id',
+                        'denomination' => 'denomination_id',
                         'battalion'  => 'battalion_id',
                         'company'    => 'company_id',
                         default      => null,
@@ -246,11 +246,11 @@ class ActivityController extends Controller
     {
         Gate::authorize('update', $activity);
 
-        $dominations = Domination::orderBy('name')->get();
-        $battalions  = Battalion::with('domination')->orderBy('name')->get();
+        $denominations = Denomination::orderBy('name')->get();
+        $battalions  = Battalion::with('denomination')->orderBy('name')->get();
         $companies   = Company::with('battalion')->orderBy('name')->get();
 
-        return view('activities.edit', compact('activity', 'dominations', 'battalions', 'companies'));
+        return view('activities.edit', compact('activity', 'denominations', 'battalions', 'companies'));
     }
 
     /**
@@ -270,7 +270,7 @@ class ActivityController extends Controller
             'date'             => 'required|date',
             'status'           => 'required|in:upcoming,ongoing,completed,cancelled',
             'location'         => 'nullable|string|max:255',
-            'target_audience'  => 'required|in:national,domination,battalion,company',
+            'target_audience'  => 'required|in:national,denomination,battalion,company',
             'entity_ids'       => 'nullable|array',
             'entity_ids.*'     => 'uuid',
         ]);
@@ -285,7 +285,7 @@ class ActivityController extends Controller
                 $entityIds = $submitted;
             } else {
                 $auto = match ($level) {
-                    'domination' => $user->domination_id,
+                    'denomination' => $user->denomination_id,
                     'battalion'  => $user->battalion_id,
                     'company'    => $user->company_id,
                     default      => null,

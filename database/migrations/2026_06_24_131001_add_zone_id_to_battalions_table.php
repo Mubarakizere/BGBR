@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('battalions', function (Blueprint $table) {
-            $table->uuid('zone_id')->nullable()->after('domination_id');
+            $table->uuid('zone_id')->nullable()->after('denomination_id');
             $table->foreign('zone_id')->references('id')->on('zones')->nullOnDelete();
         });
     }

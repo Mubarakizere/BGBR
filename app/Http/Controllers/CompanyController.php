@@ -14,7 +14,7 @@ class CompanyController extends Controller
     {
         Gate::authorize('viewAny', Company::class);
         $companies = Company::with(['battalion', 'officers'])->orderBy('name')->paginate(15)->withQueryString();
-        $battalions = Battalion::with('domination')->orderBy('name')->get();
+        $battalions = Battalion::with('denomination')->orderBy('name')->get();
         $users = User::orderBy('name')->get();
         return view('companies.index', compact('companies', 'battalions', 'users'));
     }
@@ -32,10 +32,10 @@ class CompanyController extends Controller
         ]);
 
         if (!$user->hasRole('Super Admin')) {
-            if ($user->hasRole('Domination Admin') && $user->domination_id) {
+            if ($user->hasRole('Denomination Admin') && $user->denomination_id) {
                 $battalion = Battalion::find($request->battalion_id);
-                if (!$battalion || $battalion->domination_id !== $user->domination_id) {
-                    return back()->with('error', 'Unauthorized to assign this company to a battalion outside your domination.');
+                if (!$battalion || $battalion->denomination_id !== $user->denomination_id) {
+                    return back()->with('error', 'Unauthorized to assign this company to a battalion outside your denomination.');
                 }
             } elseif ($user->hasRole('Battalion Commander') && $user->battalion_id) {
                 if ($request->battalion_id !== $user->battalion_id) {
@@ -64,10 +64,10 @@ class CompanyController extends Controller
         ]);
 
         if (!$user->hasRole('Super Admin')) {
-            if ($user->hasRole('Domination Admin') && $user->domination_id) {
+            if ($user->hasRole('Denomination Admin') && $user->denomination_id) {
                 $battalion = Battalion::find($request->battalion_id);
-                if (!$battalion || $battalion->domination_id !== $user->domination_id) {
-                    return back()->with('error', 'Unauthorized to assign this company to a battalion outside your domination.');
+                if (!$battalion || $battalion->denomination_id !== $user->denomination_id) {
+                    return back()->with('error', 'Unauthorized to assign this company to a battalion outside your denomination.');
                 }
             } elseif ($user->hasRole('Battalion Commander') && $user->battalion_id) {
                 if ($request->battalion_id !== $user->battalion_id) {

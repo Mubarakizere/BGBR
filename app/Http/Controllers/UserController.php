@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Domination;
+use App\Models\Denomination;
 use App\Models\Battalion;
 use App\Models\Company;
 use Illuminate\Http\Request;
@@ -15,16 +15,16 @@ class UserController extends Controller
     /**
      * Display a listing of all users.
      * Super Admin: all users.
-     * Domination Admin: users within their domination.
+     * Denomination Admin: users within their denomination.
      */
     public function index(Request $request)
     {
         $currentUser = Auth::user();
-        $query = User::with(['domination', 'battalion', 'company', 'roles']);
+        $query = User::with(['denomination', 'battalion', 'company', 'roles']);
 
-        // Scope for Domination Admin
-        if ($currentUser->hasRole('Domination Admin') && $currentUser->domination_id) {
-            $query->where('domination_id', $currentUser->domination_id);
+        // Scope for Denomination Admin
+        if ($currentUser->hasRole('Denomination Admin') && $currentUser->denomination_id) {
+            $query->where('denomination_id', $currentUser->denomination_id);
         } elseif (!$currentUser->hasRole('Super Admin')) {
             abort(403);
         }
@@ -52,11 +52,11 @@ class UserController extends Controller
 
         $users = $query->latest()->paginate(20);
         $roles = Role::orderBy('name')->get();
-        $dominations = Domination::orderBy('name')->get();
-        $battalions = Battalion::with('domination')->orderBy('name')->get();
+        $denominations = Denomination::orderBy('name')->get();
+        $battalions = Battalion::with('denomination')->orderBy('name')->get();
         $companies = Company::with('battalion')->orderBy('name')->get();
 
-        return view('admin.users.index', compact('users', 'roles', 'dominations', 'battalions', 'companies'));
+        return view('admin.users.index', compact('users', 'roles', 'denominations', 'battalions', 'companies'));
     }
 
     /**
@@ -66,8 +66,8 @@ class UserController extends Controller
     {
         $currentUser = Auth::user();
 
-        // Domination Admin can only manage users in their domination
-        if ($currentUser->hasRole('Domination Admin') && $user->domination_id !== $currentUser->domination_id) {
+        // Denomination Admin can only manage users in their denomination
+        if ($currentUser->hasRole('Denomination Admin') && $user->denomination_id !== $currentUser->denomination_id) {
             abort(403);
         }
 
@@ -93,19 +93,19 @@ class UserController extends Controller
     {
         $currentUser = Auth::user();
 
-        // Domination Admin scope check
-        if ($currentUser->hasRole('Domination Admin') && $user->domination_id !== $currentUser->domination_id) {
+        // Denomination Admin scope check
+        if ($currentUser->hasRole('Denomination Admin') && $user->denomination_id !== $currentUser->denomination_id) {
             abort(403);
         }
 
         $request->validate([
             'role' => 'required|exists:roles,name',
-            'domination_id' => 'nullable|exists:dominations,id',
+            'denomination_id' => 'nullable|exists:denominations,id',
             'battalion_id' => 'nullable|exists:battalions,id',
             'company_id' => 'nullable|exists:companies,id',
         ]);
 
-        // Prevent Domination Admin from assigning Super Admin role
+        // Prevent Denomination Admin from assigning Super Admin role
         if (!$currentUser->hasRole('Super Admin') && $request->role === 'Super Admin') {
             return back()->with('error', 'You cannot assign the Super Admin role.');
         }
@@ -113,11 +113,11 @@ class UserController extends Controller
         $user->syncRoles([$request->role]);
 
         // Reset hierarchy, then set
-        $user->domination_id = null;
+        $user->denomination_id = null;
         $user->battalion_id = null;
         $user->company_id = null;
 
-        if ($request->domination_id) $user->domination_id = $request->domination_id;
+        if ($request->denomination_id) $user->denomination_id = $request->denomination_id;
         if ($request->battalion_id) $user->battalion_id = $request->battalion_id;
         if ($request->company_id) $user->company_id = $request->company_id;
 

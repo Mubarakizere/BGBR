@@ -56,9 +56,9 @@
                     </div>
 
                     {{-- Entity Selection (conditional) --}}
-                    {{-- Domination multi-select --}}
-                    <div x-show="level === 'domination'" x-cloak x-transition.opacity
-                         x-data="multiSelect({{ $dominations->map(fn($d) => ['id' => $d->id, 'label' => $d->name])->toJson() }}, {{ json_encode(old('entity_ids', [])) }})"
+                    {{-- Denomination multi-select --}}
+                    <div x-show="level === 'denomination'" x-cloak x-transition.opacity
+                         x-data="multiSelect({{ $denominations->map(fn($d) => ['id' => $d->id, 'label' => $d->name])->toJson() }}, {{ json_encode(old('entity_ids', [])) }})"
                          class="space-y-2 bg-surface border border-border p-5 rounded-2xl">
                         <div class="flex items-center justify-between mb-2">
                             <label class="block text-sm font-black text-text">Select Zone(s) <span class="text-danger">*</span></label>
@@ -91,7 +91,7 @@
 
                     {{-- Battalion multi-select --}}
                     <div x-show="level === 'battalion'" x-cloak x-transition.opacity
-                         x-data="multiSelect({{ $battalions->map(fn($b) => ['id' => $b->id, 'label' => $b->name . ' (' . ($b->domination?->name ?? '—') . ')'])->toJson() }}, {{ json_encode(old('entity_ids', [])) }})"
+                         x-data="multiSelect({{ $battalions->map(fn($b) => ['id' => $b->id, 'label' => $b->name . ' (' . ($b->denomination?->name ?? '—') . ')'])->toJson() }}, {{ json_encode(old('entity_ids', [])) }})"
                          class="space-y-2 bg-surface border border-border p-5 rounded-2xl">
                         <div class="flex items-center justify-between mb-2">
                             <label class="block text-sm font-black text-text">Select Battalion(s) <span class="text-danger">*</span></label>

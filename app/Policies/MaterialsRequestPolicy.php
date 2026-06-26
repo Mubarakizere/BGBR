@@ -10,13 +10,13 @@ class MaterialsRequestPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('Super Admin') || $user->hasRole('Domination Admin') || $user->hasRole('Battalion Commander') || $user->hasRole('Company Captain');
+        return $user->hasRole('Super Admin') || $user->hasRole('Denomination Admin') || $user->hasRole('Battalion Commander') || $user->hasRole('Company Captain');
     }
 
     public function view(User $user, MaterialsRequest $materialsRequest): bool
     {
         if ($user->hasRole('Super Admin')) return true;
-        if ($user->hasRole('Domination Admin') && $user->domination_id === $materialsRequest->company->battalion->domination_id) return true;
+        if ($user->hasRole('Denomination Admin') && $user->denomination_id === $materialsRequest->company->battalion->denomination_id) return true;
         if ($user->hasRole('Battalion Commander') && $user->battalion_id === $materialsRequest->company->battalion_id) return true;
         if ($user->hasRole('Company Captain') && $user->company_id === $materialsRequest->company_id) return true;
         return false;

@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
 
         // Permissions
         $permissions = [
-            'manage dominations', 'create battalions', 'view all reports', 'manage system settings', 'view audit logs', 'manage users',
-            'manage battalions', 'approve battalion reports', 'create domination announcements',
+            'manage denominations', 'create battalions', 'view all reports', 'manage system settings', 'view audit logs', 'manage users',
+            'manage battalions', 'approve battalion reports', 'create denomination announcements',
             'manage companies', 'approve company reports', 'create battalion announcements',
             'register members', 'register company info', 'submit activity participation', 'generate company reports', 'create company announcements',
             'view members', 'update members', 'participate in activities', 'view company announcements',
@@ -38,9 +38,9 @@ class DatabaseSeeder extends Seeder
         $superAdmin = Role::findOrCreate('Super Admin');
         $superAdmin->givePermissionTo(Permission::all());
 
-        $dominationAdmin = Role::findOrCreate('Domination Admin');
-        $dominationAdmin->givePermissionTo([
-            'manage battalions', 'approve battalion reports', 'create domination announcements', 'view all reports', 'manage users'
+        $denominationAdmin = Role::findOrCreate('Denomination Admin');
+        $denominationAdmin->givePermissionTo([
+            'manage battalions', 'approve battalion reports', 'create denomination announcements', 'view all reports', 'manage users'
         ]);
 
         $battalionCommander = Role::findOrCreate('Battalion Commander');

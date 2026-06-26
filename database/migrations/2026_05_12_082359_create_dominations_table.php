@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dominations', function (Blueprint $table) {
+        Schema::create('denominations', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('region')->nullable();
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('dominations');
+        Schema::dropIfExists('denominations');
     }
 };

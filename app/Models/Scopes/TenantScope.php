@@ -21,16 +21,16 @@ class TenantScope implements Scope
                 return;
             }
 
-            if ($user->hasRole('Domination Admin') && $user->domination_id) {
-                if (in_array('domination_id', $model->getFillable()) || \Schema::hasColumn($model->getTable(), 'domination_id')) {
-                    $builder->where($model->getTable() . '.domination_id', $user->domination_id);
+            if ($user->hasRole('Denomination Admin') && $user->denomination_id) {
+                if (in_array('denomination_id', $model->getFillable()) || \Schema::hasColumn($model->getTable(), 'denomination_id')) {
+                    $builder->where($model->getTable() . '.denomination_id', $user->denomination_id);
                 } elseif (in_array('battalion_id', $model->getFillable()) || \Schema::hasColumn($model->getTable(), 'battalion_id')) {
                     $builder->whereHas('battalion', function ($query) use ($user) {
-                        $query->where('domination_id', $user->domination_id);
+                        $query->where('denomination_id', $user->denomination_id);
                     });
                 } elseif (in_array('company_id', $model->getFillable()) || \Schema::hasColumn($model->getTable(), 'company_id')) {
                     $builder->whereHas('company.battalion', function ($query) use ($user) {
-                        $query->where('domination_id', $user->domination_id);
+                        $query->where('denomination_id', $user->denomination_id);
                     });
                 }
             } elseif ($user->hasRole('Battalion Commander') && $user->battalion_id) {

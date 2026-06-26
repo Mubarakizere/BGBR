@@ -31,7 +31,7 @@
                 </form>
                 @endif
 
-                @if(auth()->user()->hasRole(['Domination Admin', 'Super Admin']))
+                @if(auth()->user()->hasRole(['Denomination Admin', 'Super Admin']))
                 <form action="{{ route('reports.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="type" value="financial">

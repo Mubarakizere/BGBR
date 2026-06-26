@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Domination;
+use App\Models\Denomination;
 use App\Models\Battalion;
 use App\Models\Company;
 use Illuminate\Http\Request;
@@ -25,18 +25,18 @@ class UserApprovalController extends Controller
 
         $pendingUsers = $query->latest()->paginate(15)->withQueryString();
         $roles = Role::where('name', '!=', 'Super Admin')->get(); // Don't allow assigning Super Admin via this UI
-        $dominations = Domination::orderBy('name')->get();
-        $battalions = Battalion::with('domination')->orderBy('name')->get();
+        $denominations = Denomination::orderBy('name')->get();
+        $battalions = Battalion::with('denomination')->orderBy('name')->get();
         $companies = Company::with('battalion')->orderBy('name')->get();
 
-        return view('admin.users.pending', compact('pendingUsers', 'roles', 'dominations', 'battalions', 'companies'));
+        return view('admin.users.pending', compact('pendingUsers', 'roles', 'denominations', 'battalions', 'companies'));
     }
 
     public function update(Request $request, User $user)
     {
         $request->validate([
             'role' => 'required|exists:roles,name',
-            'domination_id' => 'nullable|exists:dominations,id',
+            'denomination_id' => 'nullable|exists:denominations,id',
             'battalion_id' => 'nullable|exists:battalions,id',
             'company_id' => 'nullable|exists:companies,id',
         ]);
@@ -45,11 +45,11 @@ class UserApprovalController extends Controller
         $user->is_approved = true;
         
         // Reset IDs first, then set based on input
-        $user->domination_id = null;
+        $user->denomination_id = null;
         $user->battalion_id = null;
         $user->company_id = null;
 
-        if ($request->domination_id) $user->domination_id = $request->domination_id;
+        if ($request->denomination_id) $user->denomination_id = $request->denomination_id;
         if ($request->battalion_id) $user->battalion_id = $request->battalion_id;
         if ($request->company_id) $user->company_id = $request->company_id;
 

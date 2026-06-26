@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Battalion;
-use App\Models\Domination;
+use App\Models\Denomination;
 use App\Models\Zone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -13,10 +13,10 @@ class BattalionController extends Controller
     public function index()
     {
         Gate::authorize('viewAny', Battalion::class);
-        $battalions = Battalion::with(['domination', 'zone'])->orderBy('name')->paginate(15)->withQueryString();
-        $dominations = Domination::orderBy('name')->get();
+        $battalions = Battalion::with(['denomination', 'zone'])->orderBy('name')->paginate(15)->withQueryString();
+        $denominations = Denomination::orderBy('name')->get();
         $zones = Zone::orderBy('name')->get();
-        return view('battalions.index', compact('battalions', 'dominations', 'zones'));
+        return view('battalions.index', compact('battalions', 'denominations', 'zones'));
     }
 
     public function store(Request $request)
@@ -27,13 +27,13 @@ class BattalionController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'domination_id' => 'required|exists:dominations,id',
+            'denomination_id' => 'required|exists:denominations,id',
             'zone_id' => 'nullable|exists:zones,id',
         ]);
 
         if (!$user->hasRole('Super Admin')) {
-            if ($request->domination_id !== $user->domination_id) {
-                return back()->with('error', 'Unauthorized to assign this battalion to another domination.');
+            if ($request->denomination_id !== $user->denomination_id) {
+                return back()->with('error', 'Unauthorized to assign this battalion to another denomination.');
             }
         }
 
@@ -50,13 +50,13 @@ class BattalionController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'domination_id' => 'required|exists:dominations,id',
+            'denomination_id' => 'required|exists:denominations,id',
             'zone_id' => 'nullable|exists:zones,id',
         ]);
 
         if (!$user->hasRole('Super Admin')) {
-            if ($request->domination_id !== $user->domination_id) {
-                return back()->with('error', 'Unauthorized to assign this battalion to another domination.');
+            if ($request->denomination_id !== $user->denomination_id) {
+                return back()->with('error', 'Unauthorized to assign this battalion to another denomination.');
             }
         }
 

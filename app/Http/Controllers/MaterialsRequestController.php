@@ -17,9 +17,9 @@ class MaterialsRequestController extends Controller
         // ── 1. Role-Based Scoping ──────────────────────────────
         $query = MaterialsRequest::query();
 
-        if ($user->hasRole('Domination Admin') && !$user->hasRole('Super Admin')) {
+        if ($user->hasRole('Denomination Admin') && !$user->hasRole('Super Admin')) {
             $query->whereHas('company.battalion', function ($q) use ($user) {
-                $q->where('domination_id', $user->domination_id);
+                $q->where('denomination_id', $user->denomination_id);
             });
         } elseif ($user->hasRole('Battalion Commander') && !$user->hasRole('Super Admin')) {
             $query->whereHas('company', function ($q) use ($user) {

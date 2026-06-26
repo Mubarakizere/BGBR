@@ -33,22 +33,22 @@ class AnnouncementPolicy
             return true;
         }
 
-        if ($user->hasRole('Domination Admin') && $user->domination_id) {
-            if ($level === 'domination') {
-                return $entityId === $user->domination_id;
+        if ($user->hasRole('Denomination Admin') && $user->denomination_id) {
+            if ($level === 'denomination') {
+                return $entityId === $user->denomination_id;
             }
             if ($level === 'battalion') {
                 $battalion = Battalion::find($entityId);
-                return $battalion && $battalion->domination_id === $user->domination_id;
+                return $battalion && $battalion->denomination_id === $user->denomination_id;
             }
         }
 
         if ($user->hasRole('Battalion Commander') && $user->battalion_id) {
             $battalion = Battalion::find($user->battalion_id);
-            $dominationId = $battalion?->domination_id;
+            $denominationId = $battalion?->denomination_id;
 
-            if ($level === 'domination') {
-                return $entityId === $dominationId;
+            if ($level === 'denomination') {
+                return $entityId === $denominationId;
             }
             if ($level === 'battalion') {
                 return $entityId === $user->battalion_id;
@@ -62,10 +62,10 @@ class AnnouncementPolicy
         if (($user->hasRole('Company Captain') || $user->hasRole('Company Officer') || $user->hasRole('Member')) && $user->company_id) {
             $company = Company::find($user->company_id);
             $battalion = $company?->battalion;
-            $dominationId = $battalion?->domination_id;
+            $denominationId = $battalion?->denomination_id;
 
-            if ($level === 'domination') {
-                return $entityId === $dominationId;
+            if ($level === 'denomination') {
+                return $entityId === $denominationId;
             }
             if ($level === 'battalion') {
                 return $entityId === $company?->battalion_id;
@@ -84,7 +84,7 @@ class AnnouncementPolicy
     public function create(User $user): bool
     {
         return $user->hasRole('Super Admin')
-            || $user->hasRole('Domination Admin')
+            || $user->hasRole('Denomination Admin')
             || $user->hasRole('Battalion Commander')
             || $user->hasRole('Company Captain');
     }

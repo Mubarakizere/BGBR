@@ -232,7 +232,7 @@
                                 </select>
                             </div>
                             @else
-                            {{-- Domination Admins can only record battalion deposits --}}
+                            {{-- Denomination Admins can only record battalion deposits --}}
                             <input type="hidden" name="level" value="battalion">
                             <div x-init="modalLevel = 'battalion'"></div>
                             @endif

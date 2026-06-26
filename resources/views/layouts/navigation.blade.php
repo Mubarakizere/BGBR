@@ -19,7 +19,7 @@
            x-data="{
                adminOpen: {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('audit-logs.*') || request()->routeIs('users.pending') ? 'true' : 'false' }},
                orgOpen: {{ request()->routeIs('battalions.*') || request()->routeIs('companies.*') || request()->routeIs('members.*') || request()->routeIs('materials-requests.*') ? 'true' : 'false' }},
-               opsOpen: {{ request()->routeIs('dominations.*') || request()->routeIs('zones.*') || request()->routeIs('account-deposits.*') || request()->routeIs('reports.*') ? 'true' : 'false' }},
+               opsOpen: {{ request()->routeIs('denominations.*') || request()->routeIs('zones.*') || request()->routeIs('account-deposits.*') || request()->routeIs('reports.*') ? 'true' : 'false' }},
                websiteOpen: {{ request()->routeIs('admin.website.*') ? 'true' : 'false' }}
            }">
 
@@ -140,8 +140,8 @@
             @endif
 
             {{-- ── OPERATIONS GROUP (collapsible) ── --}}
-            @if(auth()->user()->can('manage dominations') ||
-                auth()->user()->hasRole(['Company Captain', 'Company Officer', 'Battalion Commander', 'Domination Admin', 'Super Admin']))
+            @if(auth()->user()->can('manage denominations') ||
+                auth()->user()->hasRole(['Company Captain', 'Company Officer', 'Battalion Commander', 'Denomination Admin', 'Super Admin']))
                 <div class="mt-5 mb-1">
                     <button @click="opsOpen = !opsOpen"
                             class="w-full flex items-center justify-between px-3 group">
@@ -154,15 +154,15 @@
                 </div>
 
                 <div x-show="opsOpen" x-collapse>
-                    @can('manage dominations')
-                        @php $isDom = request()->routeIs('dominations.*'); @endphp
-                        <a href="{{ route('dominations.index') }}"
+                    @can('manage denominations')
+                        @php $isDom = request()->routeIs('denominations.*'); @endphp
+                        <a href="{{ route('denominations.index') }}"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150
                                   {{ $isDom ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
                             <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isDom ? 'bg-cyan-500/20 text-cyan-400' : 'text-white/40' }}">
                                 <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             </span>
-                            Dominations
+                            Denominations
                         </a>
 
                         @php $isZones = request()->routeIs('zones.*'); @endphp
@@ -187,7 +187,7 @@
                     @endcan
 
                     {{-- Reports --}}
-                    @if(auth()->user()->hasRole(['Company Captain', 'Company Officer', 'Battalion Commander', 'Domination Admin', 'Super Admin']))
+                    @if(auth()->user()->hasRole(['Company Captain', 'Company Officer', 'Battalion Commander', 'Denomination Admin', 'Super Admin']))
                         @php $isReports = request()->routeIs('reports.*'); @endphp
                         <a href="{{ route('reports.index') }}"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
@@ -202,7 +202,7 @@
             @endif
 
             {{-- ── SYSTEM GROUP (collapsible) ── --}}
-            @if(auth()->user()->can('manage users') || auth()->user()->can('manage dominations'))
+            @if(auth()->user()->can('manage users') || auth()->user()->can('manage denominations'))
                 <div class="mt-5 mb-1.5">
                     <button @click="adminOpen = !adminOpen"
                             class="w-full flex items-center justify-between px-3 group">
@@ -215,7 +215,7 @@
                 </div>
 
                 <div x-show="adminOpen" x-collapse>
-                    @can('manage dominations')
+                    @can('manage denominations')
                         @php $isPending = request()->routeIs('users.pending'); @endphp
                         <a href="{{ route('users.pending') }}"
                            class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150

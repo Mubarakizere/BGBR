@@ -49,7 +49,7 @@ class Announcement extends Model
         $first = $ids[0] ?? null;
 
         return match ($this->visibility_level) {
-            'domination' => $first ? Domination::find($first) : null,
+            'denomination' => $first ? Denomination::find($first) : null,
             'battalion'  => $first ? Battalion::find($first)  : null,
             'company'    => $first ? Company::find($first)    : null,
             default      => null,
@@ -67,7 +67,7 @@ class Announcement extends Model
         }
 
         return match ($this->visibility_level) {
-            'domination' => Domination::whereIn('id', $ids)->get(),
+            'denomination' => Denomination::whereIn('id', $ids)->get(),
             'battalion'  => Battalion::whereIn('id', $ids)->get(),
             'company'    => Company::whereIn('id', $ids)->get(),
             default      => collect(),

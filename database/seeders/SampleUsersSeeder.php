@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\Domination;
+use App\Models\Denomination;
 use App\Models\Battalion;
 use App\Models\Company;
 use Illuminate\Database\Seeder;
@@ -14,18 +14,18 @@ class SampleUsersSeeder extends Seeder
     public function run(): void
     {
         // Ensure some basic hierarchy exists to link users
-        $domination = Domination::firstOrCreate(['name' => 'Kigali City Domination', 'region' => 'Kigali']);
-        $battalion = Battalion::firstOrCreate(['name' => '1st Kigali Battalion', 'domination_id' => $domination->id]);
+        $denomination = Denomination::firstOrCreate(['name' => 'Kigali City Denomination', 'region' => 'Kigali']);
+        $battalion = Battalion::firstOrCreate(['name' => '1st Kigali Battalion', 'denomination_id' => $denomination->id]);
         $company = Company::firstOrCreate(['name' => '1st Company Remera', 'battalion_id' => $battalion->id, 'date_started' => '2010-01-01']);
 
         $password = Hash::make('password');
 
-        // Domination Admin
+        // Denomination Admin
         $domAdmin = User::firstOrCreate(
-            ['email' => 'domination@bgbr.rw'],
-            ['name' => 'Domination Admin', 'password' => $password, 'is_approved' => true, 'domination_id' => $domination->id]
+            ['email' => 'denomination@bgbr.rw'],
+            ['name' => 'Denomination Admin', 'password' => $password, 'is_approved' => true, 'denomination_id' => $denomination->id]
         );
-        if (!$domAdmin->hasRole('Domination Admin')) $domAdmin->assignRole('Domination Admin');
+        if (!$domAdmin->hasRole('Denomination Admin')) $domAdmin->assignRole('Denomination Admin');
 
         // Battalion Commander
         $btnCmdr = User::firstOrCreate(

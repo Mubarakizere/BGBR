@@ -15,7 +15,7 @@
                 <h1 class="text-3xl font-black text-text tracking-tight">Announcements</h1>
                 <p class="text-sm text-muted mt-1.5">Stay updated with the latest news and broadcast messages.</p>
             </div>
-            @if(auth()->user()->hasRole(['Super Admin', 'Domination Admin', 'Battalion Commander', 'Company Captain']))
+            @if(auth()->user()->hasRole(['Super Admin', 'Denomination Admin', 'Battalion Commander', 'Company Captain']))
             <a href="{{ route('announcements.create') }}" class="group relative inline-flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-bold text-white transition-all duration-200 bg-primary border border-transparent rounded-xl hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-0.5">
                 <svg class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 New Announcement
@@ -33,7 +33,7 @@
                     <select name="level" class="w-full bg-background border-none rounded-xl pl-11 pr-4 py-3 text-sm font-medium text-text focus:ring-2 focus:ring-primary/30 transition-all cursor-pointer">
                         <option value="">All Organization Levels</option>
                         <option value="national" {{ request('level') === 'national' ? 'selected' : '' }}>National Level</option>
-                        <option value="domination" {{ request('level') === 'domination' ? 'selected' : '' }}>Domination Level</option>
+                        <option value="denomination" {{ request('level') === 'denomination' ? 'selected' : '' }}>Denomination Level</option>
                         <option value="battalion" {{ request('level') === 'battalion' ? 'selected' : '' }}>Battalion Level</option>
                         <option value="company" {{ request('level') === 'company' ? 'selected' : '' }}>Company Level</option>
                     </select>
@@ -59,7 +59,7 @@
                     @php
                         $levelStyles = [
                             'national' => ['bg' => 'from-blue-500 to-blue-600', 'icon' => 'M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
-                            'domination' => ['bg' => 'from-violet-500 to-violet-600', 'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
+                            'denomination' => ['bg' => 'from-violet-500 to-violet-600', 'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
                             'battalion' => ['bg' => 'from-emerald-500 to-emerald-600', 'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z'],
                             'company' => ['bg' => 'from-amber-500 to-amber-600', 'icon' => 'M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z'],
                         ];

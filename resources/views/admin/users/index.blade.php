@@ -92,10 +92,10 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-xs text-muted">
-                                @if($user->domination) <span class="block">Dom: {{ $user->domination->name }}</span> @endif
+                                @if($user->denomination) <span class="block">Dom: {{ $user->denomination->name }}</span> @endif
                                 @if($user->battalion) <span class="block">Btn: {{ $user->battalion->name }}</span> @endif
                                 @if($user->company) <span class="block">Coy: {{ $user->company->name }}</span> @endif
-                                @if(!$user->domination && !$user->battalion && !$user->company) <span class="text-muted">—</span> @endif
+                                @if(!$user->denomination && !$user->battalion && !$user->company) <span class="text-muted">—</span> @endif
                             </td>
                             <td class="px-6 py-4">
                                 @if($user->is_approved)
@@ -180,11 +180,11 @@
                                 </select>
                             </div>
 
-                            <div x-show="selectedRole === 'Domination Admin'" x-cloak>
-                                <label class="block text-sm font-bold text-text mb-2">Domination</label>
-                                <select name="domination_id" class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text focus:ring-2 focus:ring-primary/30 focus:border-primary">
+                            <div x-show="selectedRole === 'Denomination Admin'" x-cloak>
+                                <label class="block text-sm font-bold text-text mb-2">Denomination</label>
+                                <select name="denomination_id" class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text focus:ring-2 focus:ring-primary/30 focus:border-primary">
                                     <option value="">-- Select --</option>
-                                    @foreach($dominations as $dom)
+                                    @foreach($denominations as $dom)
                                         <option value="{{ $dom->id }}">{{ $dom->name }}</option>
                                     @endforeach
                                 </select>
@@ -195,7 +195,7 @@
                                 <select name="battalion_id" class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text focus:ring-2 focus:ring-primary/30 focus:border-primary">
                                     <option value="">-- Select --</option>
                                     @foreach($battalions as $btn)
-                                        <option value="{{ $btn->id }}">{{ $btn->name }} ({{ $btn->domination?->name ?? '—' }})</option>
+                                        <option value="{{ $btn->id }}">{{ $btn->name }} ({{ $btn->denomination?->name ?? '—' }})</option>
                                     @endforeach
                                 </select>
                             </div>

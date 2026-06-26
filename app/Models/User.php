@@ -28,7 +28,7 @@ class User extends Authenticatable
         'email',
         'password',
         'is_approved',
-        'domination_id',
+        'denomination_id',
         'battalion_id',
         'company_id',
         'photo_path',
@@ -60,14 +60,14 @@ class User extends Authenticatable
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'email', 'is_approved', 'domination_id', 'battalion_id', 'company_id', 'photo_path'])
+            ->logOnly(['name', 'email', 'is_approved', 'denomination_id', 'battalion_id', 'company_id', 'photo_path'])
             ->logOnlyDirty()
             ->setDescriptionForEvent(fn(string $eventName) => "User was {$eventName}");
     }
 
-    public function domination(): BelongsTo
+    public function denomination(): BelongsTo
     {
-        return $this->belongsTo(Domination::class);
+        return $this->belongsTo(Denomination::class);
     }
 
     public function battalion(): BelongsTo
