@@ -13,6 +13,7 @@ class Battalion extends Model
     use HasUuids, LogsActivity;
 
     protected $guarded = [];
+    protected $appends = ['is_active'];
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -52,5 +53,10 @@ class Battalion extends Model
 
         if ($totalMembers === 0) return 0;
         return round(($paidMembers / $totalMembers) * 100, 2);
+    }
+
+    public function getIsActiveAttribute(): bool
+    {
+        return $this->companies()->count() >= 5;
     }
 }

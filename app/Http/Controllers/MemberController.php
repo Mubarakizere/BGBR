@@ -59,9 +59,31 @@ class MemberController extends Controller
             $data['photo_path'] = $request->file('photo')->store('photos', 'public');
         }
 
+        // Generate a random password and create the User account
+        $password = \Illuminate\Support\Str::password(10, true, true, true, false);
+        $user = \App\Models\User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($password),
+            'company_id' => $data['company_id'],
+            'is_approved' => true,
+        ]);
+
+        try {
+            $user->assignRole('Member');
+        } catch (\Exception $e) {
+            // Ignore if role doesn't exist
+        }
+
+        // Email the credentials directly to the new user
+        $user->notify(new \App\Notifications\MemberCredentialsNotification($password));
+
+        // Remove email from data as it is not a field in the members table
+        unset($data['email']);
+
         Member::create($data);
 
-        return redirect()->route('members.index')->with('success', 'Member created successfully.');
+        return redirect()->route('members.index')->with('success', 'Member created successfully. Login credentials have been sent to their email.');
     }
 
     /**

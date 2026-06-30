@@ -43,6 +43,15 @@
                             @endif
                         </span>
                     @endif
+                    @if(!$announcement->is_approved)
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                            Pending Approval
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                            Approved
+                        </span>
+                    @endif
                 </div>
                 <h1 class="text-3xl sm:text-4xl font-black text-text mb-6 leading-tight tracking-tight">{{ $announcement->title }}</h1>
                 
@@ -77,8 +86,19 @@
             </div>
 
             {{-- Actions --}}
-            @if(auth()->user()->hasRole('Super Admin') || auth()->id() === $announcement->created_by)
             <div class="p-6 border-t border-border bg-background/50 flex items-center justify-end gap-3 relative z-10">
+                @if(!$announcement->is_approved && auth()->user()->can('approve announcements'))
+                <form method="POST" action="{{ route('announcements.approve', $announcement) }}" class="inline">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-500 text-white font-bold text-sm hover:bg-emerald-600 transition-all shadow-sm shadow-emerald-500/20">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Approve Announcement
+                    </button>
+                </form>
+                @endif
+
+            @if(auth()->user()->hasRole('Super Admin') || auth()->id() === $announcement->created_by)
                 <a href="{{ route('announcements.edit', $announcement) }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-surface border border-border text-text font-bold text-sm hover:bg-background transition-all shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     Edit Announcement

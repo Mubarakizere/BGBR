@@ -19,6 +19,14 @@ class CompanyController extends Controller
         return view('companies.index', compact('companies', 'battalions', 'users'));
     }
 
+    public function show(Company $company)
+    {
+        Gate::authorize('viewAny', Company::class);
+        $company->load(['battalion', 'officers', 'members']);
+        return view('companies.show', compact('company'));
+    }
+
+
     public function store(Request $request)
     {
         Gate::authorize('create', Company::class);

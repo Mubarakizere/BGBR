@@ -32,6 +32,7 @@ class User extends Authenticatable
         'battalion_id',
         'company_id',
         'photo_path',
+        'fee_valid_until',
     ];
 
     /**
@@ -54,6 +55,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'fee_valid_until' => 'datetime',
         ];
     }
 
@@ -83,5 +85,10 @@ class User extends Authenticatable
     public function officeredCompanies()
     {
         return $this->belongsToMany(Company::class, 'company_officer')->withPivot('rank')->withTimestamps();
+    }
+
+    public function registrationFees()
+    {
+        return $this->hasMany(RegistrationFee::class);
     }
 }

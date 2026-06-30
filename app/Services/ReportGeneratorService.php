@@ -16,9 +16,9 @@ class ReportGeneratorService
      */
     public function generateCompanySnapshot(Company $company): array
     {
-        $members = $company->members;
-        $totalMembers = $members->count();
-        $paidMembers = $members->where('registration_fee_paid', true)->count();
+        $users = \App\Models\User::where('company_id', $company->id)->with('roles')->get();
+        $totalMembers = $users->count();
+        $paidMembers = $users->filter(fn($u) => $u->fee_valid_until && $u->fee_valid_until >= now())->count();
         $contributionPercentage = $totalMembers > 0 ? round(($paidMembers / $totalMembers) * 100, 2) : 0;
 
         $recentRequests = MaterialsRequest::where('company_id', $company->id)
@@ -32,12 +32,12 @@ class ReportGeneratorService
                 'paid_members' => $paidMembers,
                 'contribution_percentage' => $contributionPercentage,
             ],
-            'members' => $members->map(function ($m) {
+            'members' => $users->map(function ($u) {
                 return [
-                    'id' => $m->id,
-                    'name' => $m->name,
-                    'rank' => $m->rank,
-                    'registration_fee_paid' => $m->registration_fee_paid,
+                    'id' => $u->id,
+                    'name' => $u->name,
+                    'rank' => $u->roles->pluck('name')->first() ?? 'Member',
+                    'registration_fee_paid' => $u->fee_valid_until && $u->fee_valid_until >= now(),
                 ];
             })->toArray(),
             'recent_materials_requests' => $recentRequests->toArray(),
@@ -56,8 +56,9 @@ class ReportGeneratorService
         $companyData = [];
 
         foreach ($companies as $company) {
-            $cTotal = $company->members()->count();
-            $cPaid = $company->members()->where('registration_fee_paid', true)->count();
+            $users = \App\Models\User::where('company_id', $company->id)->get();
+            $cTotal = $users->count();
+            $cPaid = $users->filter(fn($u) => $u->fee_valid_until && $u->fee_valid_until >= now())->count();
             $cPerc = $cTotal > 0 ? round(($cPaid / $cTotal) * 100, 2) : 0;
 
             $totalMembers += $cTotal;
@@ -111,11 +112,14 @@ class ReportGeneratorService
             'fulfilled' => MaterialsRequest::where('status', 'fulfilled')->count(),
         ];
 
+        $totalRegistrationFees = \App\Models\RegistrationFee::where('status', 'approved')->sum('amount');
+
         return [
             'metrics' => [
                 'total_deposits' => (float) $totalDeposits,
                 'total_activity_fees_collected' => (float) $totalActivityFees,
-                'total_income' => (float) ($totalDeposits + $totalActivityFees),
+                'total_registration_fees' => (float) $totalRegistrationFees,
+                'total_income' => (float) ($totalDeposits + $totalActivityFees), // totalDeposits already includes registration fees via AccountDeposit
             ],
             'material_requests' => $materialRequestsStats,
             'generated_at' => now()->toIso8601String(),

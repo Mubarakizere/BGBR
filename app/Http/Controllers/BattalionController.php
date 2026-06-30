@@ -19,6 +19,13 @@ class BattalionController extends Controller
         return view('battalions.index', compact('battalions', 'denominations', 'zones'));
     }
 
+    public function show(Battalion $battalion)
+    {
+        Gate::authorize('viewAny', Battalion::class);
+        $battalion->load(['denomination', 'companies', 'companies.officers']);
+        return view('battalions.show', compact('battalion'));
+    }
+
     public function store(Request $request)
     {
         Gate::authorize('create', Battalion::class);

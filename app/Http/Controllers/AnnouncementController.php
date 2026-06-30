@@ -22,7 +22,14 @@ class AnnouncementController extends Controller
     {
         Gate::authorize('viewAny', Announcement::class);
         $user = Auth::user();
-        $query = Announcement::with('creator')->latest();
+        $query = Announcement::with(['creator', 'approver'])->latest();
+
+        if (!$user->can('approve announcements')) {
+            $query->where(function ($q) use ($user) {
+                $q->where('is_approved', true)
+                  ->orWhere('created_by', $user->id);
+            });
+        }
 
         if ($user->hasRole('Super Admin')) {
             // Sees everything
@@ -185,6 +192,8 @@ class AnnouncementController extends Controller
             }
         }
 
+        $isApproved = $user->can('approve announcements');
+
         $announcement = Announcement::create([
             'title' => $data['title'],
             'content' => $data['content'],
@@ -192,6 +201,9 @@ class AnnouncementController extends Controller
             'entity_ids' => !empty($entityIds) ? $entityIds : null,
             'entity_id' => $entityIds[0] ?? null,
             'created_by' => $user->id,
+            'is_approved' => $isApproved,
+            'approved_by' => $isApproved ? $user->id : null,
+            'approved_at' => $isApproved ? now() : null,
         ]);
 
         // Send Notification (includes email if properly queued)
@@ -302,6 +314,23 @@ class AnnouncementController extends Controller
         Gate::authorize('delete', $announcement);
         $announcement->delete();
         return redirect()->route('announcements.index')->with('success', 'Announcement deleted successfully.');
+    }
+
+    /**
+     * Approve the specified announcement.
+     */
+    public function approve(Announcement $announcement)
+    {
+        Gate::authorize('approve', $announcement);
+
+        $announcement->update([
+            'is_approved' => true,
+            'approved_by' => Auth::id(),
+            'approved_at' => now(),
+        ]);
+
+        return redirect()->route('announcements.show', $announcement)
+            ->with('success', 'Announcement approved successfully.');
     }
 
     /**

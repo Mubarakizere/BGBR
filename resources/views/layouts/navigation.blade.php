@@ -184,6 +184,18 @@
                             </span>
                             Account Deposits
                         </a>
+                        
+                        @can('approve fees')
+                            @php $isFees = request()->routeIs('admin.fees.*'); @endphp
+                            <a href="{{ route('admin.fees.index') }}"
+                               class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                                      {{ $isFees ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                                <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isFees ? 'bg-cyan-500/20 text-cyan-400' : 'text-white/40' }}">
+                                    <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                </span>
+                                Fee Submissions
+                            </a>
+                        @endcan
                     @endcan
 
                     {{-- Reports --}}

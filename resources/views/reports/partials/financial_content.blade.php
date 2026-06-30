@@ -1,5 +1,5 @@
 <div class="space-y-8">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div class="bg-background border border-border p-4 rounded-xl">
             <p class="text-sm text-muted font-bold uppercase mb-1">Total Deposits</p>
             <p class="text-2xl font-black text-primary">RWF {{ number_format($content['metrics']['total_deposits'], 2) }}</p>
@@ -7,6 +7,10 @@
         <div class="bg-background border border-border p-4 rounded-xl">
             <p class="text-sm text-muted font-bold uppercase mb-1">Activity Fees</p>
             <p class="text-2xl font-black text-success">RWF {{ number_format($content['metrics']['total_activity_fees_collected'], 2) }}</p>
+        </div>
+        <div class="bg-background border border-border p-4 rounded-xl">
+            <p class="text-sm text-muted font-bold uppercase mb-1">Registration Fees</p>
+            <p class="text-2xl font-black text-cyan-600">RWF {{ number_format($content['metrics']['total_registration_fees'] ?? 0, 2) }}</p>
         </div>
         <div class="bg-background border border-border p-4 rounded-xl">
             <p class="text-sm text-muted font-bold uppercase mb-1">Total Income</p>

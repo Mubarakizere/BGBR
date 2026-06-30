@@ -7,6 +7,7 @@
                 <tr>
                     <th>Total Deposits</th>
                     <th>Activity Fees</th>
+                    <th>Registration Fees</th>
                     <th>Total Income</th>
                 </tr>
             </thead>
@@ -14,6 +15,7 @@
                 <tr>
                     <td>{{ $report->content['metrics']['total_deposits'] }}</td>
                     <td>{{ $report->content['metrics']['total_activity_fees_collected'] }}</td>
+                    <td>{{ $report->content['metrics']['total_registration_fees'] ?? 0 }}</td>
                     <td>{{ $report->content['metrics']['total_income'] }}</td>
                 </tr>
             </tbody>
@@ -28,6 +30,10 @@
                 <td>
                     <div class="metric-label">Activity Fees</div>
                     <div class="metric-value">RWF {{ number_format($report->content['metrics']['total_activity_fees_collected'], 2) }}</div>
+                </td>
+                <td>
+                    <div class="metric-label">Registration Fees</div>
+                    <div class="metric-value">RWF {{ number_format($report->content['metrics']['total_registration_fees'] ?? 0, 2) }}</div>
                 </td>
                 <td>
                     <div class="metric-label">Total Income</div>

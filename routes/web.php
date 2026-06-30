@@ -31,10 +31,19 @@ Route::get('/pending-approval', function () {
 })->middleware(['auth'])->name('pending.approval');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified', 'approved'])
+    ->middleware(['auth', 'verified', 'approved', 'fee_paid'])
     ->name('dashboard');
 
-Route::middleware(['auth', 'verified', 'approved'])->group(function () {
+Route::middleware(['auth', 'verified', 'approved', 'fee_paid'])->group(function () {
+    // Registration Fee Routes
+    Route::get('/pay-fee', [\App\Http\Controllers\RegistrationFeeController::class, 'create'])->name('fee.pay');
+    Route::post('/pay-fee', [\App\Http\Controllers\RegistrationFeeController::class, 'store'])->name('fee.store');
+
+    Route::prefix('admin')->middleware('can:approve fees')->group(function () {
+        Route::get('/fees', [\App\Http\Controllers\Admin\RegistrationFeeController::class, 'index'])->name('admin.fees.index');
+        Route::patch('/fees/{fee}/approve', [\App\Http\Controllers\Admin\RegistrationFeeController::class, 'approve'])->name('admin.fees.approve');
+        Route::patch('/fees/{fee}/reject', [\App\Http\Controllers\Admin\RegistrationFeeController::class, 'reject'])->name('admin.fees.reject');
+    });
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -80,6 +89,7 @@ Route::middleware(['auth', 'verified', 'approved'])->group(function () {
 
     // Announcements
     Route::resource('announcements', AnnouncementController::class);
+    Route::patch('announcements/{announcement}/approve', [AnnouncementController::class, 'approve'])->name('announcements.approve');
 
     // Notifications
     Route::patch('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');

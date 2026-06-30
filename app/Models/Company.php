@@ -13,6 +13,7 @@ class Company extends Model
     use HasUuids, LogsActivity;
 
     protected $guarded = [];
+    protected $appends = ['is_active'];
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -47,5 +48,10 @@ class Company extends Model
         
         $paid = $this->members()->where('registration_fee_paid', true)->count();
         return round(($paid / $total) * 100, 2);
+    }
+
+    public function getIsActiveAttribute(): bool
+    {
+        return $this->members()->count() >= 20;
     }
 }

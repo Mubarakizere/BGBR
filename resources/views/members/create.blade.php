@@ -28,12 +28,13 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                         </div>
                         <div>
+                        <div>
                             <h3 class="text-base font-bold text-text">Personal Information</h3>
-                            <p class="text-xs text-muted">Basic identity details of the member</p>
+                            <p class="text-xs text-muted">Basic identity details of the member. An account will be automatically created with these credentials.</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                         <div>
                             <label for="name" class="block text-sm font-semibold text-text mb-1.5">Full Name <span class="text-danger">*</span></label>
                             <input type="text" name="name" id="name" value="{{ old('name') }}" required
@@ -41,6 +42,16 @@
                                    placeholder="Enter full name">
                             @error('name') <p class="mt-1.5 text-xs text-danger font-medium">{{ $message }}</p> @enderror
                         </div>
+                        <div>
+                            <label for="email" class="block text-sm font-semibold text-text mb-1.5">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" name="email" id="email" value="{{ old('email') }}" required
+                                   class="w-full px-4 py-2.5 rounded-xl border border-border bg-background text-text text-sm placeholder:text-muted/50 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                   placeholder="member@example.com">
+                            @error('email') <p class="mt-1.5 text-xs text-danger font-medium">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label for="rank" class="block text-sm font-semibold text-text mb-1.5">Rank <span class="text-danger">*</span></label>
                             <input type="text" name="rank" id="rank" value="{{ old('rank') }}" required

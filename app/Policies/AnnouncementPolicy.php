@@ -26,6 +26,13 @@ class AnnouncementPolicy
             return true;
         }
 
+        // If it's not approved, only the creator or someone with approval permission can view it
+        if (!$announcement->is_approved) {
+            if ($announcement->created_by !== $user->id && !$user->can('approve announcements')) {
+                return false;
+            }
+        }
+
         $level = $announcement->visibility_level;
         $entityId = $announcement->entity_id;
 
@@ -107,5 +114,13 @@ class AnnouncementPolicy
     public function delete(User $user, Announcement $announcement): bool
     {
         return $this->update($user, $announcement);
+    }
+
+    /**
+     * Determine whether the user can approve the model.
+     */
+    public function approve(User $user, Announcement $announcement): bool
+    {
+        return $user->can('approve announcements');
     }
 }

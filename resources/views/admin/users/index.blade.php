@@ -68,6 +68,7 @@
                             <th class="px-6 py-4">Role</th>
                             <th class="px-6 py-4">Assignment</th>
                             <th class="px-6 py-4">Status</th>
+                            <th class="px-6 py-4">Fee Status</th>
                             <th class="px-6 py-4">Joined</th>
                             <th class="px-6 py-4 text-right">Actions</th>
                         </tr>
@@ -108,6 +109,19 @@
                                     </span>
                                 @endif
                             </td>
+                            <td class="px-6 py-4">
+                                @if($user->fee_valid_until)
+                                    @if($user->fee_valid_until >= now())
+                                        <span class="text-xs font-bold text-success block">Valid</span>
+                                        <span class="text-[10px] text-muted">till {{ $user->fee_valid_until->format('M d, Y') }}</span>
+                                    @else
+                                        <span class="text-xs font-bold text-danger block">Expired</span>
+                                        <span class="text-[10px] text-muted">on {{ $user->fee_valid_until->format('M d, Y') }}</span>
+                                    @endif
+                                @else
+                                    <span class="text-xs font-bold text-amber-500 block">Unpaid</span>
+                                @endif
+                            </td>
                             <td class="px-6 py-4 text-muted text-xs">{{ $user->created_at->format('M d, Y') }}</td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
@@ -132,7 +146,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center">
+                            <td colspan="7" class="px-6 py-12 text-center">
                                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-background mb-4">
                                     <svg class="w-8 h-8 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                 </div>

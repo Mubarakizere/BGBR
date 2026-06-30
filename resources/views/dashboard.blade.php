@@ -31,6 +31,38 @@
                 </div>
             </div>
 
+            <!-- My Command Section (For Officers/Commanders) -->
+            @if(isset($myCommand))
+            <div class="mb-8">
+                <div class="bg-surface rounded-2xl shadow-sm border border-border p-6 md:p-8 relative overflow-hidden group">
+                    <div class="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-primary/5 to-transparent z-0"></div>
+                    <div class="relative z-10">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div>
+                                <h3 class="text-sm font-bold uppercase tracking-widest text-primary mb-1">My Command</h3>
+                                <h2 class="text-2xl font-extrabold text-text mb-2">{{ $myCommand->name }} ({{ $myCommand->type }})</h2>
+                                <div class="flex flex-wrap items-center gap-3 mt-4">
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold {{ $myCommand->is_active ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger' }}">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $myCommand->is_active ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12' }}"></path></svg>
+                                        {{ $myCommand->is_active ? 'Active' : 'Inactive' }}
+                                    </span>
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold bg-background border border-border text-text">
+                                        {{ $myCommand->type === 'Battalion' ? $myCommand->companies->count() . ' Companies' : $myCommand->members->count() . ' Members' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex-shrink-0">
+                                <a href="{{ $myCommand->type === 'Battalion' ? route('battalions.show', $myCommand) : route('companies.show', $myCommand) }}" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white text-sm font-bold rounded-xl shadow-md shadow-primary/20 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+                                    View Full Details
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Dynamic Statistics Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 
@@ -115,6 +147,135 @@
                 @endcan
             </div>
 
+            <!-- Dynamic Content Feeds -->
+            @if((isset($latestAnnouncements) && $latestAnnouncements->isNotEmpty()) || (isset($upcomingActivities) && $upcomingActivities->isNotEmpty()) || (isset($recentMembers) && $recentMembers->isNotEmpty()) || (isset($pendingUsersList) && $pendingUsersList->isNotEmpty()) || (isset($pendingReportsList) && $pendingReportsList->isNotEmpty()))
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                
+                @if(isset($latestAnnouncements) && $latestAnnouncements->isNotEmpty())
+                <div class="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
+                    <div class="px-6 py-4 border-b border-border bg-background/50 flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-text flex items-center gap-2">
+                            <svg class="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                            Latest Announcements
+                        </h3>
+                        <a href="{{ Route::has('announcements.index') ? route('announcements.index') : '#' }}" class="text-sm text-primary font-semibold hover:underline">View All</a>
+                    </div>
+                    <div class="divide-y divide-border">
+                        @foreach($latestAnnouncements as $announcement)
+                        <div class="p-4 hover:bg-background/50 transition-colors">
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="text-sm font-bold text-text">{{ $announcement->title }}</h4>
+                                <span class="text-xs text-muted">{{ $announcement->created_at->diffForHumans() }}</span>
+                            </div>
+                            <p class="text-sm text-muted line-clamp-2">{{ strip_tags($announcement->content) }}</p>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                @if(isset($upcomingActivities) && $upcomingActivities->isNotEmpty())
+                <div class="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
+                    <div class="px-6 py-4 border-b border-border bg-background/50 flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-text flex items-center gap-2">
+                            <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            Upcoming Activities
+                        </h3>
+                        <a href="{{ Route::has('activities.index') ? route('activities.index') : '#' }}" class="text-sm text-primary font-semibold hover:underline">View All</a>
+                    </div>
+                    <div class="divide-y divide-border">
+                        @foreach($upcomingActivities as $activity)
+                        <div class="p-4 hover:bg-background/50 transition-colors flex items-center gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 bg-success/10 rounded-xl flex flex-col items-center justify-center text-success">
+                                <span class="text-xs font-bold uppercase">{{ \Carbon\Carbon::parse($activity->date)->format('M') }}</span>
+                                <span class="text-lg font-black leading-none">{{ \Carbon\Carbon::parse($activity->date)->format('d') }}</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-text">{{ $activity->title }}</h4>
+                                <p class="text-xs text-muted mt-0.5 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                    {{ $activity->location ?? 'TBA' }}
+                                </p>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                @if(isset($recentMembers) && $recentMembers->isNotEmpty())
+                <div class="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
+                    <div class="px-6 py-4 border-b border-border bg-background/50 flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-text flex items-center gap-2">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            New Members
+                        </h3>
+                        <a href="{{ Route::has('members.index') ? route('members.index') : '#' }}" class="text-sm text-primary font-semibold hover:underline">Directory</a>
+                    </div>
+                    <div class="divide-y divide-border">
+                        @foreach($recentMembers as $member)
+                        <div class="p-4 hover:bg-background/50 transition-colors flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
+                                    {{ strtoupper(substr($member->name, 0, 2)) }}
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-text">{{ $member->name }}</h4>
+                                    <p class="text-xs text-muted">{{ $member->rank ?? 'Member' }}</p>
+                                </div>
+                            </div>
+                            <span class="text-xs text-muted">{{ $member->created_at->diffForHumans() }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                @if((isset($pendingUsersList) && $pendingUsersList->isNotEmpty()) || (isset($pendingReportsList) && $pendingReportsList->isNotEmpty()))
+                <div class="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
+                    <div class="px-6 py-4 border-b border-border bg-background/50 flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-text flex items-center gap-2">
+                            <svg class="w-5 h-5 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            Pending Actions
+                        </h3>
+                    </div>
+                    <div class="divide-y divide-border">
+                        @if(isset($pendingUsersList))
+                        @foreach($pendingUsersList as $pUser)
+                        <div class="p-4 hover:bg-background/50 transition-colors flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full bg-danger"></div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-text">User Approval Required</h4>
+                                    <p class="text-xs text-muted">{{ $pUser->name }} ({{ $pUser->email }})</p>
+                                </div>
+                            </div>
+                            <a href="{{ Route::has('users.index') ? route('users.index') : '#' }}" class="text-xs px-3 py-1 bg-surface border border-border rounded-lg hover:border-danger hover:text-danger transition-colors">Review</a>
+                        </div>
+                        @endforeach
+                        @endif
+
+                        @if(isset($pendingReportsList))
+                        @foreach($pendingReportsList as $pReport)
+                        <div class="p-4 hover:bg-background/50 transition-colors flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full bg-secondary"></div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-text">Report Review Required</h4>
+                                    <p class="text-xs text-muted">{{ $pReport->title }}</p>
+                                </div>
+                            </div>
+                            <a href="{{ Route::has('reports.index') ? route('reports.index') : '#' }}" class="text-xs px-3 py-1 bg-surface border border-border rounded-lg hover:border-secondary hover:text-secondary transition-colors">Review</a>
+                        </div>
+                        @endforeach
+                        @endif
+                    </div>
+                </div>
+                @endif
+
+            </div>
+            @endif
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Main Graphics / Premium Features (Takes 2 columns if exists) -->
                 @if(isset($chartData))
@@ -132,49 +293,33 @@
                 </div>
                 @endif
 
-                <!-- Permission-Gated Quick Actions Section -->
+                <!-- Interactive Event Calendar -->
                 <div class="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden {{ isset($chartData) ? 'lg:col-span-1' : 'lg:col-span-3' }}">
-                    <div class="px-8 py-6 border-b border-border bg-background/50">
-                        <h3 class="text-xl font-bold text-text">Operational Actions</h3>
+                    <div class="px-8 py-6 border-b border-border bg-background/50 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-xl font-bold text-text">Event Calendar</h3>
+                            <p class="text-sm text-muted mt-1" id="calendar-month-year"></p>
+                        </div>
+                        <div class="p-2 bg-primary/10 text-primary rounded-xl">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
                     </div>
                     <div class="p-6">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 {{ isset($chartData) ? 'lg:grid-cols-2' : 'md:grid-cols-4' }} gap-4">
-                            
-                            @can('register members')
-                            <a href="{{ route('members.index') }}" class="flex flex-col items-center justify-center p-6 border border-border rounded-xl hover:border-primary hover:bg-primary/5 transition-all text-center group">
-                                <div class="w-12 h-12 rounded-full bg-background flex items-center justify-center text-muted mb-4 group-hover:bg-primary/10 group-hover:text-primary transition-all">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                </div>
-                                <span class="text-sm font-bold text-text group-hover:text-primary">Directory</span>
-                            </a>
-                            @endcan
-
-                            @can('manage companies')
-                            <a href="{{ route('companies.index') }}" class="flex flex-col items-center justify-center p-6 border border-border rounded-xl hover:border-accent hover:bg-accent/5 transition-all text-center group">
-                                <div class="w-12 h-12 rounded-full bg-background flex items-center justify-center text-muted mb-4 group-hover:bg-accent/10 group-hover:text-accent transition-all">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                                </div>
-                                <span class="text-sm font-bold text-text group-hover:text-accent">Companies</span>
-                            </a>
-                            @endcan
-
-                            @can('manage battalions')
-                            <a href="{{ route('battalions.index') }}" class="flex flex-col items-center justify-center p-6 border border-border rounded-xl hover:border-secondary hover:bg-secondary/5 transition-all text-center group">
-                                <div class="w-12 h-12 rounded-full bg-background flex items-center justify-center text-muted mb-4 group-hover:bg-secondary/10 group-hover:text-secondary transition-all">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"></path></svg>
-                                </div>
-                                <span class="text-sm font-bold text-text group-hover:text-secondary">Battalions</span>
-                            </a>
-                            @endcan
-
-                            <!-- Standard action for all logged in users -->
-                            <a href="{{ route('profile.edit') }}" class="flex flex-col items-center justify-center p-6 border border-border rounded-xl hover:border-muted hover:bg-muted/5 transition-all text-center group">
-                                <div class="w-12 h-12 rounded-full bg-background flex items-center justify-center text-muted mb-4 group-hover:bg-border group-hover:text-text transition-all">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                </div>
-                                <span class="text-sm font-bold text-text group-hover:text-text">My Profile</span>
-                            </a>
-
+                        <div class="grid grid-cols-7 gap-1 text-center mb-2" id="calendar-days-header">
+                            <div class="text-xs font-bold text-muted uppercase">Sun</div>
+                            <div class="text-xs font-bold text-muted uppercase">Mon</div>
+                            <div class="text-xs font-bold text-muted uppercase">Tue</div>
+                            <div class="text-xs font-bold text-muted uppercase">Wed</div>
+                            <div class="text-xs font-bold text-muted uppercase">Thu</div>
+                            <div class="text-xs font-bold text-muted uppercase">Fri</div>
+                            <div class="text-xs font-bold text-muted uppercase">Sat</div>
+                        </div>
+                        <div class="grid grid-cols-7 gap-1" id="calendar-grid">
+                            <!-- Calendar days will be injected here via JS -->
+                        </div>
+                        <div class="mt-4 flex items-center justify-center gap-4 text-xs text-muted">
+                            <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-success"></div> Event</div>
+                            <div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-transparent border-2 border-primary"></div> Today</div>
                         </div>
                     </div>
                 </div>
@@ -234,4 +379,76 @@
         });
     </script>
     @endif
+    
+    <!-- Calendar JS Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const activities = {!! json_encode($calendarActivities ?? []) !!};
+            const calendarGrid = document.getElementById('calendar-grid');
+            const monthYearLabel = document.getElementById('calendar-month-year');
+            
+            if (!calendarGrid) return;
+
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            
+            monthYearLabel.textContent = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            const eventMap = {};
+            activities.forEach(act => {
+                const actDate = new Date(act.date);
+                if (actDate.getMonth() === month && actDate.getFullYear() === year) {
+                    const day = actDate.getDate();
+                    if (!eventMap[day]) eventMap[day] = [];
+                    eventMap[day].push(act);
+                }
+            });
+
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'aspect-square rounded-xl bg-transparent';
+                calendarGrid.appendChild(emptyDiv);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isToday = (day === date.getDate());
+                const hasEvent = eventMap[day] && eventMap[day].length > 0;
+                
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'aspect-square flex flex-col items-center justify-center rounded-xl relative text-sm font-medium transition-all duration-200 cursor-default p-1';
+                
+                if (isToday) {
+                    dayDiv.classList.add('border-2', 'border-primary', 'text-primary', 'font-bold');
+                } else {
+                    dayDiv.classList.add('text-text');
+                }
+
+                dayDiv.textContent = day;
+
+                if (hasEvent) {
+                    dayDiv.classList.add('bg-success/10', 'hover:bg-success/20', 'cursor-pointer', 'group');
+                    dayDiv.classList.remove('text-text');
+                    if(!isToday) dayDiv.classList.add('text-success', 'font-bold');
+                    
+                    const dot = document.createElement('div');
+                    dot.className = 'absolute bottom-1 w-1.5 h-1.5 rounded-full bg-success';
+                    dayDiv.appendChild(dot);
+                    
+                    const tooltipText = eventMap[day].map(e => e.title).join(' | ');
+                    dayDiv.title = tooltipText;
+                    
+                    // Simple custom tooltip on hover (optional enhancement if native title is enough)
+                    // We'll stick to native title= as it is clean and robust out of the box.
+                } else {
+                    dayDiv.classList.add('hover:bg-surface/50');
+                }
+                
+                calendarGrid.appendChild(dayDiv);
+            }
+        });
+    </script>
 </x-app-layout>

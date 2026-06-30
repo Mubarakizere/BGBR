@@ -70,10 +70,15 @@
 
                     <div class="p-6 flex-1 flex flex-col">
                         <div class="flex items-center justify-between mb-4">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest bg-background border border-border text-muted group-hover:border-primary/20 transition-colors">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $style['icon'] }}"></path></svg>
-                                {{ $announcement->visibility_level }}
-                            </span>
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-widest bg-background border border-border text-muted group-hover:border-primary/20 transition-colors">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $style['icon'] }}"></path></svg>
+                                    {{ $announcement->visibility_level }}
+                                </span>
+                                @if(!$announcement->is_approved)
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-600 border border-amber-500/20">Pending</span>
+                                @endif
+                            </div>
                             <span class="text-[11px] font-medium text-muted bg-background px-2.5 py-1 rounded-md border border-border flex items-center gap-1">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                 {{ $announcement->created_at->diffForHumans() }}

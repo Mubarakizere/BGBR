@@ -18,10 +18,15 @@ class Announcement extends Model
         'entity_id',   // kept for legacy compatibility
         'entity_ids',  // new: JSON array of target entity UUIDs
         'created_by',
+        'is_approved',
+        'approved_by',
+        'approved_at',
     ];
 
     protected $casts = [
         'entity_ids' => 'array',
+        'is_approved' => 'boolean',
+        'approved_at' => 'datetime',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -38,6 +43,14 @@ class Announcement extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * The user who approved this announcement.
+     */
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     /**

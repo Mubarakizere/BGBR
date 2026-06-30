@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         // Permissions
         $permissions = [
             'manage denominations', 'create battalions', 'view all reports', 'manage system settings', 'view audit logs', 'manage users',
-            'manage battalions', 'approve battalion reports', 'create denomination announcements',
+            'manage battalions', 'approve battalion reports', 'create denomination announcements', 'approve announcements',
             'manage companies', 'approve company reports', 'create battalion announcements',
             'register members', 'register company info', 'submit activity participation', 'generate company reports', 'create company announcements',
             'view members', 'update members', 'participate in activities', 'view company announcements',
