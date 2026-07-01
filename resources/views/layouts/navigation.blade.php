@@ -17,6 +17,7 @@
     <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
            class="fixed md:sticky top-0 left-0 w-[270px] h-screen flex flex-col bg-[#0E1538] text-white transition-transform duration-300 ease-in-out shadow-2xl md:shadow-lg z-50"
            x-data="{
+               engageOpen: {{ request()->routeIs('announcements.*') || request()->routeIs('activities.*') ? 'true' : 'false' }},
                adminOpen: {{ request()->routeIs('users.*') || request()->routeIs('roles.*') || request()->routeIs('audit-logs.*') || request()->routeIs('users.pending') ? 'true' : 'false' }},
                orgOpen: {{ request()->routeIs('battalions.*') || request()->routeIs('companies.*') || request()->routeIs('members.*') || request()->routeIs('materials-requests.*') ? 'true' : 'false' }},
                opsOpen: {{ request()->routeIs('denominations.*') || request()->routeIs('zones.*') || request()->routeIs('account-deposits.*') || request()->routeIs('reports.*') ? 'true' : 'false' }},
@@ -53,29 +54,43 @@
                 Dashboard
             </a>
 
-            {{-- ── Announcements ── --}}
-            @php $isAnn = request()->routeIs('announcements.*'); @endphp
-            <a href="{{ route('announcements.index') }}"
-               class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
-                      {{ $isAnn ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
-                <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isAnn ? 'bg-amber-500/20 text-amber-400' : 'text-white/40' }}">
-                    <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
-                </span>
-                Announcements
-            </a>
+            {{-- ── ENGAGEMENT GROUP (collapsible) ── --}}
+            <div class="mt-5 mb-1">
+                <button @click="engageOpen = !engageOpen"
+                        class="w-full flex items-center justify-between px-3 group">
+                    <span class="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25 group-hover:text-white/40 transition-colors">Engagement</span>
+                    <svg :class="engageOpen ? 'rotate-0' : '-rotate-90'"
+                         class="w-3 h-3 text-white/20 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+            </div>
 
-            {{-- ── Activities ── --}}
-            @if(auth()->user()->can('manage activities') || auth()->user()->can('submit activity participation'))
-                @php $isAct = request()->routeIs('activities.*'); @endphp
-                <a href="{{ route('activities.index') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
-                          {{ $isAct ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
-                    <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isAct ? 'bg-emerald-500/20 text-emerald-400' : 'text-white/40' }}">
-                        <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <div x-show="engageOpen" x-collapse>
+                {{-- ── Announcements ── --}}
+                @php $isAnn = request()->routeIs('announcements.*'); @endphp
+                <a href="{{ route('announcements.index') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150
+                          {{ $isAnn ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                    <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isAnn ? 'bg-amber-500/20 text-amber-400' : 'text-white/40' }}">
+                        <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
                     </span>
-                    Activities
+                    Announcements
                 </a>
-            @endif
+
+                {{-- ── Activities ── --}}
+                @if(auth()->user()->can('manage activities') || auth()->user()->can('submit activity participation'))
+                    @php $isAct = request()->routeIs('activities.*'); @endphp
+                    <a href="{{ route('activities.index') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                              {{ $isAct ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+                        <span class="w-7 h-7 rounded-md flex items-center justify-center {{ $isAct ? 'bg-emerald-500/20 text-emerald-400' : 'text-white/40' }}">
+                            <svg class="w-[16px] h-[16px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </span>
+                        Activities
+                    </a>
+                @endif
+            </div>
 
             {{-- ── ORGANIZATION GROUP (collapsible) ── --}}
             @if(auth()->user()->can('manage battalions') || auth()->user()->can('manage companies') || auth()->user()->can('register members'))

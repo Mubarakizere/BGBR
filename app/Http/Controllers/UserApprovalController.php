@@ -58,6 +58,39 @@ class UserApprovalController extends Controller
         return back()->with('success', "User {$user->name} has been approved and assigned to the {$request->role} role.");
     }
 
+    public function bulkApprove(Request $request)
+    {
+        $request->validate([
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id',
+            'role' => 'required|exists:roles,name',
+            'denomination_id' => 'nullable|exists:denominations,id',
+            'battalion_id' => 'nullable|exists:battalions,id',
+            'company_id' => 'nullable|exists:companies,id',
+        ]);
+
+        $users = User::whereIn('id', $request->user_ids)->get();
+        $count = 0;
+
+        foreach ($users as $user) {
+            $user->syncRoles([$request->role]);
+            $user->is_approved = true;
+            
+            $user->denomination_id = null;
+            $user->battalion_id = null;
+            $user->company_id = null;
+
+            if ($request->denomination_id) $user->denomination_id = $request->denomination_id;
+            if ($request->battalion_id) $user->battalion_id = $request->battalion_id;
+            if ($request->company_id) $user->company_id = $request->company_id;
+
+            $user->save();
+            $count++;
+        }
+
+        return back()->with('success', "{$count} users have been approved and assigned to the {$request->role} role.");
+    }
+
     public function reject(User $user)
     {
         $name = $user->name;

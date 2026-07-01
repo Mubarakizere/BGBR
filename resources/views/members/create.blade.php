@@ -28,7 +28,6 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                         </div>
                         <div>
-                        <div>
                             <h3 class="text-base font-bold text-text">Personal Information</h3>
                             <p class="text-xs text-muted">Basic identity details of the member. An account will be automatically created with these credentials.</p>
                         </div>

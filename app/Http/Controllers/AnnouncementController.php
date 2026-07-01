@@ -134,6 +134,10 @@ class AnnouncementController extends Controller
             $query->where('visibility_level', $request->level);
         }
 
+        $query->withExists(['readByUsers as is_read' => function ($q) use ($user) {
+            $q->where('user_id', $user->id);
+        }]);
+
         $announcements = $query->paginate(12);
         return view('announcements.index', compact('announcements'));
     }
@@ -206,28 +210,33 @@ class AnnouncementController extends Controller
             'approved_at' => $isApproved ? now() : null,
         ]);
 
-        // Send Notification (includes email if properly queued)
-        $usersQuery = User::query()->where('is_approved', true);
-        
-        if ($level === 'national') {
-            // notify everyone
-        } elseif (!empty($entityIds)) {
-            $usersQuery->where(function ($q) use ($level, $entityIds) {
-                foreach ($entityIds as $id) {
-                    $column = match ($level) {
-                        'denomination' => 'denomination_id',
-                        'battalion'  => 'battalion_id',
-                        'company'    => 'company_id',
-                        default      => null,
-                    };
-                    if ($column) {
-                        $q->orWhere($column, $id);
+        // Send Notification
+        if ($isApproved) {
+            $usersQuery = User::query()->where('is_approved', true);
+            
+            if ($level === 'national') {
+                // notify everyone
+            } elseif (!empty($entityIds)) {
+                $usersQuery->where(function ($q) use ($level, $entityIds) {
+                    foreach ($entityIds as $id) {
+                        $column = match ($level) {
+                            'denomination' => 'denomination_id',
+                            'battalion'  => 'battalion_id',
+                            'company'    => 'company_id',
+                            default      => null,
+                        };
+                        if ($column) {
+                            $q->orWhere($column, $id);
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
 
-        Notification::send($usersQuery->get(), new NewAnnouncementNotification($announcement));
+            Notification::send($usersQuery->get(), new NewAnnouncementNotification($announcement));
+        } else {
+            $approvers = User::permission('approve announcements')->get();
+            Notification::send($approvers, new \App\Notifications\AnnouncementPendingApprovalNotification($announcement));
+        }
 
         return redirect()->route('announcements.index')->with('success', 'Announcement created successfully.');
     }
@@ -239,6 +248,10 @@ class AnnouncementController extends Controller
     {
         Gate::authorize('view', $announcement);
         $announcement->load('creator');
+        
+        // Mark as read for the current user
+        Auth::user()->readAnnouncements()->syncWithoutDetaching([$announcement->id]);
+
         return view('announcements.show', compact('announcement'));
     }
 
@@ -328,6 +341,31 @@ class AnnouncementController extends Controller
             'approved_by' => Auth::id(),
             'approved_at' => now(),
         ]);
+
+        $level = $announcement->visibility_level;
+        $entityIds = collect($announcement->entity_ids ?? [$announcement->entity_id])->filter()->toArray();
+
+        $usersQuery = User::query()->where('is_approved', true);
+        
+        if ($level === 'national') {
+            // notify everyone
+        } elseif (!empty($entityIds)) {
+            $usersQuery->where(function ($q) use ($level, $entityIds) {
+                foreach ($entityIds as $id) {
+                    $column = match ($level) {
+                        'denomination' => 'denomination_id',
+                        'battalion'  => 'battalion_id',
+                        'company'    => 'company_id',
+                        default      => null,
+                    };
+                    if ($column) {
+                        $q->orWhere($column, $id);
+                    }
+                }
+            });
+        }
+
+        Notification::send($usersQuery->get(), new NewAnnouncementNotification($announcement));
 
         return redirect()->route('announcements.show', $announcement)
             ->with('success', 'Announcement approved successfully.');

@@ -55,7 +55,7 @@ class DashboardController extends Controller
         // Announcements
         $latestAnnouncements = collect();
         if ($user->can('view announcements') || $user->can('view company announcements') || $user->can('create battalion announcements') || $user->can('create company announcements') || $user->can('create denomination announcements')) {
-            $latestAnnouncements = Announcement::latest()->take(3)->get();
+            $latestAnnouncements = Announcement::where('is_approved', true)->latest()->take(3)->get();
         }
 
         // Activities

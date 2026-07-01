@@ -35,7 +35,35 @@ class MemberController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('members.index', compact('members', 'search'));
+        $companies = Company::orderBy('name')->get();
+
+        return view('members.index', compact('members', 'search', 'companies'));
+    }
+
+    /**
+     * Bulk assign members to a company.
+     */
+    public function bulkAssignCompany(Request $request)
+    {
+        Gate::authorize('viewAny', Member::class); // Ensure they have access to members
+
+        $request->validate([
+            'member_ids' => 'required|array',
+            'member_ids.*' => 'exists:members,id',
+            'company_id' => 'required|exists:companies,id',
+        ]);
+
+        $members = Member::whereIn('id', $request->member_ids)->get();
+        
+        foreach ($members as $member) {
+            // Check if user has permission to update this specific member
+            Gate::authorize('update', $member);
+            
+            $member->company_id = $request->company_id;
+            $member->save();
+        }
+
+        return back()->with('success', count($members) . ' members have been assigned to the company.');
     }
 
     /**

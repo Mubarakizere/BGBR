@@ -87,6 +87,21 @@
                             @error('target_audience') <p class="text-danger text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
+                        {{-- Inactive info banners --}}
+                        <div x-show="audience === 'battalion' && {{ $inactiveBattalionCount }} > 0" x-cloak x-transition.opacity>
+                            <div class="bg-secondary/5 border border-secondary/20 rounded-xl p-3 flex items-start gap-2">
+                                <svg class="w-4 h-4 text-secondary mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p class="text-xs text-muted"><strong class="text-text">{{ $inactiveBattalionCount }} inactive battalion(s)</strong> hidden — a battalion needs ≥ 5 companies to be active and assignable.</p>
+                            </div>
+                        </div>
+
+                        <div x-show="audience === 'company' && {{ $inactiveCompanyCount }} > 0" x-cloak x-transition.opacity>
+                            <div class="bg-secondary/5 border border-secondary/20 rounded-xl p-3 flex items-start gap-2">
+                                <svg class="w-4 h-4 text-secondary mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <p class="text-xs text-muted"><strong class="text-text">{{ $inactiveCompanyCount }} inactive company/ies</strong> hidden — a company needs ≥ 20 members to be active and assignable.</p>
+                            </div>
+                        </div>
+
                         {{-- Denomination multi-select --}}
                         <div x-show="audience === 'denomination'" x-cloak x-transition.opacity
                              x-data="multiSelect({{ $denominations->map(fn($d) => ['id' => $d->id, 'label' => $d->name])->toJson() }}, {{ json_encode(old('entity_ids', [])) }})"
@@ -120,9 +135,9 @@
                             @error('entity_ids') <p class="text-danger text-xs mt-2">{{ $message }}</p> @enderror
                         </div>
 
-                        {{-- Battalion multi-select --}}
+                        {{-- Battalion multi-select (only active) --}}
                         <div x-show="audience === 'battalion'" x-cloak x-transition.opacity
-                             x-data="multiSelect({{ $battalions->map(fn($b) => ['id' => $b->id, 'label' => $b->name . ' (' . ($b->denomination?->name ?? '—') . ')'])->toJson() }}, {{ json_encode(old('entity_ids', [])) }})"
+                             x-data="multiSelect({{ $battalions->map(fn($b) => ['id' => $b->id, 'label' => $b->name . ' (' . ($b->denomination?->name ?? '—') . ') — ' . $b->companies_count . ' companies'])->toJson() }}, {{ json_encode(old('entity_ids', [])) }})"
                              class="bg-background rounded-xl p-4 border border-border">
                             <div class="flex items-center justify-between mb-2">
                                 <label class="block text-sm font-bold text-text">Select Battalion(s) <span class="text-danger">*</span></label>
@@ -133,7 +148,7 @@
                                 </div>
                             </div>
                             <p class="text-xs text-muted mb-3">
-                                <span x-text="selected.length"></span> selected
+                                <span x-text="selected.length"></span> selected — only active battalions (≥ 5 companies) are shown
                             </p>
                             <input type="text" x-model="search" placeholder="Search battalions…"
                                    class="w-full rounded-lg border-border bg-surface text-text text-sm px-3 py-2 mb-3 focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
@@ -145,17 +160,20 @@
                                                :checked="selected.includes(item.id)"
                                                @change="toggle(item.id)"
                                                class="rounded border-border text-primary focus:ring-primary/30">
-                                        <span class="text-sm text-text" x-text="item.label"></span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-text" x-text="item.label"></span>
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-success/10 text-success">Active</span>
+                                        </div>
                                     </label>
                                 </template>
-                                <p x-show="filtered.length === 0" class="text-xs text-muted text-center py-4">No battalions found.</p>
+                                <p x-show="filtered.length === 0" class="text-xs text-muted text-center py-4">No active battalions found.</p>
                             </div>
                             @error('entity_ids') <p class="text-danger text-xs mt-2">{{ $message }}</p> @enderror
                         </div>
 
-                        {{-- Company multi-select --}}
+                        {{-- Company multi-select (only active) --}}
                         <div x-show="audience === 'company'" x-cloak x-transition.opacity
-                             x-data="multiSelect({{ $companies->map(fn($c) => ['id' => $c->id, 'label' => $c->name . ' (' . ($c->battalion?->name ?? '—') . ')'])->toJson() }}, {{ json_encode(old('entity_ids', [])) }})"
+                             x-data="multiSelect({{ $companies->map(fn($c) => ['id' => $c->id, 'label' => $c->name . ' (' . ($c->battalion?->name ?? '—') . ') — ' . $c->members_count . ' members'])->toJson() }}, {{ json_encode(old('entity_ids', [])) }})"
                              class="bg-background rounded-xl p-4 border border-border">
                             <div class="flex items-center justify-between mb-2">
                                 <label class="block text-sm font-bold text-text">Select Company/ies <span class="text-danger">*</span></label>
@@ -166,7 +184,7 @@
                                 </div>
                             </div>
                             <p class="text-xs text-muted mb-3">
-                                <span x-text="selected.length"></span> selected
+                                <span x-text="selected.length"></span> selected — only active companies (≥ 20 members) are shown
                             </p>
                             <input type="text" x-model="search" placeholder="Search companies…"
                                    class="w-full rounded-lg border-border bg-surface text-text text-sm px-3 py-2 mb-3 focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
@@ -178,10 +196,13 @@
                                                :checked="selected.includes(item.id)"
                                                @change="toggle(item.id)"
                                                class="rounded border-border text-primary focus:ring-primary/30">
-                                        <span class="text-sm text-text" x-text="item.label"></span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm text-text" x-text="item.label"></span>
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-success/10 text-success">Active</span>
+                                        </div>
                                     </label>
                                 </template>
-                                <p x-show="filtered.length === 0" class="text-xs text-muted text-center py-4">No companies found.</p>
+                                <p x-show="filtered.length === 0" class="text-xs text-muted text-center py-4">No active companies found.</p>
                             </div>
                             @error('entity_ids') <p class="text-danger text-xs mt-2">{{ $message }}</p> @enderror
                         </div>

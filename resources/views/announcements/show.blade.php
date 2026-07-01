@@ -20,13 +20,10 @@
         @endphp
 
         <div class="bg-surface rounded-3xl shadow-lg border border-border overflow-hidden relative">
-            {{-- Decorative background --}}
-            <div class="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none">
-                <svg class="w-64 h-64" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
-            </div>
+
 
             {{-- Header --}}
-            <div class="p-8 sm:p-12 border-b border-border bg-background/30 relative z-10">
+            <div class="p-6 sm:p-8 border-b border-border bg-background/30 relative z-10">
                 <div class="flex flex-wrap items-center gap-3 mb-6">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest border {{ $style['bg'] }} {{ $style['text'] }} {{ $style['border'] }}">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $style['icon'] }}"></path></svg>
@@ -53,15 +50,15 @@
                         </span>
                     @endif
                 </div>
-                <h1 class="text-3xl sm:text-4xl font-black text-text mb-6 leading-tight tracking-tight">{{ $announcement->title }}</h1>
+                <h1 class="text-2xl sm:text-3xl font-black text-text mb-6 leading-tight tracking-tight">{{ $announcement->title }}</h1>
                 
-                <div class="flex flex-wrap items-center gap-6 bg-surface border border-border rounded-xl p-4 inline-flex shadow-sm">
+                <div class="flex flex-wrap items-center gap-6 mt-2">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-black text-lg">
                             {{ substr($announcement->creator?->name ?? 'S', 0, 1) }}
                         </div>
                         <div>
-                            <div class="text-sm font-black text-text">{{ $announcement->creator?->name ?? 'System' }}</div>
+                            <div class="text-sm font-bold text-text">{{ $announcement->creator?->name ?? 'System' }}</div>
                             <div class="text-xs font-medium text-muted">Author</div>
                         </div>
                     </div>
@@ -79,7 +76,7 @@
             </div>
 
             {{-- Content --}}
-            <div class="p-8 sm:p-12 text-text leading-loose text-[15px] relative z-10">
+            <div class="p-6 sm:p-8 text-text leading-loose text-[15px] relative z-10 min-h-[200px]">
                 <div class="prose prose-sm sm:prose-base max-w-none prose-headings:font-black prose-headings:text-text prose-a:text-primary prose-a:font-bold hover:prose-a:text-primary/80 prose-strong:font-black prose-strong:text-text">
                     {!! nl2br(e($announcement->content)) !!}
                 </div>
@@ -88,14 +85,11 @@
             {{-- Actions --}}
             <div class="p-6 border-t border-border bg-background/50 flex items-center justify-end gap-3 relative z-10">
                 @if(!$announcement->is_approved && auth()->user()->can('approve announcements'))
-                <form method="POST" action="{{ route('announcements.approve', $announcement) }}" class="inline">
-                    @csrf
-                    @method('PATCH')
-                    <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-500 text-white font-bold text-sm hover:bg-emerald-600 transition-all shadow-sm shadow-emerald-500/20">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        Approve Announcement
-                    </button>
-                </form>
+                <button type="button" @click="$dispatch('open-approve-modal', { action: '{{ route('announcements.approve', $announcement) }}', message: 'Are you sure you want to approve this announcement?' })"
+                        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-500 text-white font-bold text-sm hover:bg-emerald-600 transition-all shadow-sm shadow-emerald-500/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    Approve Announcement
+                </button>
                 @endif
 
             @if(auth()->user()->hasRole('Super Admin') || auth()->id() === $announcement->created_by)
@@ -113,4 +107,8 @@
             @endif
         </div>
     </div>
+
+    {{-- Confirmation Modals --}}
+    <x-delete-confirm-modal />
+    <x-approve-confirm-modal />
 </x-app-layout>

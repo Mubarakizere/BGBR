@@ -25,12 +25,15 @@ class RegistrationFeeController extends Controller
 
         $path = $request->file('receipt')->store('receipts', 'public');
 
-        $request->user()->registrationFees()->create([
+        $fee = $request->user()->registrationFees()->create([
             'amount' => $request->amount,
             'year' => now()->year,
             'receipt_path' => $path,
             'status' => 'pending',
         ]);
+
+        $approvers = \App\Models\User::permission('approve fees')->get();
+        \Illuminate\Support\Facades\Notification::send($approvers, new \App\Notifications\FeeSubmittedNotification($fee));
 
         return redirect()->route('fee.pay')->with('success', 'Fee payment proof submitted successfully and is pending approval.');
     }

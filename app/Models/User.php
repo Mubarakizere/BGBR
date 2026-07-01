@@ -91,4 +91,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(RegistrationFee::class);
     }
+
+    public function readAnnouncements()
+    {
+        return $this->belongsToMany(Announcement::class, 'announcement_user_read')->withTimestamps();
+    }
 }

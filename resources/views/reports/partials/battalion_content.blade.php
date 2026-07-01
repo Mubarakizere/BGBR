@@ -40,6 +40,24 @@
                             {{ $company['contribution_percentage'] }}%
                         </td>
                     </tr>
+                    @if(isset($company['members']) && count($company['members']) > 0)
+                    <tr>
+                        <td colspan="4" class="px-4 py-3 bg-background/30">
+                            <div class="text-xs font-bold text-muted uppercase mb-2">Members List</div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                @foreach($company['members'] as $member)
+                                    <div class="bg-surface border border-border p-2 rounded-lg text-xs">
+                                        <div class="font-bold text-text">{{ $member['name'] }}</div>
+                                        <div class="text-muted flex justify-between items-center mt-1">
+                                            <span>{{ $member['rank'] }}</span>
+                                            <span class="w-2 h-2 rounded-full {{ $member['registration_fee_paid'] ? 'bg-success' : 'bg-danger' }}" title="{{ $member['registration_fee_paid'] ? 'Paid' : 'Unpaid' }}"></span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </td>
+                    </tr>
+                    @endif
                     @endforeach
                 </tbody>
             </table>

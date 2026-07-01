@@ -32,6 +32,20 @@
                 @endif
 
                 @if(auth()->user()->hasRole(['Denomination Admin', 'Super Admin']))
+                <form action="{{ route('reports.store') }}" method="POST" class="flex gap-2 items-center">
+                    @csrf
+                    <input type="hidden" name="type" value="battalion_summary">
+                    <select name="battalion_id" required class="rounded-xl border-border bg-background focus:ring-primary focus:border-primary text-sm py-2.5 px-3">
+                        <option value="">Select Battalion</option>
+                        @foreach($battalions as $battalion)
+                            <option value="{{ $battalion->id }}">{{ $battalion->name }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-primary/20">
+                        Generate Battalion Report
+                    </button>
+                </form>
+
                 <form action="{{ route('reports.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="type" value="financial">

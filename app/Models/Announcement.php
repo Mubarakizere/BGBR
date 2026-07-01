@@ -86,4 +86,20 @@ class Announcement extends Model
             default      => collect(),
         };
     }
+
+    /**
+     * Users who have read this announcement.
+     */
+    public function readByUsers()
+    {
+        return $this->belongsToMany(User::class, 'announcement_user_read')->withTimestamps();
+    }
+
+    /**
+     * Check if a specific user has read the announcement.
+     */
+    public function isReadBy(User $user): bool
+    {
+        return $this->readByUsers()->where('user_id', $user->id)->exists();
+    }
 }

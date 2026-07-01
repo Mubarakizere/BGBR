@@ -70,6 +70,14 @@ class ReportGeneratorService
                 'total_members' => $cTotal,
                 'paid_members' => $cPaid,
                 'contribution_percentage' => $cPerc,
+                'members' => $users->map(function ($u) {
+                    return [
+                        'id' => $u->id,
+                        'name' => $u->name,
+                        'rank' => $u->roles->pluck('name')->first() ?? 'Member',
+                        'registration_fee_paid' => $u->fee_valid_until && $u->fee_valid_until >= now(),
+                    ];
+                })->toArray(),
             ];
         }
 

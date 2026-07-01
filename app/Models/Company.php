@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use App\Models\Scopes\TenantScope;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -53,5 +54,26 @@ class Company extends Model
     public function getIsActiveAttribute(): bool
     {
         return $this->members()->count() >= 20;
+    }
+
+    /**
+     * Scope: only active companies (>= 20 members).
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->whereHas('members', function ($q) {
+            // no extra condition — just count
+        }, '>=', 20);
+    }
+
+    /**
+     * Scope: only inactive companies (< 20 members).
+     */
+    public function scopeInactive(Builder $query): Builder
+    {
+        return $query->where(function ($q) {
+            $q->whereHas('members', function ($sub) {}, '<', 20)
+              ->orWhereDoesntHave('members');
+        });
     }
 }

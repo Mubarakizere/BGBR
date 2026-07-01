@@ -70,12 +70,19 @@ class MaterialsRequestController extends Controller
         ]);
 
         // Automatically assign company based on the captain's company
-        MaterialsRequest::create([
+        $materialsRequest = MaterialsRequest::create([
             'company_id' => $request->user()->company_id,
             'item_name'  => $request->item_name,
             'quantity'   => $request->quantity,
             'status'     => 'pending',
         ]);
+
+        $company = $materialsRequest->company;
+        $commanders = \App\Models\User::role('Battalion Commander')->where('battalion_id', $company->battalion_id)->get();
+        $superAdmins = \App\Models\User::role('Super Admin')->get();
+        $notifiables = $commanders->merge($superAdmins);
+        
+        \Illuminate\Support\Facades\Notification::send($notifiables, new \App\Notifications\NewMaterialRequestNotification($materialsRequest));
 
         return back()->with('success', 'Materials request submitted successfully.');
     }

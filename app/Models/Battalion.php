@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use App\Models\Scopes\TenantScope;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -41,6 +42,14 @@ class Battalion extends Model
         return $this->hasMany(Company::class);
     }
 
+    /**
+     * Only companies that are active (>= 20 members).
+     */
+    public function activeCompanies()
+    {
+        return $this->companies()->active();
+    }
+
     public function getContributionPercentageAttribute(): float
     {
         $totalMembers = 0;
@@ -58,5 +67,24 @@ class Battalion extends Model
     public function getIsActiveAttribute(): bool
     {
         return $this->companies()->count() >= 5;
+    }
+
+    /**
+     * Scope: only active battalions (>= 5 companies).
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->whereHas('companies', function ($q) {}, '>=', 5);
+    }
+
+    /**
+     * Scope: only inactive battalions (< 5 companies).
+     */
+    public function scopeInactive(Builder $query): Builder
+    {
+        return $query->where(function ($q) {
+            $q->whereHas('companies', function ($sub) {}, '<', 5)
+              ->orWhereDoesntHave('companies');
+        });
     }
 }

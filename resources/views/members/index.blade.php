@@ -3,7 +3,18 @@
         {{ __('Members Management') }}
     </x-slot>
 
-    <div class="py-8">
+    <div class="py-8" x-data="{
+        selectedMembers: [],
+        selectAll: false,
+        bulkAssignModal: false,
+        toggleAll() {
+            if (this.selectAll) {
+                this.selectedMembers = Array.from(document.querySelectorAll('.member-checkbox')).map(cb => cb.value);
+            } else {
+                this.selectedMembers = [];
+            }
+        }
+    }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Page Title Bar --}}
@@ -24,6 +35,13 @@
                             </a>
                         @endif
                     </form>
+
+                    <button x-show="selectedMembers.length > 0" x-transition x-cloak
+                            @click="bulkAssignModal = true"
+                            class="inline-flex justify-center items-center gap-2 px-5 py-2.5 bg-success text-white text-sm font-bold rounded-xl shadow-md shadow-success/20 hover:shadow-lg hover:shadow-success/30 hover:-translate-y-0.5 transition-all duration-200 whitespace-nowrap w-full sm:w-auto">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        Assign Company (<span x-text="selectedMembers.length"></span>)
+                    </button>
 
                     <a href="{{ route('members.create') }}"
                        class="inline-flex justify-center items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-200 whitespace-nowrap w-full sm:w-auto">
@@ -79,6 +97,9 @@
                     <table class="min-w-full divide-y divide-border" id="members-table">
                         <thead>
                             <tr class="bg-background">
+                                <th scope="col" class="px-6 py-4 w-10">
+                                    <input type="checkbox" x-model="selectAll" @change="toggleAll" class="rounded border-border text-primary focus:ring-primary/30 bg-background cursor-pointer w-4 h-4">
+                                </th>
                                 <th scope="col" class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted">Member</th>
                                 <th scope="col" class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted">Company</th>
                                 <th scope="col" class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-muted">Tenure</th>
@@ -89,6 +110,9 @@
                         <tbody class="divide-y divide-border">
                             @forelse ($members as $member)
                                 <tr class="hover:bg-primary/[0.02] transition-colors duration-150 group">
+                                    <td class="px-6 py-4">
+                                        <input type="checkbox" value="{{ $member->id }}" x-model="selectedMembers" class="member-checkbox rounded border-border text-primary focus:ring-primary/30 bg-background cursor-pointer w-4 h-4">
+                                    </td>
                                     {{-- Member Info --}}
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <a href="{{ route('members.show', $member) }}" class="flex items-center gap-3">
@@ -177,5 +201,61 @@
             </div>
 
         </div>
+        {{-- Bulk Assign Modal --}}
+        <div x-show="bulkAssignModal" class="fixed z-50 inset-0 overflow-y-auto" style="display: none;" x-cloak>
+            <div class="flex items-center justify-center min-h-screen px-4">
+                <div x-show="bulkAssignModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="bulkAssignModal = false"></div>
+
+                <div x-show="bulkAssignModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                     class="relative bg-surface rounded-2xl shadow-2xl max-w-lg w-full border border-border overflow-hidden z-10">
+
+                    <form action="{{ route('members.bulk-assign-company') }}" method="POST">
+                        @csrf
+                        <template x-for="id in selectedMembers" :key="id">
+                            <input type="hidden" name="member_ids[]" :value="id">
+                        </template>
+
+                        {{-- Modal Header --}}
+                        <div class="p-6 border-b border-border">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-success/80 to-success flex items-center justify-center text-white shadow-lg shadow-success/20">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-black text-text">Bulk Assign Company</h3>
+                                    <p class="text-sm text-muted mt-0.5">Assign a company to <strong x-text="selectedMembers.length" class="text-text"></strong> selected members</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Modal Body --}}
+                        <div class="p-6 space-y-5">
+                            <div>
+                                <label class="block text-sm font-bold text-text mb-2">Select Company</label>
+                                <select name="company_id" required class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm">
+                                    <option value="">-- Select Company --</option>
+                                    @foreach($companies as $company)
+                                        <option value="{{ $company->id }}">{{ $company->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- Modal Footer --}}
+                        <div class="p-6 border-t border-border bg-background/50 flex items-center justify-end gap-3">
+                            <button type="button" @click="bulkAssignModal = false" class="px-5 py-2.5 rounded-xl border border-border text-muted font-bold hover:bg-background transition-colors text-sm">Cancel</button>
+                            <button type="submit" class="bg-success hover:bg-success/90 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-success/20 text-sm inline-flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Assign Company
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
 </x-app-layout>

@@ -5,10 +5,20 @@
 
     <div class="px-6 py-8" x-data="{ 
         openModal: false, 
-        rejectModal: false, 
+        rejectModal: false,
+        bulkApproveModal: false,
         selectedUser: null, 
         selectedRole: 'Member',
-        searchQuery: '{{ request('search') }}'
+        searchQuery: '{{ request('search') }}',
+        selectedUsers: [],
+        selectAll: false,
+        toggleAll() {
+            if (this.selectAll) {
+                this.selectedUsers = Array.from(document.querySelectorAll('.user-checkbox')).map(cb => cb.value);
+            } else {
+                this.selectedUsers = [];
+            }
+        }
     }">
         {{-- Header --}}
         <div class="mb-8 flex items-center justify-between">
@@ -59,8 +69,8 @@
         @endif
 
         {{-- Search/Filter --}}
-        <div class="mb-6 bg-surface rounded-2xl shadow-sm border border-border p-4">
-            <form method="GET" action="{{ route('users.pending') }}" class="flex flex-wrap items-center gap-4">
+        <div class="mb-6 bg-surface rounded-2xl shadow-sm border border-border p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <form method="GET" action="{{ route('users.pending') }}" class="flex flex-wrap items-center gap-4 w-full sm:w-auto">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search pending users by name or email..."
                        class="flex-1 min-w-[250px] px-4 py-2.5 rounded-xl bg-background border border-border text-sm text-text focus:ring-2 focus:ring-primary/30 focus:border-primary placeholder:text-muted/50">
                 <button type="submit" class="bg-primary/10 text-primary font-bold py-2.5 px-5 rounded-xl hover:bg-primary/20 transition-colors text-sm">
@@ -70,6 +80,13 @@
                 <a href="{{ route('users.pending') }}" class="text-sm text-muted hover:text-text font-medium transition-colors">Clear</a>
                 @endif
             </form>
+
+            <button x-show="selectedUsers.length > 0" x-transition x-cloak
+                    @click="bulkApproveModal = true"
+                    class="bg-success hover:bg-success/90 text-white font-bold py-2.5 px-5 rounded-xl transition-all shadow-lg shadow-success/20 text-sm inline-flex items-center gap-2 w-full sm:w-auto justify-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Bulk Approve (<span x-text="selectedUsers.length"></span>)
+            </button>
         </div>
 
         {{-- Users Table --}}
@@ -93,6 +110,9 @@
                     <table class="w-full text-sm text-left">
                         <thead class="bg-background/50 text-xs text-muted uppercase font-black tracking-wider border-b border-border">
                             <tr>
+                                <th class="px-6 py-4 w-10">
+                                    <input type="checkbox" x-model="selectAll" @change="toggleAll" class="rounded border-border text-primary focus:ring-primary/30 bg-background cursor-pointer w-4 h-4">
+                                </th>
                                 <th class="px-6 py-4">User</th>
                                 <th class="px-6 py-4">Registered</th>
                                 <th class="px-6 py-4">Waiting</th>
@@ -102,6 +122,9 @@
                         <tbody class="divide-y divide-border">
                             @foreach($pendingUsers as $user)
                             <tr class="hover:bg-background/50 transition-colors group">
+                                <td class="px-6 py-4">
+                                    <input type="checkbox" value="{{ $user->id }}" x-model="selectedUsers" class="user-checkbox rounded border-border text-primary focus:ring-primary/30 bg-background cursor-pointer w-4 h-4">
+                                </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-warning/80 to-warning flex items-center justify-center text-white font-bold text-sm shadow-sm ring-2 ring-warning/20">
@@ -276,6 +299,93 @@
                             <button type="submit" class="bg-danger hover:bg-danger/90 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-danger/20 text-sm inline-flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                 Reject & Delete
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Bulk Approve Modal --}}
+        <div x-show="bulkApproveModal" class="fixed z-50 inset-0 overflow-y-auto" style="display: none;" x-cloak>
+            <div class="flex items-center justify-center min-h-screen px-4">
+                <div x-show="bulkApproveModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="bulkApproveModal = false"></div>
+
+                <div x-show="bulkApproveModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                     class="relative bg-surface rounded-2xl shadow-2xl max-w-lg w-full border border-border overflow-hidden z-10">
+
+                    <form action="{{ route('users.bulk-approve') }}" method="POST">
+                        @csrf
+                        <template x-for="id in selectedUsers" :key="id">
+                            <input type="hidden" name="user_ids[]" :value="id">
+                        </template>
+
+                        {{-- Modal Header --}}
+                        <div class="p-6 border-b border-border">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-success/80 to-success flex items-center justify-center text-white shadow-lg shadow-success/20">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-black text-text">Bulk Approve Users</h3>
+                                    <p class="text-sm text-muted mt-0.5">Assign a role and unit for <strong x-text="selectedUsers.length" class="text-text"></strong> selected users</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Modal Body --}}
+                        <div class="p-6 space-y-5">
+                            {{-- Role Selection --}}
+                            <div>
+                                <label class="block text-sm font-bold text-text mb-2">Assign Role</label>
+                                <select name="role" x-model="selectedRole" class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm">
+                                    @foreach($roles as $role)
+                                        <option value="{{ $role->name }}">{{ $role->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- Dynamic Fields --}}
+                            <div x-show="selectedRole === 'Denomination Admin'" x-cloak x-transition>
+                                <label class="block text-sm font-bold text-text mb-2">Select Denomination</label>
+                                <select name="denomination_id" class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm">
+                                    <option value="">-- Select Denomination --</option>
+                                    @foreach($denominations as $dom)
+                                        <option value="{{ $dom->id }}">{{ $dom->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div x-show="selectedRole === 'Battalion Commander'" x-cloak x-transition>
+                                <label class="block text-sm font-bold text-text mb-2">Select Battalion</label>
+                                <select name="battalion_id" class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm">
+                                    <option value="">-- Select Battalion --</option>
+                                    @foreach($battalions as $btn)
+                                        <option value="{{ $btn->id }}">{{ $btn->name }} ({{ $btn->denomination?->name ?? '—' }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div x-show="['Company Captain', 'Company Officer', 'Member'].includes(selectedRole)" x-cloak x-transition>
+                                <label class="block text-sm font-bold text-text mb-2">Select Company</label>
+                                <select name="company_id" class="w-full px-4 py-3 rounded-xl bg-background border border-border text-text focus:ring-2 focus:ring-primary/30 focus:border-primary text-sm">
+                                    <option value="">-- Select Company --</option>
+                                    @foreach($companies as $company)
+                                        <option value="{{ $company->id }}">{{ $company->name }} ({{ $company->battalion?->name ?? '—' }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- Modal Footer --}}
+                        <div class="p-6 border-t border-border bg-background/50 flex items-center justify-end gap-3">
+                            <button type="button" @click="bulkApproveModal = false" class="px-5 py-2.5 rounded-xl border border-border text-muted font-bold hover:bg-background transition-colors text-sm">Cancel</button>
+                            <button type="submit" class="bg-success hover:bg-success/90 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-success/20 text-sm inline-flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Approve Users
                             </button>
                         </div>
                     </form>

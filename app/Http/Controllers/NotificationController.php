@@ -25,6 +25,11 @@ class NotificationController extends Controller
             return redirect()->route('activities.show', $notification->data['activity_id']);
         }
 
+        // If a dynamic url is provided
+        if (isset($notification->data['url'])) {
+            return redirect($notification->data['url']);
+        }
+
         return back();
     }
 
@@ -36,5 +41,26 @@ class NotificationController extends Controller
         Auth::user()->unreadNotifications->markAsRead();
 
         return back()->with('success', 'All notifications marked as read.');
+    }
+
+    /**
+     * Fetch unread notifications for UI polling.
+     */
+    public function fetchUnread()
+    {
+        $notifications = Auth::user()->unreadNotifications()->latest()->take(10)->get();
+
+        return response()->json([
+            'count' => Auth::user()->unreadNotifications()->count(),
+            'notifications' => $notifications->map(function($notif) {
+                return [
+                    'id' => $notif->id,
+                    'title' => $notif->data['title'] ?? 'New Notification',
+                    'content_excerpt' => $notif->data['content_excerpt'] ?? '',
+                    'created_at' => $notif->created_at->diffForHumans(),
+                    'read_route' => route('notifications.read', $notif->id),
+                ];
+            })
+        ]);
     }
 }

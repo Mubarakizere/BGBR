@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-8" x-data="{ viewModalOpen: false, currentFileUrl: '', currentFileType: '' }">
+    <div class="py-8" x-data="{ viewModalOpen: false, currentFileUrl: '', currentFileType: '', approveModalOpen: false, rejectModalOpen: false, selectedFeeApproveUrl: '', selectedFeeRejectUrl: '' }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
                 <div class="p-6 border-b border-border flex justify-between items-center bg-background/50">
@@ -68,20 +68,12 @@
                                     <td class="py-4 px-6 text-right">
                                         @if($fee->status === 'pending')
                                             <div class="flex items-center justify-end gap-2">
-                                                <form action="{{ route('admin.fees.approve', $fee) }}" method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="p-2 bg-success/10 text-success hover:bg-success hover:text-white rounded-lg transition-colors tooltip-trigger" title="Approve">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                    </button>
-                                                </form>
-                                                <form action="{{ route('admin.fees.reject', $fee) }}" method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="p-2 bg-danger/10 text-danger hover:bg-danger hover:text-white rounded-lg transition-colors tooltip-trigger" title="Reject">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                    </button>
-                                                </form>
+                                                <button type="button" @click="selectedFeeApproveUrl = '{{ route('admin.fees.approve', $fee) }}'; approveModalOpen = true" class="p-2 bg-success/10 text-success hover:bg-success hover:text-white rounded-lg transition-colors tooltip-trigger" title="Approve">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                </button>
+                                                <button type="button" @click="selectedFeeRejectUrl = '{{ route('admin.fees.reject', $fee) }}'; rejectModalOpen = true" class="p-2 bg-danger/10 text-danger hover:bg-danger hover:text-white rounded-lg transition-colors tooltip-trigger" title="Reject">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                                </button>
                                             </div>
                                         @endif
                                     </td>
@@ -139,6 +131,79 @@
                         </a>
                         <button type="button" @click="viewModalOpen = false" class="px-5 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-colors text-sm shadow-md shadow-primary/20">Close</button>
                     </div>
+                </div>
+            </div>
+        </div>
+        {{-- Approve Confirmation Modal --}}
+        <div x-show="approveModalOpen" class="fixed z-50 inset-0 overflow-y-auto" style="display: none;" x-cloak>
+            <div class="flex items-center justify-center min-h-screen px-4">
+                <div x-show="approveModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="approveModalOpen = false"></div>
+
+                <div x-show="approveModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                     class="relative bg-surface rounded-2xl shadow-2xl max-w-md w-full border border-border overflow-hidden z-10">
+
+                    <form :action="selectedFeeApproveUrl" method="POST">
+                        @csrf
+                        @method('PATCH')
+
+                        <div class="p-6 text-center">
+                            <div class="mx-auto w-14 h-14 rounded-full bg-success/10 flex items-center justify-center mb-4">
+                                <svg class="w-7 h-7 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <h3 class="text-lg font-black text-text">Approve Fee?</h3>
+                            <p class="text-sm text-muted mt-2">
+                                Are you sure you want to approve this fee payment?
+                            </p>
+                        </div>
+
+                        <div class="p-6 border-t border-border bg-background/50 flex items-center justify-center gap-3">
+                            <button type="button" @click="approveModalOpen = false" class="px-5 py-2.5 rounded-xl border border-border text-muted font-bold hover:bg-background transition-colors text-sm">Cancel</button>
+                            <button type="submit" class="bg-success hover:bg-success/90 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-success/20 text-sm inline-flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                Approve
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{-- Reject Confirmation Modal --}}
+        <div x-show="rejectModalOpen" class="fixed z-50 inset-0 overflow-y-auto" style="display: none;" x-cloak>
+            <div class="flex items-center justify-center min-h-screen px-4">
+                <div x-show="rejectModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="rejectModalOpen = false"></div>
+
+                <div x-show="rejectModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                     class="relative bg-surface rounded-2xl shadow-2xl max-w-md w-full border border-border overflow-hidden z-10">
+
+                    <form :action="selectedFeeRejectUrl" method="POST">
+                        @csrf
+                        @method('PATCH')
+
+                        <div class="p-6 text-center">
+                            <div class="mx-auto w-14 h-14 rounded-full bg-danger/10 flex items-center justify-center mb-4">
+                                <svg class="w-7 h-7 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </div>
+                            <h3 class="text-lg font-black text-text">Decline Fee?</h3>
+                            <p class="text-sm text-muted mt-2">
+                                Are you sure you want to decline this fee payment?
+                            </p>
+                        </div>
+
+                        <div class="p-6 border-t border-border bg-background/50 flex items-center justify-center gap-3">
+                            <button type="button" @click="rejectModalOpen = false" class="px-5 py-2.5 rounded-xl border border-border text-muted font-bold hover:bg-background transition-colors text-sm">Cancel</button>
+                            <button type="submit" class="bg-danger hover:bg-danger/90 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-danger/20 text-sm inline-flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                Decline
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

@@ -9,6 +9,7 @@
                     <th>Total Members</th>
                     <th>Paid Members</th>
                     <th>Contribution %</th>
+                    <th>Members List</th>
                 </tr>
             </thead>
             <tbody>
@@ -18,6 +19,13 @@
                     <td>{{ $company['total_members'] }}</td>
                     <td>{{ $company['paid_members'] }}</td>
                     <td>{{ $company['contribution_percentage'] }}%</td>
+                    <td>
+                        @if(isset($company['members']))
+                            @foreach($company['members'] as $member)
+                                {{ $member['name'] }} ({{ $member['rank'] }} - {{ $member['registration_fee_paid'] ? 'Paid' : 'Unpaid' }}){{ !$loop->last ? ', ' : '' }}
+                            @endforeach
+                        @endif
+                    </td>
                 </tr>
                 @endforeach
             </tbody>
@@ -40,7 +48,7 @@
             </tr>
         </table>
 
-        <h3>Company Breakdown</h3>
+        <h3>Company Breakdown & Members</h3>
         <table class="data-table">
             <thead>
                 <tr>
@@ -52,12 +60,24 @@
             </thead>
             <tbody>
                 @foreach($report->content['companies'] as $company)
-                <tr>
+                <tr style="background-color: #f8fafc; font-weight: bold;">
                     <td>{{ $company['name'] }}</td>
                     <td>{{ $company['total_members'] }}</td>
                     <td>{{ $company['paid_members'] }}</td>
                     <td>{{ $company['contribution_percentage'] }}%</td>
                 </tr>
+                @if(isset($company['members']) && count($company['members']) > 0)
+                <tr>
+                    <td colspan="4">
+                        <div style="font-size: 10px; margin-top: 4px; margin-bottom: 8px;">
+                            <strong>Members:</strong> 
+                            @foreach($company['members'] as $member)
+                                {{ $member['name'] }} <span style="color: #64748b;">({{ $member['rank'] }}, {{ $member['registration_fee_paid'] ? 'Paid' : 'Unpaid' }})</span>{{ !$loop->last ? ' • ' : '' }}
+                            @endforeach
+                        </div>
+                    </td>
+                </tr>
+                @endif
                 @endforeach
             </tbody>
         </table>

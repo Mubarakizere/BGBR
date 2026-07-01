@@ -106,13 +106,24 @@ class ReportController extends Controller
             $report->entity_id = $company->id;
             $report->type = 'company_summary';
             $report->content = $this->reportService->generateCompanySnapshot($company);
-        } elseif ($type === 'battalion_summary' && $user->battalion_id) {
-            $battalion = Battalion::find($user->battalion_id);
-            $report->title = 'Battalion Report: ' . $battalion->name;
-            $report->level = 'battalion';
-            $report->entity_id = $battalion->id;
-            $report->type = 'battalion_summary';
-            $report->content = $this->reportService->generateBattalionSnapshot($battalion);
+        } elseif ($type === 'battalion_summary') {
+            $battalionId = null;
+            if ($user->hasRole('Battalion Commander') && $user->battalion_id) {
+                $battalionId = $user->battalion_id;
+            } elseif ($user->hasRole(['Super Admin', 'Denomination Admin']) && $request->filled('battalion_id')) {
+                $battalionId = $request->input('battalion_id');
+            }
+
+            if ($battalionId) {
+                $battalion = Battalion::find($battalionId);
+                $report->title = 'Battalion Report: ' . $battalion->name;
+                $report->level = 'battalion';
+                $report->entity_id = $battalion->id;
+                $report->type = 'battalion_summary';
+                $report->content = $this->reportService->generateBattalionSnapshot($battalion);
+            } else {
+                return back()->with('error', 'Unauthorized or missing battalion selection.');
+            }
         } elseif ($type === 'financial' && ($user->hasRole('Super Admin') || $user->hasRole('Denomination Admin'))) {
             $report->title = 'Global Financial Report';
             $report->level = 'financial';

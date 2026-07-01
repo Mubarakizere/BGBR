@@ -48,6 +48,9 @@ class RegisteredUserController extends Controller
         
         $user->notify(new \App\Notifications\RegistrationConfirmation());
 
+        $admins = \App\Models\User::role(['Super Admin', 'Denomination Admin'])->get();
+        \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewUserPendingApprovalNotification($user));
+
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));

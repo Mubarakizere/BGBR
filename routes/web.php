@@ -62,10 +62,12 @@ Route::middleware(['auth', 'verified', 'approved', 'fee_paid'])->group(function 
 
     // User Approvals
     Route::get('/admin/users/pending', [UserApprovalController::class, 'index'])->name('users.pending')->middleware('can:manage users');
+    Route::post('/admin/users/bulk-approve', [UserApprovalController::class, 'bulkApprove'])->name('users.bulk-approve')->middleware('can:manage users');
     Route::patch('/admin/users/{user}/approve', [UserApprovalController::class, 'update'])->name('users.approve')->middleware('can:manage users');
     Route::delete('/admin/users/{user}/reject', [UserApprovalController::class, 'reject'])->name('users.reject')->middleware('can:manage users');
 
     // Members
+    Route::post('/members/bulk-assign-company', [MemberController::class, 'bulkAssignCompany'])->name('members.bulk-assign-company');
     Route::resource('members', MemberController::class);
 
     // Activities
@@ -82,8 +84,12 @@ Route::middleware(['auth', 'verified', 'approved', 'fee_paid'])->group(function 
     // Participation
     Route::post('activities/{activity}/participants', [ParticipationController::class, 'store'])
         ->name('activities.participants.store');
+    Route::post('activities/{activity}/participants/bulk', [ParticipationController::class, 'bulkStore'])
+        ->name('activities.participants.bulk-store');
     Route::patch('activities/{activity}/participants/{member}/pay', [ParticipationController::class, 'markPaid'])
         ->name('activities.participants.pay');
+    Route::patch('activities/{activity}/participants/bulk-pay', [ParticipationController::class, 'bulkMarkPaid'])
+        ->name('activities.participants.bulk-pay');
     Route::delete('activities/{activity}/participants/{member}', [ParticipationController::class, 'remove'])
         ->name('activities.participants.remove');
 
@@ -94,6 +100,7 @@ Route::middleware(['auth', 'verified', 'approved', 'fee_paid'])->group(function 
     // Notifications
     Route::patch('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
     Route::patch('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::get('/notifications/fetch', [\App\Http\Controllers\NotificationController::class, 'fetchUnread'])->name('notifications.fetch');
 
     // User Management (Super Admin + Denomination Admin)
     Route::get('/admin/users', [UserController::class, 'index'])->name('users.index')->middleware('can:manage users');
