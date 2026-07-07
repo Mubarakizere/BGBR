@@ -71,14 +71,14 @@
                         </div>
 
                         @can('update', $activity)
-                        <div class="flex items-center gap-2 shrink-0">
-                            <a href="{{ route('activities.edit', $activity) }}" class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-bold py-2 px-4 rounded-xl text-sm transition backdrop-blur-sm">
+                        <div class="flex flex-wrap items-center gap-2 shrink-0 mt-4 sm:mt-0">
+                            <a href="{{ route('activities.edit', $activity) }}" class="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white font-bold py-2 px-4 rounded-xl text-sm transition backdrop-blur-sm whitespace-nowrap">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                 Edit
                             </a>
                             <form method="POST" action="{{ route('activities.destroy', $activity) }}" x-ref="deleteActivityForm">
                                 @csrf @method('DELETE')
-                                <button type="button" @click="$dispatch('open-delete-modal', { action: '{{ route('activities.destroy', $activity) }}', message: 'Are you sure you want to delete this activity? All participation records will be removed.' })" class="inline-flex items-center gap-2 bg-danger/20 hover:bg-danger/40 text-white font-bold py-2 px-4 rounded-xl text-sm transition backdrop-blur-sm">
+                                <button type="button" @click="$dispatch('open-delete-modal', { action: '{{ route('activities.destroy', $activity) }}', message: 'Are you sure you want to delete this activity? All participation records will be removed.' })" class="inline-flex items-center gap-2 bg-danger/20 hover:bg-danger/40 text-white font-bold py-2 px-4 rounded-xl text-sm transition backdrop-blur-sm whitespace-nowrap">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     Delete
                                 </button>
@@ -179,19 +179,19 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-background/50 border-b border-border">
-                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest">Company</th>
-                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest">Status</th>
-                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest text-center">Members</th>
-                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest text-center">Registered</th>
-                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest text-center">Paid</th>
-                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest text-center">Unpaid</th>
-                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest">Collection</th>
+                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest whitespace-nowrap">Company</th>
+                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest whitespace-nowrap">Status</th>
+                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest text-center whitespace-nowrap">Members</th>
+                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest text-center whitespace-nowrap">Registered</th>
+                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest text-center whitespace-nowrap">Paid</th>
+                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest text-center whitespace-nowrap">Unpaid</th>
+                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest whitespace-nowrap">Collection</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-border">
                             @foreach($companyBreakdown as $row)
                             <tr class="hover:bg-background/50 transition-colors">
-                                <td class="px-6 py-3">
+                                <td class="px-6 py-3 whitespace-nowrap">
                                     <div class="flex flex-col">
                                         <span class="text-sm font-bold text-text">{{ $row['company']->name }}</span>
                                         @if($row['company']->battalion)
@@ -199,7 +199,7 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td class="px-6 py-3 whitespace-nowrap">
                                     @if($row['is_active'])
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase bg-success/10 text-success">
                                         <span class="w-1.5 h-1.5 rounded-full bg-success"></span> Active
@@ -232,12 +232,12 @@
                         {{-- Totals Row --}}
                         <tfoot>
                             <tr class="bg-background/70 border-t-2 border-border font-bold">
-                                <td class="px-6 py-3 text-sm text-text" colspan="2">Total</td>
-                                <td class="px-6 py-3 text-center text-sm text-muted">{{ collect($companyBreakdown)->sum('total_members') }}</td>
-                                <td class="px-6 py-3 text-center text-sm text-text">{{ collect($companyBreakdown)->sum('registered') }}</td>
-                                <td class="px-6 py-3 text-center text-sm text-success">{{ collect($companyBreakdown)->sum('paid') }}</td>
-                                <td class="px-6 py-3 text-center text-sm text-danger">{{ collect($companyBreakdown)->sum('unpaid') }}</td>
-                                <td class="px-6 py-3">
+                                <td class="px-6 py-3 text-sm text-text whitespace-nowrap" colspan="2">Total</td>
+                                <td class="px-6 py-3 text-center text-sm text-muted whitespace-nowrap">{{ collect($companyBreakdown)->sum('total_members') }}</td>
+                                <td class="px-6 py-3 text-center text-sm text-text whitespace-nowrap">{{ collect($companyBreakdown)->sum('registered') }}</td>
+                                <td class="px-6 py-3 text-center text-sm text-success whitespace-nowrap">{{ collect($companyBreakdown)->sum('paid') }}</td>
+                                <td class="px-6 py-3 text-center text-sm text-danger whitespace-nowrap">{{ collect($companyBreakdown)->sum('unpaid') }}</td>
+                                <td class="px-6 py-3 whitespace-nowrap">
                                     @php
                                         $totalExp = collect($companyBreakdown)->sum('expected_fees');
                                         $totalCol = collect($companyBreakdown)->sum('collected_fees');
@@ -363,14 +363,14 @@
 
                     {{-- Filters --}}
                     @if($activity->members->count() > 0)
-                    <div class="flex items-center gap-2">
-                        <button type="button" @click="feeFilter = 'all'" :class="feeFilter === 'all' ? 'bg-primary/10 text-primary border-primary/30' : 'bg-background text-muted border-border'" class="text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" @click="feeFilter = 'all'" :class="feeFilter === 'all' ? 'bg-primary/10 text-primary border-primary/30' : 'bg-background text-muted border-border'" class="text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors whitespace-nowrap">
                             All ({{ $totalParticipants }})
                         </button>
-                        <button type="button" @click="feeFilter = 'paid'" :class="feeFilter === 'paid' ? 'bg-success/10 text-success border-success/30' : 'bg-background text-muted border-border'" class="text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors">
+                        <button type="button" @click="feeFilter = 'paid'" :class="feeFilter === 'paid' ? 'bg-success/10 text-success border-success/30' : 'bg-background text-muted border-border'" class="text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors whitespace-nowrap">
                             Paid ({{ $paidCount }})
                         </button>
-                        <button type="button" @click="feeFilter = 'unpaid'" :class="feeFilter === 'unpaid' ? 'bg-danger/10 text-danger border-danger/30' : 'bg-background text-muted border-border'" class="text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors">
+                        <button type="button" @click="feeFilter = 'unpaid'" :class="feeFilter === 'unpaid' ? 'bg-danger/10 text-danger border-danger/30' : 'bg-background text-muted border-border'" class="text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors whitespace-nowrap">
                             Unpaid ({{ $unpaidCount }})
                         </button>
                     </div>
@@ -382,14 +382,14 @@
                 {{-- Bulk Pay Action --}}
                 @can('markPayment', App\Models\Activity::class)
                 @if($unpaidCount > 0)
-                <div class="px-6 py-3 bg-background/50 border-b border-border flex items-center justify-between" x-show="bulkPayIds.length > 0" x-cloak x-transition.opacity>
+                <div class="px-6 py-3 bg-background/50 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3" x-show="bulkPayIds.length > 0" x-cloak x-transition.opacity>
                     <p class="text-xs text-muted"><span class="font-bold text-text" x-text="bulkPayIds.length"></span> participant(s) selected</p>
                     <form method="POST" action="{{ route('activities.participants.bulk-pay', $activity) }}" x-ref="bulkPayForm">
                         @csrf @method('PATCH')
                         <template x-for="id in bulkPayIds" :key="id">
                             <input type="hidden" name="member_ids[]" :value="id">
                         </template>
-                        <button type="submit" class="inline-flex items-center gap-1 text-xs font-bold text-success hover:text-white bg-success/10 hover:bg-success px-3 py-1.5 rounded-lg transition-all">
+                        <button type="submit" class="inline-flex items-center gap-1 text-xs font-bold text-success hover:text-white bg-success/10 hover:bg-success px-3 py-1.5 rounded-lg transition-all whitespace-nowrap">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                             Mark Selected as Paid
                         </button>
@@ -403,17 +403,17 @@
                         <thead class="bg-background">
                             <tr>
                                 @can('markPayment', App\Models\Activity::class)
-                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest w-10">
+                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest w-10 whitespace-nowrap">
                                     <input type="checkbox" @change="toggleAllPay($event)" class="rounded border-border text-primary focus:ring-primary/30">
                                 </th>
                                 @endcan
-                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest">#</th>
-                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest">Member</th>
-                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest">Rank</th>
-                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest">Company</th>
-                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest">Fee Status</th>
-                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest">Payment Date</th>
-                                <th class="px-6 py-3 text-right text-[10px] font-bold text-muted uppercase tracking-widest">Actions</th>
+                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest whitespace-nowrap">#</th>
+                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest whitespace-nowrap">Member</th>
+                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest whitespace-nowrap">Rank</th>
+                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest whitespace-nowrap">Company</th>
+                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest whitespace-nowrap">Fee Status</th>
+                                <th class="px-6 py-3 text-left text-[10px] font-bold text-muted uppercase tracking-widest whitespace-nowrap">Payment Date</th>
+                                <th class="px-6 py-3 text-right text-[10px] font-bold text-muted uppercase tracking-widest whitespace-nowrap">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-border">
@@ -427,8 +427,8 @@
                                     @endif
                                 </td>
                                 @endcan
-                                <td class="px-6 py-4 text-sm text-muted">{{ $index + 1 }}</td>
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 text-sm text-muted whitespace-nowrap">{{ $index + 1 }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-3">
                                         <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
                                             {{ strtoupper(substr($member->name, 0, 2)) }}
@@ -436,8 +436,8 @@
                                         <span class="text-sm font-semibold text-text">{{ $member->name }}</span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-sm text-muted">{{ $member->rank }}</td>
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 text-sm text-muted whitespace-nowrap">{{ $member->rank }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center gap-1.5">
                                         <span class="text-sm text-muted">{{ $member->company->name ?? '—' }}</span>
                                         @if($member->company)
@@ -462,16 +462,16 @@
                                     </span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 text-sm text-muted">
+                                <td class="px-6 py-4 text-sm text-muted whitespace-nowrap">
                                     {{ $member->pivot->payment_date ? \Carbon\Carbon::parse($member->pivot->payment_date)->format('M d, Y') : '—' }}
                                 </td>
-                                <td class="px-6 py-4 text-right">
+                                <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="flex items-center justify-end gap-2">
                                         @can('markPayment', App\Models\Activity::class)
                                             @if(!$member->pivot->fee_paid)
                                             <form method="POST" action="{{ route('activities.participants.pay', [$activity, $member]) }}">
                                                 @csrf @method('PATCH')
-                                                <button type="button" @click="$dispatch('open-delete-modal', { action: '{{ route('activities.participants.pay', [$activity, $member]) }}', method: 'PATCH', message: 'Mark fee as paid for {{ $member->name }}? This will create a national account deposit of {{ number_format($activity->participation_fee, 0) }} RWF.' })" class="inline-flex items-center gap-1 text-xs font-bold text-success hover:text-white bg-success/10 hover:bg-success px-3 py-1.5 rounded-lg transition-all">
+                                                <button type="button" @click="$dispatch('open-approve-modal', { action: '{{ route('activities.participants.pay', [$activity, $member]) }}', method: 'PATCH', message: 'Mark fee as paid for {{ $member->name }}? This will create a national account deposit of {{ number_format($activity->participation_fee, 0) }} RWF.' })" class="inline-flex items-center gap-1 text-xs font-bold text-success hover:text-white bg-success/10 hover:bg-success px-3 py-1.5 rounded-lg transition-all">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                                     Mark Paid
                                                 </button>
