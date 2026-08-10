@@ -44,6 +44,12 @@ class RegisteredUserController extends Controller
 
         $user->assignRole('Member');
 
+        \App\Models\Member::create([
+            'name' => $user->name,
+            'rank' => 'Member',
+            'user_id' => $user->id,
+        ]);
+
         event(new Registered($user));
         
         $user->notify(new \App\Notifications\RegistrationConfirmation());
