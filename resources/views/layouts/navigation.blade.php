@@ -73,14 +73,14 @@ Announcements
                 </a>
 
                 {{-- ── Activities ── --}}
-                @if(auth()->user()->can('manage activities') || auth()->user()->can('submit activity participation'))
+                @can('viewAny', App\Models\Activity::class)
                     @php $isAct = request()->routeIs('activities.*'); @endphp
                     <a href="{{ route('activities.index') }}"
                        class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
                               {{ $isAct ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
 Activities
                     </a>
-                @endif
+                @endcan
             </div>
 
             {{-- ── ORGANIZATION GROUP (collapsible) ── --}}
