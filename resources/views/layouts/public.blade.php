@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'BGBR Rwanda — Sure & Steadfast')</title>
+    <title>@yield('title', 'Boys and Girls Brigade Rwanda — Sure & Steadfast')</title>
     <meta name="description" content="@yield('meta_description', 'The Boys\' and Girls\' Brigade Rwanda — Empowering youth through Christian values, leadership, and discipline.')">
 
     <!-- Favicon -->
@@ -232,7 +232,7 @@
 
         /* ===== FOOTER ===== */
         .pub-footer {
-            background: linear-gradient(135deg, #0a0f3a 0%, var(--primary-dark) 50%, var(--primary) 100%);
+            background: var(--primary-dark);
             color: white;
             padding: 80px 24px 32px;
         }
@@ -495,8 +495,8 @@
     <nav class="pub-nav" id="pubNav">
         <div class="pub-nav-inner">
             <a href="{{ route('site.home') }}" class="pub-nav-logo">
-                <img src="{{ asset('images/logo.jpg') }}" alt="BGBR Logo" />
-                <span>BGBR</span>
+                <img src="{{ asset('images/logo.jpg') }}" alt="Boys and Girls Brigade Logo" />
+                <span>Boys and Girls Brigade</span>
             </a>
 
             <ul class="pub-nav-links">
@@ -506,6 +506,7 @@
                 <li><a href="{{ route('site.news') }}" class="{{ request()->routeIs('site.news*') ? 'active' : '' }}">News</a></li>
                 <li><a href="{{ route('site.gallery') }}" class="{{ request()->routeIs('site.gallery') ? 'active' : '' }}">Gallery</a></li>
                 <li><a href="{{ route('site.faq') }}" class="{{ request()->routeIs('site.faq') ? 'active' : '' }}">FAQ</a></li>
+                <li><a href="{{ route('login') }}">Portal Login</a></li>
                 <li><a href="{{ route('site.contact') }}" class="pub-nav-cta">Contact Us</a></li>
             </ul>
 
@@ -526,6 +527,7 @@
             <a href="{{ route('site.news') }}" class="{{ request()->routeIs('site.news*') ? 'active' : '' }}">News</a>
             <a href="{{ route('site.gallery') }}" class="{{ request()->routeIs('site.gallery') ? 'active' : '' }}">Gallery</a>
             <a href="{{ route('site.faq') }}" class="{{ request()->routeIs('site.faq') ? 'active' : '' }}">FAQ</a>
+            <a href="{{ route('login') }}">Portal Login</a>
             <a href="{{ route('site.donate') }}" class="{{ request()->routeIs('site.donate') ? 'active' : '' }}">Donate</a>
             <a href="{{ route('site.contact') }}" class="{{ request()->routeIs('site.contact') ? 'active' : '' }}">Contact Us</a>
         </div>
@@ -539,9 +541,9 @@
         <div class="pub-footer-grid">
             <div class="pub-footer-brand">
                 <div style="display:flex;align-items:center;gap:12px;">
-                    <img src="{{ asset('images/logo.jpg') }}" alt="BGBR" style="width:48px;height:48px;border-radius:14px;object-fit:contain;background:white;padding:4px;">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="Boys and Girls Brigade" style="width:48px;height:48px;border-radius:14px;object-fit:contain;background:white;padding:4px;">
                     <div>
-                        <div style="font-weight:800;font-size:1.1rem;">BGBR Rwanda</div>
+                        <div style="font-weight:800;font-size:1.1rem;">Boys and Girls Brigade Rwanda</div>
                         <div style="font-size:0.75rem;color:var(--secondary);font-weight:600;">Sure & Steadfast</div>
                     </div>
                 </div>
@@ -569,7 +571,7 @@
             </div>
         </div>
         <div class="pub-footer-bottom">
-            <span>&copy; {{ date('Y') }} BGBR Rwanda. All rights reserved.</span>
+            <span>&copy; {{ date('Y') }} Boys and Girls Brigade Rwanda. All rights reserved.</span>
             <span>Sure & Steadfast</span>
         </div>
     </footer>

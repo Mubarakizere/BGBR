@@ -36,9 +36,14 @@ class MaterialsRequestController extends Controller
         $approvedCount = (clone $statsQuery)->whereIn('status', ['approved', 'fulfilled'])->count();
         $rejectedCount = (clone $statsQuery)->where('status', 'rejected')->count();
 
-        // ── 3. Apply Server-Side Filters ───────────────────────
         if ($request->filled('search')) {
-            $query->where('item_name', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('item_name', 'like', "%{$search}%")
+                  ->orWhereHas('company', function($subQuery) use ($search) {
+                      $subQuery->where('name', 'like', "%{$search}%");
+                  });
+            });
         }
 
         if ($request->filled('status')) {

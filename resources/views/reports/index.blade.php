@@ -5,51 +5,52 @@
 
     <div class="px-6 py-8">
         {{-- Actions --}}
-        <div class="mb-8 bg-surface rounded-2xl shadow-sm border border-border p-6 flex items-center justify-between">
-            <div>
-                <h2 class="text-lg font-black text-text mb-1">Generate New Report</h2>
+        <div class="mb-8 bg-surface rounded-2xl shadow-sm border border-border p-6 flex flex-col xl:flex-row gap-6 justify-between items-start xl:items-center">
+            <div class="max-w-2xl">
+                <h2 class="text-lg font-black text-text mb-2">Generate New Report</h2>
                 <p class="text-sm text-muted">Create a new point-in-time snapshot report.</p>
             </div>
-            <div class="flex gap-4">
+            
+            <div class="flex flex-wrap gap-4 w-full xl:w-auto">
                 @if(auth()->user()->hasRole(['Company Captain', 'Company Officer']) && auth()->user()->company_id)
-                <form action="{{ route('reports.store') }}" method="POST">
+                <form action="{{ route('reports.store') }}" method="POST" class="flex">
                     @csrf
                     <input type="hidden" name="type" value="company_summary">
-                    <button type="submit" class="bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-primary/20">
+                    <button type="submit" class="bg-primary hover:bg-primary/90 text-white font-bold py-2 px-5 rounded-xl transition-all shadow-lg shadow-primary/20 h-[42px] whitespace-nowrap flex items-center justify-center text-sm">
                         Generate Company Report
                     </button>
                 </form>
                 @endif
 
                 @if(auth()->user()->hasRole('Battalion Commander') && auth()->user()->battalion_id)
-                <form action="{{ route('reports.store') }}" method="POST">
+                <form action="{{ route('reports.store') }}" method="POST" class="flex">
                     @csrf
                     <input type="hidden" name="type" value="battalion_summary">
-                    <button type="submit" class="bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-primary/20">
+                    <button type="submit" class="bg-primary hover:bg-primary/90 text-white font-bold py-2 px-5 rounded-xl transition-all shadow-lg shadow-primary/20 h-[42px] whitespace-nowrap flex items-center justify-center text-sm">
                         Generate Battalion Report
                     </button>
                 </form>
                 @endif
 
                 @if(auth()->user()->hasRole(['Denomination Admin', 'Super Admin']))
-                <form action="{{ route('reports.store') }}" method="POST" class="flex gap-2 items-center">
+                <form action="{{ route('reports.store') }}" method="POST" class="flex flex-wrap sm:flex-nowrap gap-2 items-center">
                     @csrf
                     <input type="hidden" name="type" value="battalion_summary">
-                    <select name="battalion_id" required class="rounded-xl border-border bg-background focus:ring-primary focus:border-primary text-sm py-2.5 px-3">
+                    <select name="battalion_id" required class="rounded-xl border-border bg-background focus:ring-primary focus:border-primary text-sm py-2 px-3 h-[42px] w-full sm:w-auto min-w-[160px]">
                         <option value="">Select Battalion</option>
                         @foreach($battalions as $battalion)
                             <option value="{{ $battalion->id }}">{{ $battalion->name }}</option>
                         @endforeach
                     </select>
-                    <button type="submit" class="bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-primary/20">
+                    <button type="submit" class="bg-primary hover:bg-primary/90 text-white font-bold py-2 px-5 rounded-xl transition-all shadow-lg shadow-primary/20 h-[42px] whitespace-nowrap flex items-center justify-center text-sm w-full sm:w-auto">
                         Generate Battalion Report
                     </button>
                 </form>
 
-                <form action="{{ route('reports.store') }}" method="POST">
+                <form action="{{ route('reports.store') }}" method="POST" class="flex">
                     @csrf
                     <input type="hidden" name="type" value="financial">
-                    <button type="submit" class="bg-success hover:bg-success/90 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-lg shadow-success/20">
+                    <button type="submit" class="bg-success hover:bg-success/90 text-white font-bold py-2 px-5 rounded-xl transition-all shadow-lg shadow-success/20 h-[42px] whitespace-nowrap flex items-center justify-center text-sm w-full sm:w-auto">
                         Generate Financial Report
                     </button>
                 </form>

@@ -10,10 +10,23 @@ use Illuminate\Support\Facades\Gate;
 
 class CompanyController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         Gate::authorize('viewAny', Company::class);
-        $companies = Company::with(['battalion', 'officers'])->orderBy('name')->paginate(15)->withQueryString();
+        
+        $query = Company::with(['battalion', 'officers'])->withCount('members')->orderBy('name');
+        
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhereHas('battalion', function($subQuery) use ($search) {
+                      $subQuery->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
+        $companies = $query->paginate(15)->withQueryString();
         $battalions = Battalion::with('denomination')->orderBy('name')->get();
         $users = User::orderBy('name')->get();
         return view('companies.index', compact('companies', 'battalions', 'users'));

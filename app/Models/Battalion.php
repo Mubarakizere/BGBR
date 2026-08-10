@@ -69,6 +69,8 @@ class Battalion extends Model
         return $this->companies()->count() >= 5;
     }
 
+
+
     /**
      * Scope: only active battalions (>= 5 companies).
      */

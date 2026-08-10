@@ -10,7 +10,7 @@
         <meta name="theme-color" content="#1E2FA3">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <meta name="apple-mobile-web-app-title" content="BGBR">
+        <meta name="apple-mobile-web-app-title" content="Boys and Girls Brigade">
         <link rel="apple-touch-icon" href="{{ asset('images/icon-192x192.png') }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
@@ -22,7 +22,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased text-text bg-background overflow-hidden" x-data="{ sidebarOpen: false }">
+    <body class="font-sans antialiased text-text bg-background overflow-hidden" x-data="{ sidebarOpen: false, searchModalOpen: false }" @keydown.window.ctrl.k.prevent="searchModalOpen = true" @keydown.window.meta.k.prevent="searchModalOpen = true">
         <div class="h-screen flex w-full">
             <!-- Sidebar Navigation -->
             @include('layouts.navigation')
@@ -50,6 +50,14 @@
 
                         <!-- Action Buttons -->
                         <div class="flex items-center gap-4">
+                            <!-- Global Search Trigger -->
+                            <button @click="searchModalOpen = true" class="hidden sm:flex relative items-center w-48 lg:w-64 pl-10 pr-4 py-2 bg-background border border-border rounded-full text-sm font-medium text-muted hover:border-primary hover:text-text transition-all shadow-sm text-left group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="w-4 h-4 text-muted group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                </div>
+                                <span class="flex-1">Search...</span>
+                                <kbd class="hidden xl:inline-block text-[10px] font-semibold bg-surface border border-border rounded px-1.5 py-0.5 text-muted shadow-sm">Ctrl K</kbd>
+                            </button>
                             <!-- Notification Bell -->
                             <div class="relative" x-data="{ showNotifications: false }" @click.outside="showNotifications = false">
                                 <button @click="showNotifications = !showNotifications" class="relative p-2 text-muted hover:text-primary transition rounded-full hover:bg-primary/10">
@@ -134,6 +142,112 @@
         </div>
         {{-- Global Delete Confirmation Modal --}}
         <x-delete-confirm-modal />
+
+        {{-- Global Search Modal --}}
+        <div x-show="searchModalOpen" style="display: none;" class="fixed inset-0 z-[100] overflow-y-auto p-4 sm:p-6 md:p-20" role="dialog" aria-modal="true"
+             x-data="{ 
+                 query: '', 
+                 results: { battalions: [], companies: [], members: [] }, 
+                 loading: false,
+                 fetchResults() {
+                     if (this.query.length < 2) {
+                         this.results = { battalions: [], companies: [], members: [] };
+                         return;
+                     }
+                     this.loading = true;
+                     fetch('{{ route('search.index') }}?q=' + encodeURIComponent(this.query), {
+                         headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+                     })
+                     .then(res => res.json())
+                     .then(data => {
+                         this.results = data;
+                         this.loading = false;
+                     });
+                 }
+             }">
+            
+            <div x-show="searchModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" @click="searchModalOpen = false"></div>
+
+            <div x-show="searchModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-95 translate-y-4 sm:translate-y-0" x-transition:enter-end="opacity-100 scale-100 translate-y-0" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100 translate-y-0" x-transition:leave-end="opacity-0 scale-95 translate-y-4 sm:translate-y-0" class="mx-auto max-w-2xl transform divide-y divide-border overflow-hidden rounded-2xl bg-surface shadow-2xl ring-1 ring-black ring-opacity-5 transition-all relative z-10 mt-10 sm:mt-20" @click.stop>
+                
+                <div class="relative">
+                    <svg class="pointer-events-none absolute left-4 top-3.5 h-5 w-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" x-model.debounce.300ms="query" @input="fetchResults" x-ref="searchInput" class="h-14 w-full border-0 bg-transparent pl-11 pr-4 text-text placeholder:text-muted focus:ring-0 sm:text-base outline-none font-medium" placeholder="Search battalions, companies, members..." autocomplete="off" @keydown.escape="searchModalOpen = false" x-init="$watch('searchModalOpen', value => { if (value) { setTimeout(() => $refs.searchInput.focus(), 100); } else { query = ''; results = { battalions: [], companies: [], members: [] }; } })">
+                </div>
+
+                <!-- Results -->
+                <div x-show="query.length > 0" class="max-h-[60vh] overflow-y-auto p-3" style="display: none;">
+                    
+                    <div x-show="loading" class="p-8 text-center text-sm text-muted">
+                        <svg class="animate-spin h-6 w-6 mx-auto text-primary mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        Searching...
+                    </div>
+
+                    <div x-show="!loading && results.battalions.length === 0 && results.companies.length === 0 && results.members.length === 0" class="p-8 text-center text-sm text-muted" style="display: none;">
+                        No results found for "<span x-text="query" class="font-bold text-text"></span>".
+                    </div>
+
+                    <!-- Battalions -->
+                    <template x-if="results.battalions && results.battalions.length > 0">
+                        <div class="mb-4">
+                            <h2 class="bg-surface px-3 py-1.5 text-xs font-bold text-muted uppercase tracking-wider sticky top-0">Battalions</h2>
+                            <ul class="mt-2 text-sm text-text">
+                                <template x-for="item in results.battalions" :key="item.id">
+                                    <li class="group cursor-pointer select-none rounded-xl px-4 py-3 hover:bg-primary/10 transition-colors">
+                                        <a :href="item.url" class="flex flex-col w-full h-full">
+                                            <span class="font-bold text-text group-hover:text-primary transition-colors" x-text="item.title"></span>
+                                            <span class="text-xs font-medium text-muted mt-0.5 uppercase tracking-wider" x-text="item.subtitle"></span>
+                                        </a>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+
+                    <!-- Companies -->
+                    <template x-if="results.companies && results.companies.length > 0">
+                        <div class="mb-4">
+                            <h2 class="bg-surface px-3 py-1.5 text-xs font-bold text-muted uppercase tracking-wider sticky top-0">Companies</h2>
+                            <ul class="mt-2 text-sm text-text">
+                                <template x-for="item in results.companies" :key="item.id">
+                                    <li class="group cursor-pointer select-none rounded-xl px-4 py-3 hover:bg-success/10 transition-colors">
+                                        <a :href="item.url" class="flex flex-col w-full h-full">
+                                            <span class="font-bold text-text group-hover:text-success transition-colors" x-text="item.title"></span>
+                                            <span class="text-xs font-medium text-muted mt-0.5 uppercase tracking-wider" x-text="item.subtitle"></span>
+                                        </a>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+
+                    <!-- Members -->
+                    <template x-if="results.members && results.members.length > 0">
+                        <div>
+                            <h2 class="bg-surface px-3 py-1.5 text-xs font-bold text-muted uppercase tracking-wider sticky top-0">Members</h2>
+                            <ul class="mt-2 text-sm text-text">
+                                <template x-for="item in results.members" :key="item.id">
+                                    <li class="group cursor-pointer select-none rounded-xl px-4 py-3 hover:bg-indigo-500/10 transition-colors">
+                                        <a :href="item.url" class="flex flex-col w-full h-full">
+                                            <span class="font-bold text-text group-hover:text-indigo-600 transition-colors" x-text="item.title"></span>
+                                            <span class="text-xs font-medium text-muted mt-0.5 uppercase tracking-wider" x-text="item.subtitle"></span>
+                                        </a>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+                </div>
+                
+                <!-- Helper footer -->
+                <div class="flex flex-wrap items-center bg-background/50 py-3 px-4 text-xs font-medium text-muted justify-between border-t border-border">
+                    <div class="flex items-center gap-4">
+                        <span class="flex items-center gap-1.5"><kbd class="font-bold bg-surface border border-border rounded px-1.5 shadow-sm text-[10px]">ESC</kbd> to close</span>
+                    </div>
+                    <span>Boys and Girls Brigade</span>
+                </div>
+            </div>
+        </div>
 
         @auth
             <!-- Toast Notification Container -->

@@ -34,7 +34,16 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified', 'approved', 'fee_paid'])
     ->name('dashboard');
 
+Route::get('/search', [\App\Http\Controllers\SearchController::class, 'index'])
+    ->middleware(['auth', 'verified', 'approved', 'fee_paid'])
+    ->name('search.index');
+
 Route::middleware(['auth', 'verified', 'approved', 'fee_paid'])->group(function () {
+    // System Documentation
+    Route::get('/documentation/system', function () {
+        return view('docs.system');
+    })->name('docs.system');
+
     // Registration Fee Routes
     Route::get('/pay-fee', [\App\Http\Controllers\RegistrationFeeController::class, 'create'])->name('fee.pay');
     Route::post('/pay-fee', [\App\Http\Controllers\RegistrationFeeController::class, 'store'])->name('fee.store');

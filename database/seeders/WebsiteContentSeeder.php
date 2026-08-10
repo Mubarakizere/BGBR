@@ -17,7 +17,7 @@ class WebsiteContentSeeder extends Seeder
         $pages = [
             [
                 'slug' => 'hero',
-                'title' => 'Welcome to BGBR Rwanda',
+                'title' => 'Welcome to Boys and Girls Brigade Rwanda',
                 'content' => 'Sure & Steadfast. Empowering youth through Christian values, leadership development, and discipline for a brighter future.',
                 'sort_order' => 1,
             ],
@@ -35,7 +35,7 @@ class WebsiteContentSeeder extends Seeder
             ],
             [
                 'slug' => 'about',
-                'title' => 'About BGBR Rwanda',
+                'title' => 'About Boys and Girls Brigade Rwanda',
                 'content' => 'The Boys\' and Girls\' Brigade Rwanda is a Christian youth organisation dedicated to developing young people spiritually, physically, and socially. Through structured programs, mentorship, and community activities, we help youth become responsible, faithful, and competent leaders.',
                 'sort_order' => 4,
             ],
@@ -72,25 +72,25 @@ class WebsiteContentSeeder extends Seeder
                 'sort_order' => 1,
             ],
             [
-                'question' => 'How can I join BGBR Rwanda?',
-                'answer' => 'You can join by contacting your nearest BGBR company or reaching out to us through the contact form on our website. We welcome all young people who are interested in growing in faith and leadership.',
+                'question' => 'How can I join Boys and Girls Brigade Rwanda?',
+                'answer' => 'You can join by contacting your nearest Boys and Girls Brigade company or reaching out to us through the contact form on our website. We welcome all young people who are interested in growing in faith and leadership.',
                 'category' => 'Membership',
                 'sort_order' => 2,
             ],
             [
-                'question' => 'What age groups does BGBR serve?',
-                'answer' => 'BGBR serves children and young people of various age groups, from juniors to seniors. Each age group has programs tailored to their developmental needs and interests.',
+                'question' => 'What age groups does Boys and Girls Brigade serve?',
+                'answer' => 'Boys and Girls Brigade serves children and young people of various age groups, from juniors to seniors. Each age group has programs tailored to their developmental needs and interests.',
                 'category' => 'General',
                 'sort_order' => 3,
             ],
             [
-                'question' => 'How can I support BGBR Rwanda?',
+                'question' => 'How can I support Boys and Girls Brigade Rwanda?',
                 'answer' => 'You can support us through volunteering, donations, prayer, and spreading the word about our mission. Contact us to learn more about how you can contribute to empowering the next generation of leaders.',
                 'category' => 'Support',
                 'sort_order' => 4,
             ],
             [
-                'question' => 'What activities does BGBR offer?',
+                'question' => 'What activities does Boys and Girls Brigade offer?',
                 'answer' => 'We offer a wide range of activities including Bible study, leadership training, community service projects, sports, camping, skills development workshops, and cultural activities. Our programs are designed to develop the whole person.',
                 'category' => 'General',
                 'sort_order' => 5,

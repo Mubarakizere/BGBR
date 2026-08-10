@@ -12,11 +12,21 @@
                     <h1 class="text-2xl font-extrabold text-text tracking-tight">Companies</h1>
                     <p class="text-sm text-muted mt-1">Manage companies and assign officers</p>
                 </div>
-                <button @click="editing = null; openModal = true"
-                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-200">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                    Add Company
-                </button>
+                
+                <div class="flex items-center gap-3">
+                    {{-- Search Form --}}
+                    <form action="{{ route('companies.index') }}" method="GET" class="relative">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search companies..." 
+                               class="pl-10 pr-4 py-2 bg-surface border border-border rounded-xl text-sm text-text focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all w-full sm:w-64">
+                        <svg class="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </form>
+
+                    <button @click="editing = null; openModal = true"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        Add Company
+                    </button>
+                </div>
             </div>
 
             {{-- Stats Row --}}
@@ -84,15 +94,24 @@
 
                                 {{-- Status --}}
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if($company->is_active)
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-success/10 border border-success/20 text-success">
-                                            Active
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-danger/10 border border-danger/20 text-danger">
-                                            Inactive
-                                        </span>
-                                    @endif
+                                    <div class="group relative inline-block">
+                                        @if($company->is_active)
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-success/10 border border-success/20 text-success cursor-help">
+                                                Active
+                                                <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-danger/10 border border-danger/20 text-danger cursor-help">
+                                                Inactive
+                                                <svg class="w-3.5 h-3.5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            </span>
+                                        @endif
+                                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max px-3 py-2 bg-gray-800 text-white text-[11px] font-medium rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 shadow-lg border border-gray-700">
+                                            A company is active when it has 20 or more members. <br>
+                                            <span class="text-gray-400">Current members: {{ $company->members_count ?? 0 }}</span>
+                                            <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-800 rotate-45 border-r border-b border-gray-700"></div>
+                                        </div>
+                                    </div>
                                 </td>
 
                                 {{-- Battalion --}}

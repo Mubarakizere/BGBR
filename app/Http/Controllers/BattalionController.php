@@ -10,10 +10,26 @@ use Illuminate\Support\Facades\Gate;
 
 class BattalionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         Gate::authorize('viewAny', Battalion::class);
-        $battalions = Battalion::with(['denomination', 'zone'])->orderBy('name')->paginate(15)->withQueryString();
+        
+        $query = Battalion::with(['denomination', 'zone'])->withCount('companies')->orderBy('name');
+        
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhereHas('denomination', function($subQuery) use ($search) {
+                      $subQuery->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('zone', function($subQuery) use ($search) {
+                      $subQuery->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
+        $battalions = $query->paginate(15)->withQueryString();
         $denominations = Denomination::orderBy('name')->get();
         $zones = Zone::orderBy('name')->get();
         return view('battalions.index', compact('battalions', 'denominations', 'zones'));
