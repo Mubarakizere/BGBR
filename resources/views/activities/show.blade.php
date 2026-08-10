@@ -174,7 +174,7 @@
             @php
                 $myPivot = $activity->members()->where('member_id', $myMember->id)->first();
                 $isRegistered = $myPivot !== null;
-                $isEligible = $myMember->registration_fee_paid && $myMember->company && $myMember->company->is_active;
+                $isEligible = $myMember->registration_fee_paid && $myMember->company_id;
             @endphp
             <div class="bg-surface rounded-2xl border border-border shadow-sm p-6 mb-8">
                 <h3 class="text-lg font-bold text-text mb-4 flex items-center gap-2">
