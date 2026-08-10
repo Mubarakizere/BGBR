@@ -229,7 +229,8 @@
             </div>
             @endcan
 
-            {{-- Company Participation Breakdown --}}
+            {{-- Company Participation Breakdown (Admin/Officer only) --}}
+            @if(auth()->user()->can('manage activities') || auth()->user()->can('submit activity participation'))
             @if(count($companyBreakdown) > 0)
             <div class="bg-surface rounded-2xl border border-border shadow-sm overflow-hidden mb-8">
                 <div class="px-6 py-5 border-b border-border">
@@ -316,8 +317,9 @@
                 </div>
             </div>
             @endif
+            @endif {{-- end admin/officer check for company breakdown --}}
 
-            {{-- Register Participant Section --}}
+            {{-- Register Participant Section (Officer/Admin only) --}}
             @can('registerParticipant', App\Models\Activity::class)
             <div class="bg-surface rounded-2xl border border-border shadow-sm p-6 mb-8">
                 <h3 class="text-lg font-bold text-text mb-4 flex items-center gap-2">
@@ -418,7 +420,8 @@
             </div>
             @endcan
 
-            {{-- Participants Table --}}
+            {{-- Participants Table (Admin/Officer only) --}}
+            @if(auth()->user()->can('manage activities') || auth()->user()->can('submit activity participation'))
             <div class="bg-surface rounded-2xl border border-border shadow-sm overflow-hidden">
                 <div class="px-6 py-5 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <h3 class="text-lg font-bold text-text flex items-center gap-2">
@@ -582,6 +585,7 @@
                 </div>
                 @endif
             </div>
+            @endif {{-- end admin/officer check for participants table --}}
 
         </div>
     </div>

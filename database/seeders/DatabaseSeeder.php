@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             'manage battalions', 'approve battalion reports', 'create denomination announcements', 'approve announcements',
             'manage companies', 'approve company reports', 'create battalion announcements',
             'register members', 'register company info', 'submit activity participation', 'generate company reports', 'create company announcements',
-            'view members', 'update members', 'participate in activities', 'view company announcements',
+            'view members', 'update members', 'participate in activities', 'view company announcements', 'view activities',
             'view own profile', 'view announcements', 'view activity participation history',
             'manage activities',
             'manage website',
@@ -60,7 +60,7 @@ class DatabaseSeeder extends Seeder
 
         $member = Role::findOrCreate('Member');
         $member->givePermissionTo([
-            'view own profile', 'view announcements', 'view activity participation history'
+            'view own profile', 'view announcements', 'view activity participation history', 'view activities'
         ]);
 
         // Create Super Admin User
