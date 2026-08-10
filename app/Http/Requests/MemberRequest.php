@@ -51,7 +51,7 @@ class MemberRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['sometimes', 'required', 'email', 'unique:users,email'],
+            'email' => ['sometimes', 'required', 'email'],
             'rank' => ['required', 'string', 'max:255'],
             'company_id' => ['required', 'exists:companies,id'],
             'tenure' => ['nullable', 'integer', 'min:0'],

@@ -87,24 +87,45 @@ class MemberController extends Controller
             $data['photo_path'] = $request->file('photo')->store('photos', 'public');
         }
 
-        // Generate a random password and create the User account
-        $password = \Illuminate\Support\Str::password(10, true, true, true, false);
-        $user = \App\Models\User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($password),
-            'company_id' => $data['company_id'],
-            'is_approved' => true,
-        ]);
+        // Check if a user with this email already exists
+        $user = \App\Models\User::where('email', $data['email'])->first();
 
-        try {
-            $user->assignRole('Member');
-        } catch (\Exception $e) {
-            // Ignore if role doesn't exist
+        if ($user) {
+            // Check if this user already has a member profile
+            if ($user->member) {
+                return back()->withInput()->withErrors(['email' => 'This email belongs to a user who already has a member profile.']);
+            }
+            
+            // Link existing user
+            $user->is_approved = true;
+            if (!$user->company_id) {
+                $user->company_id = $data['company_id'];
+            }
+            $user->save();
+            
+            try {
+                if (!$user->hasRole('Member')) {
+                    $user->assignRole('Member');
+                }
+            } catch (\Exception $e) {}
+        } else {
+            // Generate a random password and create a new User account
+            $password = \Illuminate\Support\Str::password(10, true, true, true, false);
+            $user = \App\Models\User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => bcrypt($password),
+                'company_id' => $data['company_id'],
+                'is_approved' => true,
+            ]);
+
+            try {
+                $user->assignRole('Member');
+            } catch (\Exception $e) {}
+
+            // Email the credentials directly to the new user
+            $user->notify(new \App\Notifications\MemberCredentialsNotification($password));
         }
-
-        // Email the credentials directly to the new user
-        $user->notify(new \App\Notifications\MemberCredentialsNotification($password));
 
         // Remove email from data as it is not a field in the members table
         unset($data['email']);
