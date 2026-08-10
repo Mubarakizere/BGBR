@@ -99,6 +99,10 @@ Route::middleware(['auth', 'verified', 'approved', 'fee_paid'])->group(function 
         ->name('activities.participants.pay');
     Route::patch('activities/{activity}/participants/bulk-pay', [ParticipationController::class, 'bulkMarkPaid'])
         ->name('activities.participants.bulk-pay');
+    Route::post('activities/{activity}/participants/self', [ParticipationController::class, 'selfRegister'])
+        ->name('activities.participants.self-register');
+    Route::post('activities/{activity}/participants/proof', [ParticipationController::class, 'uploadPaymentProof'])
+        ->name('activities.participants.upload-proof');
     Route::delete('activities/{activity}/participants/{member}', [ParticipationController::class, 'remove'])
         ->name('activities.participants.remove');
 

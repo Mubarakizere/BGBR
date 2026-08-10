@@ -19,6 +19,7 @@ class Member extends Model
         'tenure',
         'photo_path',
         'registration_fee_paid',
+        'user_id',
     ];
 
     protected $casts = [
@@ -39,6 +40,11 @@ class Member extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

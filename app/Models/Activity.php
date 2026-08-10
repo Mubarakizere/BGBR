@@ -75,7 +75,7 @@ class Activity extends Model
     public function members()
     {
         return $this->belongsToMany(Member::class, 'activity_member')
-            ->withPivot('fee_paid', 'payment_date', 'eligible', 'eligibility_notes', 'registered_by')
+            ->withPivot('fee_paid', 'payment_date', 'eligible', 'eligibility_notes', 'registered_by', 'payment_proof_path')
             ->withTimestamps();
     }
 

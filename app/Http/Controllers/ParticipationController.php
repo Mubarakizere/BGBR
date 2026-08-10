@@ -200,4 +200,74 @@ class ParticipationController extends Controller
 
         return back()->with('success', "{$member->name} has been removed from this activity.");
     }
+
+    /**
+     * Allow a logged-in user to register themselves (their linked Member) for an activity.
+     */
+    public function selfRegister(Request $request, Activity $activity)
+    {
+        Gate::authorize('selfRegister', $activity);
+
+        $user = $request->user();
+        $member = $user->member;
+
+        if (!$member) {
+            return back()->with('error', 'You do not have a linked member profile.');
+        }
+
+        if ($member->company && !$member->company->is_active) {
+            return back()->with('error', 'Cannot register: your company is currently inactive.');
+        }
+
+        if (!$member->registration_fee_paid) {
+            return back()->with('error', 'Cannot register: your annual registration fee has not been paid.');
+        }
+
+        if ($activity->members()->where('member_id', $member->id)->exists()) {
+            return back()->with('error', 'You are already registered for this activity.');
+        }
+
+        $activity->members()->attach($member->id, [
+            'id' => Str::uuid(),
+            'fee_paid' => false,
+            'payment_date' => null,
+            'eligible' => true,
+            'eligibility_notes' => null,
+            'registered_by' => $user->id,
+            'payment_proof_path' => null,
+        ]);
+
+        return back()->with('success', 'You have successfully registered for this activity.');
+    }
+
+    /**
+     * Allow a member to upload proof of payment.
+     */
+    public function uploadPaymentProof(Request $request, Activity $activity)
+    {
+        $user = $request->user();
+        $member = $user->member;
+
+        if (!$member) {
+            return back()->with('error', 'You do not have a linked member profile.');
+        }
+
+        $pivot = $activity->members()->where('member_id', $member->id)->first();
+        
+        if (!$pivot) {
+            return back()->with('error', 'You are not registered for this activity.');
+        }
+
+        $request->validate([
+            'payment_proof' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120', // 5MB max
+        ]);
+
+        $path = $request->file('payment_proof')->store('payment_proofs', 'public');
+
+        $activity->members()->updateExistingPivot($member->id, [
+            'payment_proof_path' => $path,
+        ]);
+
+        return back()->with('success', 'Payment proof uploaded successfully. Awaiting admin confirmation.');
+    }
 }

@@ -116,7 +116,11 @@
                                     </div>
                                     <div>
                                         <strong class="text-text">Activities & Events</strong>
-                                        <p class="text-sm text-muted mt-1">You can schedule training camps, parades, or meetings under "Activities". This lets you track who attended and helps you plan ahead.</p>
+                                        <p class="text-sm text-muted mt-1 mb-2">You can schedule training camps, parades, or meetings under "Activities". This lets you track who attended and helps you plan ahead.</p>
+                                        <ul class="list-disc list-inside text-sm text-muted space-y-1">
+                                            <li><strong>Self-Registration:</strong> Members can view activities assigned to their company, battalion, or national level and register themselves with a single click.</li>
+                                            <li><strong>Payment Proofs:</strong> After registering, members can upload an image or PDF of their payment receipt (e.g., Momo transfer). Officers and admins can then review the uploaded proof and securely confirm the payment.</li>
+                                        </ul>
                                     </div>
                                 </li>
                                 <li class="bg-background rounded-xl p-4 border border-border flex flex-col sm:flex-row gap-4">

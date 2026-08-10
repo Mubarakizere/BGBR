@@ -164,6 +164,71 @@
                 </div>
             </div>
 
+            {{-- My Participation Section --}}
+            @can('selfRegister', $activity)
+            @php
+                $myPivot = $activity->members()->where('member_id', auth()->user()->member->id)->first();
+                $isRegistered = $myPivot !== null;
+                $myMember = auth()->user()->member;
+                $isEligible = $myMember->registration_fee_paid && $myMember->company && $myMember->company->is_active;
+            @endphp
+            <div class="bg-surface rounded-2xl border border-border shadow-sm p-6 mb-8">
+                <h3 class="text-lg font-bold text-text mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    My Participation Status
+                </h3>
+
+                @if(!$isRegistered)
+                    @if($isEligible)
+                    <form method="POST" action="{{ route('activities.participants.self-register', $activity) }}">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-5 rounded-xl text-sm transition shadow-lg shadow-primary/20">
+                            Register Now
+                        </button>
+                    </form>
+                    @else
+                    <p class="text-sm text-danger font-bold">You are not eligible to register. Please ensure your annual registration fee is paid and your company is active.</p>
+                    @endif
+                @else
+                    <div class="flex flex-col sm:flex-row gap-4 items-center justify-between bg-background p-4 rounded-xl border border-border">
+                        <div>
+                            <p class="text-sm font-bold text-text mb-1">You are registered for this activity.</p>
+                            @if($myPivot->pivot->fee_paid)
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-success/10 text-success">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Payment Confirmed
+                                </span>
+                            @elseif($myPivot->pivot->payment_proof_path)
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-secondary/10 text-secondary">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    Payment Pending Confirmation
+                                </span>
+                                <div class="mt-2 text-xs text-muted">
+                                    <a href="{{ Storage::url($myPivot->pivot->payment_proof_path) }}" target="_blank" class="text-primary hover:underline">View Uploaded Proof</a>
+                                </div>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-danger/10 text-danger">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01"></path></svg>
+                                    Fee Unpaid ({{ number_format($activity->participation_fee, 0) }} RWF)
+                                </span>
+                            @endif
+                        </div>
+
+                        @if(!$myPivot->pivot->fee_paid && !$myPivot->pivot->payment_proof_path && $activity->participation_fee > 0)
+                        <form method="POST" action="{{ route('activities.participants.upload-proof', $activity) }}" enctype="multipart/form-data" class="flex flex-col gap-2 w-full sm:w-auto">
+                            @csrf
+                            <input type="file" name="payment_proof" required accept=".jpg,.jpeg,.png,.pdf" class="text-xs w-full max-w-[220px] rounded border border-border">
+                            <button type="submit" class="inline-flex justify-center items-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-xl text-xs transition">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                                Upload Proof
+                            </button>
+                        </form>
+                        @endif
+                    </div>
+                @endif
+            </div>
+            @endcan
+
             {{-- Company Participation Breakdown --}}
             @if(count($companyBreakdown) > 0)
             <div class="bg-surface rounded-2xl border border-border shadow-sm overflow-hidden mb-8">
@@ -455,6 +520,11 @@
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                         Paid
                                     </span>
+                                    @elseif($member->pivot->payment_proof_path)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-secondary/10 text-secondary">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Pending
+                                    </span>
                                     @else
                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-danger/10 text-danger">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01"></path></svg>
@@ -467,13 +537,19 @@
                                 </td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="flex items-center justify-end gap-2">
+                                        @if($member->pivot->payment_proof_path)
+                                            <a href="{{ Storage::url($member->pivot->payment_proof_path) }}" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-white bg-primary/10 hover:bg-primary px-3 py-1.5 rounded-lg transition-all" title="View Proof">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                                View Proof
+                                            </a>
+                                        @endif
                                         @can('markPayment', App\Models\Activity::class)
                                             @if(!$member->pivot->fee_paid)
                                             <form method="POST" action="{{ route('activities.participants.pay', [$activity, $member]) }}">
                                                 @csrf @method('PATCH')
                                                 <button type="button" @click="$dispatch('open-approve-modal', { action: '{{ route('activities.participants.pay', [$activity, $member]) }}', method: 'PATCH', message: 'Mark fee as paid for {{ $member->name }}? This will create a national account deposit of {{ number_format($activity->participation_fee, 0) }} RWF.' })" class="inline-flex items-center gap-1 text-xs font-bold text-success hover:text-white bg-success/10 hover:bg-success px-3 py-1.5 rounded-lg transition-all">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                    Mark Paid
+                                                    {{ $member->pivot->payment_proof_path ? 'Confirm' : 'Mark Paid' }}
                                                 </button>
                                             </form>
                                             @endif

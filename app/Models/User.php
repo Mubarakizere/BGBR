@@ -96,4 +96,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Announcement::class, 'announcement_user_read')->withTimestamps();
     }
+
+    public function member()
+    {
+        return $this->hasOne(Member::class);
+    }
 }

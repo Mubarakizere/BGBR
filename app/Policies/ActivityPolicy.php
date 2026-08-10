@@ -56,6 +56,14 @@ class ActivityPolicy
     }
 
     /**
+     * A user can register themselves if they have a linked member profile.
+     */
+    public function selfRegister(User $user, Activity $activity): bool
+    {
+        return $user->member !== null;
+    }
+
+    /**
      * Company Captain and Company Officer can mark fee payments.
      */
     public function markPayment(User $user): bool

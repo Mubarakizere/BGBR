@@ -109,6 +109,8 @@ class MemberController extends Controller
         // Remove email from data as it is not a field in the members table
         unset($data['email']);
 
+        $data['user_id'] = $user->id;
+
         Member::create($data);
 
         return redirect()->route('members.index')->with('success', 'Member created successfully. Login credentials have been sent to their email.');
