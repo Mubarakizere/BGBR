@@ -69,6 +69,8 @@ class DatabaseSeeder extends Seeder
         ], [
             'name' => 'Super Admin',
             'password' => Hash::make('boysandgrils@brigade2026'),
+            'email_verified_at' => now(),
+            'is_approved' => true,
         ]);
 
         if (!$admin->hasRole('Super Admin')) {
