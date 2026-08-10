@@ -164,28 +164,36 @@
                 </div>
             </div>
 
-            {{-- My Participation Section --}}
-            @can('selfRegister', $activity)
+            {{-- My Participation Section (for logged-in members) --}}
             @php
-                $myPivot = $activity->members()->where('member_id', auth()->user()->member->id)->first();
-                $isRegistered = $myPivot !== null;
                 $myMember = auth()->user()->member;
+            @endphp
+            @if($myMember)
+            @php
+                $myPivot = $activity->members()->where('member_id', $myMember->id)->first();
+                $isRegistered = $myPivot !== null;
                 $isEligible = $myMember->registration_fee_paid && $myMember->company && $myMember->company->is_active;
             @endphp
             <div class="bg-surface rounded-2xl border border-border shadow-sm p-6 mb-8">
                 <h3 class="text-lg font-bold text-text mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    My Participation Status
+                    My Participation
                 </h3>
 
                 @if(!$isRegistered)
-                    @if($isEligible)
-                    <form method="POST" action="{{ route('activities.participants.self-register', $activity) }}">
-                        @csrf
-                        <button type="submit" class="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-5 rounded-xl text-sm transition shadow-lg shadow-primary/20">
-                            Register Now
-                        </button>
-                    </form>
+                    @if($isEligible && $activity->status !== 'completed' && $activity->status !== 'cancelled')
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <p class="text-sm text-muted">You are not yet registered for this activity.</p>
+                        <form method="POST" action="{{ route('activities.participants.self-register', $activity) }}">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-5 rounded-xl text-sm transition shadow-lg shadow-primary/20">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                                Register to Participate
+                            </button>
+                        </form>
+                    </div>
+                    @elseif($activity->status === 'completed' || $activity->status === 'cancelled')
+                    <p class="text-sm text-muted">This activity is {{ $activity->status }}. Registration is no longer available.</p>
                     @else
                     <p class="text-sm text-danger font-bold">You are not eligible to register. Please ensure your annual registration fee is paid and your company is active.</p>
                     @endif
@@ -201,7 +209,7 @@
                             @elseif($myPivot->pivot->payment_proof_path)
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-secondary/10 text-secondary">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    Payment Pending Confirmation
+                                    Payment Proof Submitted — Awaiting Confirmation
                                 </span>
                                 <div class="mt-2 text-xs text-muted">
                                     <a href="{{ Storage::url($myPivot->pivot->payment_proof_path) }}" target="_blank" class="text-primary hover:underline">View Uploaded Proof</a>
@@ -217,7 +225,8 @@
                         @if(!$myPivot->pivot->fee_paid && !$myPivot->pivot->payment_proof_path && $activity->participation_fee > 0)
                         <form method="POST" action="{{ route('activities.participants.upload-proof', $activity) }}" enctype="multipart/form-data" class="flex flex-col gap-2 w-full sm:w-auto">
                             @csrf
-                            <input type="file" name="payment_proof" required accept=".jpg,.jpeg,.png,.pdf" class="text-xs w-full max-w-[220px] rounded border border-border">
+                            <label class="text-xs font-bold text-text">Upload Payment Proof</label>
+                            <input type="file" name="payment_proof" required accept=".jpg,.jpeg,.png,.pdf" class="text-xs w-full max-w-[220px] rounded border border-border bg-background p-1">
                             <button type="submit" class="inline-flex justify-center items-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded-xl text-xs transition">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                                 Upload Proof
@@ -227,7 +236,7 @@
                     </div>
                 @endif
             </div>
-            @endcan
+            @endif
 
             {{-- Company Participation Breakdown (Admin/Officer only) --}}
             @if(auth()->user()->can('manage activities') || auth()->user()->can('submit activity participation'))

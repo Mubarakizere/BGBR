@@ -53,7 +53,7 @@ class Member extends Model
     public function activities()
     {
         return $this->belongsToMany(Activity::class, 'activity_member')
-            ->withPivot('fee_paid', 'payment_date', 'eligible', 'eligibility_notes', 'registered_by')
+            ->withPivot('fee_paid', 'payment_date', 'eligible', 'eligibility_notes', 'registered_by', 'payment_proof_path')
             ->withTimestamps();
     }
 }

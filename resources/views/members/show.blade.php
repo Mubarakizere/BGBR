@@ -132,6 +132,83 @@
 
             </div>
 
+            {{-- Activity Participation History --}}
+            @php
+                $participatedActivities = $member->activities()
+                    ->withPivot('fee_paid', 'payment_date', 'payment_proof_path')
+                    ->orderByDesc('date')
+                    ->get();
+            @endphp
+            @if($participatedActivities->count() > 0)
+            <div class="bg-surface rounded-2xl border border-border shadow-sm overflow-hidden mt-6">
+                <div class="px-6 py-5 border-b border-border">
+                    <h3 class="text-base font-bold text-text flex items-center gap-2">
+                        <div class="w-9 h-9 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        Activity Participation ({{ $participatedActivities->count() }})
+                    </h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-background/50 border-b border-border">
+                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest">#</th>
+                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest">Activity</th>
+                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest">Date</th>
+                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest">Fee</th>
+                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest">Payment</th>
+                                <th class="px-6 py-3 text-[10px] font-bold text-muted uppercase tracking-widest">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border">
+                            @foreach($participatedActivities as $index => $act)
+                            <tr class="hover:bg-background/50 transition-colors">
+                                <td class="px-6 py-3 text-sm text-muted">{{ $index + 1 }}</td>
+                                <td class="px-6 py-3">
+                                    <a href="{{ route('activities.show', $act) }}" class="text-sm font-semibold text-text hover:text-primary transition-colors">{{ $act->title }}</a>
+                                </td>
+                                <td class="px-6 py-3 text-sm text-muted whitespace-nowrap">
+                                    {{ $act->date ? $act->date->format('M d, Y') : '—' }}
+                                </td>
+                                <td class="px-6 py-3 text-sm font-bold text-text whitespace-nowrap">
+                                    {{ number_format($act->participation_fee, 0) }} RWF
+                                </td>
+                                <td class="px-6 py-3 whitespace-nowrap">
+                                    @if($act->pivot->fee_paid)
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-success/10 text-success">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        Paid
+                                    </span>
+                                    @elseif($act->pivot->payment_proof_path)
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-secondary/10 text-secondary">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Pending
+                                    </span>
+                                    @else
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold bg-danger/10 text-danger">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01"></path></svg>
+                                        Unpaid
+                                    </span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-3 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider
+                                        @if($act->status === 'upcoming') bg-secondary/15 text-secondary
+                                        @elseif($act->status === 'ongoing') bg-success/15 text-success
+                                        @elseif($act->status === 'completed') bg-primary/15 text-primary
+                                        @else bg-danger/15 text-danger @endif">
+                                        {{ $act->status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @endif
+
         </div>
     </div>
 </x-app-layout>
