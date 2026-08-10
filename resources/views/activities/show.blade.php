@@ -90,6 +90,7 @@
 
                 {{-- Stats & Details --}}
                 <div class="p-8">
+                    @if(auth()->user()->can('manage activities') || auth()->user()->can('submit activity participation'))
                     @php
                         $totalParticipants = $activity->members->count();
                         $paidCount = $activity->members->where('pivot.fee_paid', true)->count();
@@ -138,6 +139,7 @@
                                  style="width: {{ $percentage }}%"></div>
                         </div>
                     </div>
+                    @endif {{-- end admin stats check --}}
 
                     {{-- Description & Requirements --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
