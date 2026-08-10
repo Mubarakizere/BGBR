@@ -65,10 +65,10 @@ class DatabaseSeeder extends Seeder
 
         // Create Super Admin User
         $admin = User::firstOrCreate([
-            'email' => 'info@boysandgrilsbrigade.rw',
+            'email' => 'info@boysandgirlsbrigade.rw',
         ], [
             'name' => 'Super Admin',
-            'password' => Hash::make('boysandgrils@brigade2026'),
+            'password' => Hash::make('boysandgirls@2026'),
             'email_verified_at' => now(),
             'is_approved' => true,
         ]);
