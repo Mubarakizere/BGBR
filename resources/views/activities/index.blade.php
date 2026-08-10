@@ -173,102 +173,99 @@
                     </div>
                 </div>
 
-                {{-- ===== MEMBER VIEW: Clean Card Layout ===== --}}
+                {{-- ===== MEMBER VIEW: Clean Table ===== --}}
                 @else
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($activities as $activity)
-                    @php
-                        $myMember = auth()->user()->member;
-                        $myPivot = $myMember ? $activity->members()->where('member_id', $myMember->id)->first() : null;
-                        $isRegistered = $myPivot !== null;
-                    @endphp
-                    <div class="bg-surface rounded-2xl border border-border shadow-sm overflow-hidden hover:shadow-md transition-shadow group">
-                        {{-- Card Header --}}
-                        <div class="bg-gradient-to-r from-primary to-primary/80 px-5 py-4 relative overflow-hidden">
-                            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 bg-white rounded-full mix-blend-overlay opacity-10"></div>
-                            <div class="relative z-10">
-                                <div class="flex items-center justify-between gap-2 mb-1">
-                                    <span class="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider
-                                        @if($activity->status === 'upcoming') bg-secondary/20 text-secondary
-                                        @elseif($activity->status === 'ongoing') bg-success/20 text-green-200
-                                        @elseif($activity->status === 'completed') bg-white/20 text-white
-                                        @else bg-danger/20 text-red-200 @endif">
-                                        {{ $activity->status }}
-                                    </span>
-                                    <span class="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-white/15 text-white/80">
-                                        @if($activity->target_audience === 'national')
-                                            National
+                <div class="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-background/50 border-b border-border">
+                                    <th class="px-6 py-4 text-xs font-bold text-muted uppercase tracking-wider">Activity</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-muted uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-muted uppercase tracking-wider">Location</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-muted uppercase tracking-wider">Fee</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-muted uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-muted uppercase tracking-wider">My Status</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-muted uppercase tracking-wider text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border">
+                                @foreach($activities as $activity)
+                                @php
+                                    $myMember = auth()->user()->member;
+                                    $myPivot = $myMember ? $activity->members()->where('member_id', $myMember->id)->first() : null;
+                                    $isRegistered = $myPivot !== null;
+                                @endphp
+                                <tr class="hover:bg-background/50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <a href="{{ route('activities.show', $activity) }}" class="font-bold text-text hover:text-primary transition-colors">
+                                            {{ $activity->title }}
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-muted">
+                                        {{ $activity->date ? $activity->date->format('M d, Y') : '—' }}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-muted">
+                                        {{ $activity->location ?? '—' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-text">
+                                        {{ number_format($activity->participation_fee, 0) }} RWF
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider
+                                            @if($activity->status === 'upcoming') bg-secondary/15 text-secondary
+                                            @elseif($activity->status === 'ongoing') bg-success/15 text-success
+                                            @elseif($activity->status === 'completed') bg-primary/15 text-primary
+                                            @else bg-danger/15 text-danger @endif">
+                                            {{ $activity->status }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($isRegistered)
+                                            @if($myPivot->pivot->fee_paid)
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-success/10 text-success">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                Confirmed
+                                            </span>
+                                            @elseif($myPivot->pivot->payment_proof_path)
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-secondary/10 text-secondary">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                Proof Sent
+                                            </span>
+                                            @else
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-danger/10 text-danger">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01"></path></svg>
+                                                Unpaid
+                                            </span>
+                                            @endif
                                         @else
-                                            {{ ucfirst($activity->target_audience) }}
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-background text-muted border border-border">
+                                                Not Registered
+                                            </span>
                                         @endif
-                                    </span>
-                                </div>
-                                <h3 class="text-lg font-black text-white leading-tight">{{ $activity->title }}</h3>
-                            </div>
-                        </div>
-
-                        {{-- Card Body --}}
-                        <div class="p-5">
-                            <div class="space-y-3 mb-4">
-                                @if($activity->date)
-                                <div class="flex items-center gap-2 text-sm text-muted">
-                                    <svg class="w-4 h-4 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                    {{ $activity->date->format('F d, Y') }}
-                                </div>
-                                @endif
-                                @if($activity->location)
-                                <div class="flex items-center gap-2 text-sm text-muted">
-                                    <svg class="w-4 h-4 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                    {{ $activity->location }}
-                                </div>
-                                @endif
-                                @if($activity->participation_fee > 0)
-                                <div class="flex items-center gap-2 text-sm text-muted">
-                                    <svg class="w-4 h-4 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    <span class="font-bold text-text">{{ number_format($activity->participation_fee, 0) }} RWF</span>
-                                </div>
-                                @endif
-                            </div>
-
-                            @if($activity->description)
-                            <p class="text-xs text-muted line-clamp-2 mb-4">{{ $activity->description }}</p>
-                            @endif
-
-                            {{-- Registration Status --}}
-                            @if($isRegistered)
-                                <div class="bg-background rounded-xl border border-border p-3 mb-4">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                        <span class="text-xs font-bold text-success">Registered</span>
-                                    </div>
-                                    @if($myPivot->pivot->fee_paid)
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-success/10 text-success">Payment Confirmed</span>
-                                    @elseif($myPivot->pivot->payment_proof_path)
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-secondary/10 text-secondary">Proof Submitted — Awaiting Confirmation</span>
-                                    @elseif($activity->participation_fee > 0)
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-danger/10 text-danger">Fee Unpaid</span>
-                                    @endif
-                                </div>
-                            @endif
-
-                            {{-- Actions --}}
-                            <div class="flex items-center gap-2">
-                                <a href="{{ route('activities.show', $activity) }}" class="flex-1 inline-flex items-center justify-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary font-bold py-2.5 px-4 rounded-xl text-sm transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                    View Details
-                                </a>
-                                @if(!$isRegistered && $myMember && $myMember->registration_fee_paid && $activity->status !== 'completed' && $activity->status !== 'cancelled')
-                                <form method="POST" action="{{ route('activities.participants.self-register', $activity) }}">
-                                    @csrf
-                                    <button type="submit" class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all shadow-lg shadow-primary/20">
-                                        Register
-                                    </button>
-                                </form>
-                                @endif
-                            </div>
-                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <a href="{{ route('activities.show', $activity) }}" class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-white bg-primary/10 hover:bg-primary px-3 py-1.5 rounded-lg transition-all">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                                View
+                                            </a>
+                                            @if(!$isRegistered && $myMember && $myMember->registration_fee_paid && $activity->status !== 'completed' && $activity->status !== 'cancelled')
+                                            <form method="POST" action="{{ route('activities.participants.self-register', $activity) }}">
+                                                @csrf
+                                                <button type="submit" class="inline-flex items-center gap-1 text-xs font-bold text-white bg-primary hover:bg-primary/90 px-3 py-1.5 rounded-lg transition-all shadow-sm">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                                                    Register
+                                                </button>
+                                            </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    @endforeach
                 </div>
                 @endif
 
