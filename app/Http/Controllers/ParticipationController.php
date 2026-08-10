@@ -212,15 +212,11 @@ class ParticipationController extends Controller
         $member = $user->member;
 
         if (!$member) {
-            return back()->with('error', 'You do not have a linked member profile.');
-        }
-
-        if ($member->company && !$member->company->is_active) {
-            return back()->with('error', 'Cannot register: your company is currently inactive.');
-        }
-
-        if (!$member->registration_fee_paid) {
-            return back()->with('error', 'Cannot register: your annual registration fee has not been paid.');
+            $member = \App\Models\Member::create([
+                'name' => $user->name,
+                'rank' => 'Member',
+                'user_id' => $user->id,
+            ]);
         }
 
         if ($activity->members()->where('member_id', $member->id)->exists()) {
@@ -249,7 +245,11 @@ class ParticipationController extends Controller
         $member = $user->member;
 
         if (!$member) {
-            return back()->with('error', 'You do not have a linked member profile.');
+            $member = \App\Models\Member::create([
+                'name' => $user->name,
+                'rank' => 'Member',
+                'user_id' => $user->id,
+            ]);
         }
 
         $pivot = $activity->members()->where('member_id', $member->id)->first();

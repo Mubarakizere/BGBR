@@ -60,7 +60,7 @@ class ActivityPolicy
      */
     public function selfRegister(User $user, Activity $activity): bool
     {
-        return $user->member !== null;
+        return true;
     }
 
     /**
