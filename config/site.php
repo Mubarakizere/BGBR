@@ -31,4 +31,12 @@ return [
     */
     'contact_email' => env('CONTACT_FORM_RECIPIENT', 'info@boysandgirlsbrigade.rw'),
     'contact_name'  => env('CONTACT_FORM_RECIPIENT_NAME', 'BGBR Staff'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Registration Fee Settings
+    |--------------------------------------------------------------------------
+    */
+    'fee_amount' => env('FEE_AMOUNT', '2,000'),
+    'payment_address' => env('FEE_PAYMENT_ADDRESS', 'MoMo Pay: *182*8*1*123456#'),
 ];

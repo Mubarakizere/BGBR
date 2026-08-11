@@ -87,6 +87,7 @@
                                 <div class="bg-background rounded-xl p-5 border border-border">
                                     <strong class="text-text block mb-2 text-lg">Registration Fees</strong>
                                     <p class="text-sm text-muted leading-relaxed">Every member needs to pay an annual registration fee to stay active. You can log these payments in the system. Once logged, an admin will review and approve the payment to officially mark the member as "active" for the year.</p>
+                                    <p class="text-sm text-muted leading-relaxed mt-2"><em>Note: Super Admins can configure the yearly fee amount and payment instructions under <strong>Global Settings</strong>.</em></p>
                                 </div>
                                 <div class="bg-background rounded-xl p-5 border border-border">
                                     <strong class="text-text block mb-2 text-lg">Account Deposits</strong>
@@ -141,14 +142,33 @@
 
                         <!-- Section 5 -->
                         <section>
-                            <h3 class="text-2xl font-bold text-text mb-4 border-b border-border pb-2">5. User Roles and Approvals</h3>
+                            <h3 class="text-2xl font-bold text-text mb-4 border-b border-border pb-2">5. User Roles and Permissions</h3>
                             <p class="text-muted leading-relaxed">
                                 Because this portal contains important records, we don't just let anyone sign up and start clicking around. 
                                 When someone creates a new account, they are put on a <strong>"Pending"</strong> list. An admin has to manually review their account and assign them a specific role (like "Company Officer" or "Battalion Commander").
                             </p>
-                            <p class="text-muted leading-relaxed mt-3">
-                                What you can see and do on the sidebar depends entirely on this role. For example, a Company Captain can't see another company's members, and only Admins can approve fee payments.
+                            <p class="text-muted leading-relaxed mt-3 mb-4">
+                                What you can see and do on the sidebar depends entirely on this role. Here is a breakdown of what different members can see:
                             </p>
+                            
+                            <ul class="space-y-4">
+                                <li class="bg-background rounded-xl p-4 border border-border">
+                                    <strong class="text-text">Regular Members</strong>
+                                    <p class="text-sm text-muted mt-1">Can log in to view their own profile, see upcoming activities, and submit proof of payment for their yearly registration fees or events.</p>
+                                </li>
+                                <li class="bg-background rounded-xl p-4 border border-border">
+                                    <strong class="text-text">Company Captains & Officers</strong>
+                                    <p class="text-sm text-muted mt-1">Can view and manage members within their specific company, submit material requests, and view company-level reports. They cannot see data from other companies.</p>
+                                </li>
+                                <li class="bg-background rounded-xl p-4 border border-border">
+                                    <strong class="text-text">Battalion Commanders & Denomination Admins</strong>
+                                    <p class="text-sm text-muted mt-1">Can view data for all companies beneath them, manage companies within their jurisdiction, and generate larger aggregated reports.</p>
+                                </li>
+                                <li class="bg-background rounded-xl p-4 border border-border">
+                                    <strong class="text-text">Super Admins</strong>
+                                    <p class="text-sm text-muted mt-1">Have full access to the system. Only Super Admins can approve new user accounts, update the public website CMS, view Audit Logs, and configure <strong>Global Settings</strong> (like the fee amounts).</p>
+                                </li>
+                            </ul>
                         </section>
                     </div>
 

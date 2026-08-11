@@ -39,10 +39,10 @@ Route::get('/search', [\App\Http\Controllers\SearchController::class, 'index'])
     ->name('search.index');
 
 Route::middleware(['auth', 'verified', 'approved', 'fee_paid'])->group(function () {
-    // System Documentation
+    // System Documentation (Hidden from regular members)
     Route::get('/documentation/system', function () {
         return view('docs.system');
-    })->name('docs.system');
+    })->middleware('role:Company Captain|Company Officer|Battalion Commander|Denomination Admin|Super Admin')->name('docs.system');
 
     // Registration Fee Routes
     Route::get('/pay-fee', [\App\Http\Controllers\RegistrationFeeController::class, 'create'])->name('fee.pay');
@@ -127,6 +127,10 @@ Route::middleware(['auth', 'verified', 'approved', 'fee_paid'])->group(function 
 
     // Audit Logs (Super Admin only)
     Route::get('/admin/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index')->middleware('can:view audit logs');
+
+    // System Settings (Super Admin only)
+    Route::get('/admin/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index')->middleware('can:manage system settings');
+    Route::post('/admin/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update')->middleware('can:manage system settings');
 
     // ============================================================
     // Website CMS Management (Super Admin or 'manage website')

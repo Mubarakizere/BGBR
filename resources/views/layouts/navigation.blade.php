@@ -231,6 +231,13 @@ User Management
                                   {{ $isRoles ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
 Roles & Permissions
                         </a>
+                        
+                        @php $isSettings = request()->routeIs('settings.*'); @endphp
+                        <a href="{{ route('settings.index') }}"
+                           class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mt-0.5
+                                  {{ $isSettings ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+Global Settings
+                        </a>
                     @endcan
 
                     @can('view audit logs')
@@ -320,15 +327,17 @@ Contact Messages
                 </div>
             @endcan
 
-            {{-- ── Documentation ── --}}
-            <div class="mt-5 mb-1 border-t border-white/[0.05] pt-4">
-                @php $isDocs = request()->routeIs('docs.system'); @endphp
-                <a href="{{ route('docs.system') }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150
-                          {{ $isDocs ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
+            {{-- ── Documentation (Hidden from regular members) ── --}}
+            @if(auth()->user()->hasAnyRole(['Company Captain', 'Company Officer', 'Battalion Commander', 'Denomination Admin', 'Super Admin']))
+                <div class="mt-5 mb-1 border-t border-white/[0.05] pt-4">
+                    @php $isDocs = request()->routeIs('docs.system'); @endphp
+                    <a href="{{ route('docs.system') }}"
+                       class="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150
+                              {{ $isDocs ? 'bg-white/[0.1] text-white' : 'text-white/55 hover:text-white/90 hover:bg-white/[0.04]' }}">
 System Documentation
-                </a>
-            </div>
+                    </a>
+                </div>
+            @endif
 
         </nav>
 

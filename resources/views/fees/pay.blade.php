@@ -29,7 +29,24 @@
                     @else
                         <div class="mb-8">
                             <h3 class="text-xl font-bold text-text mb-2">Yearly Registration</h3>
-                            <p class="text-muted">Your account requires an active yearly registration fee to continue using the system. Please submit your proof of payment.</p>
+                            <p class="text-muted mb-6">Your account requires an active yearly registration fee to continue using the system. Please complete your payment using the details below and submit your proof.</p>
+                            
+                            <div class="bg-primary/5 rounded-xl border border-primary/20 p-5 mb-2">
+                                <h4 class="font-bold text-primary mb-3 flex items-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    Payment Instructions
+                                </h4>
+                                <div class="space-y-3 text-sm">
+                                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-primary/10 pb-2 gap-1">
+                                        <span class="text-muted font-medium">Required Amount:</span>
+                                        <span class="font-bold text-text bg-surface px-3 py-1 rounded shadow-sm border border-border">{{ setting('fee_amount', '2,000') }} RWF</span>
+                                    </div>
+                                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center pb-1 gap-1">
+                                        <span class="text-muted font-medium">Payment Address:</span>
+                                        <span class="font-bold text-text bg-surface px-3 py-1 rounded shadow-sm border border-border">{{ setting('payment_address', 'MoMo Pay: *182*8*1*123456#') }}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <form action="{{ route('fee.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
