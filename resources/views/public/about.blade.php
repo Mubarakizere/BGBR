@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'About Us — BGBR Rwanda')
+@section('title', 'About Us — Boys and Girls Brigade Rwanda')
 @section('meta_description', 'Learn about the mission, vision, history, and core values of the Boys\' and Girls\' Brigade Rwanda.')
 
 @section('styles')
@@ -125,7 +125,7 @@
 
 @section('content')
     <div class="pub-page-hero">
-        <h1>About BGBR Rwanda</h1>
+        <h1>About Boys and Girls Brigade Rwanda</h1>
         <p>Empowering youth through Christian values, leadership, and discipline since our founding.</p>
     </div>
 

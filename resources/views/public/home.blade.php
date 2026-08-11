@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'BGBR Rwanda — Sure & Steadfast')
+@section('title', 'Boys and Girls Brigade Rwanda — Sure & Steadfast')
 @section('meta_description', 'The Boys\' and Girls\' Brigade Rwanda — Empowering youth through Christian values, leadership, and discipline.')
 
 @section('styles')
@@ -422,7 +422,7 @@
     <section class="mission-section">
         <div class="pub-container mission-grid">
             <div class="mission-image">
-                <img src="https://images.unsplash.com/photo-1544654803-b69140b285a1?auto=format&fit=crop&q=80&w=1000" alt="BGBR Activities">
+                <img src="https://images.unsplash.com/photo-1544654803-b69140b285a1?auto=format&fit=crop&q=80&w=1000" alt="Boys and Girls Brigade Activities">
             </div>
             <div class="mission-content">
                 <h2>{{ $mission->title ?? 'Building Tomorrow\'s Leaders' }}</h2>

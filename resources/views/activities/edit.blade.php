@@ -73,11 +73,20 @@
 
                     {{-- Fee & Status Row --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
+                        <div class="col-span-1">
                             <label for="participation_fee" class="block text-sm font-bold text-text mb-2">Participation Fee (RWF) <span class="text-danger">*</span></label>
                             <input type="number" name="participation_fee" id="participation_fee" value="{{ old('participation_fee', $activity->participation_fee) }}" min="0" step="0.01" required
-                                   class="w-full rounded-xl border-border bg-background text-text px-4 py-3 focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                                   class="w-full bg-background border border-border rounded-xl px-4 py-3 text-text focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                            <p class="text-xs text-muted mt-1">Amount per person. Set to 0 if free.</p>
                             @error('participation_fee') <p class="text-danger text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="col-span-1">
+                            <label for="payment_address" class="block text-sm font-bold text-text mb-2">Payment Address / Instructions</label>
+                            <input type="text" name="payment_address" id="payment_address" value="{{ old('payment_address', $activity->payment_address) }}" placeholder="e.g. Momo Pay 123456 or Bank Acc..."
+                                   class="w-full bg-background border border-border rounded-xl px-4 py-3 text-text focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                            <p class="text-xs text-muted mt-1">Where participants should send money.</p>
+                            @error('payment_address') <p class="text-danger text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                         <div>
                             <label for="status" class="block text-sm font-bold text-text mb-2">Status <span class="text-danger">*</span></label>

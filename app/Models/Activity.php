@@ -20,6 +20,7 @@ class Activity extends Model
         'target_audience',
         'entity_id',   // kept for legacy compatibility
         'entity_ids',  // new: JSON array of target entity UUIDs
+        'payment_address',
     ];
 
     protected $casts = [
@@ -109,5 +110,50 @@ class Activity extends Model
     public function getTotalCollectedFeesAttribute(): float
     {
         return $this->paidParticipants()->count() * (float) $this->participation_fee;
+    }
+
+    /**
+     * Scope a query to only include activities visible to a given user.
+     */
+    public function scopeForUser($query, $user)
+    {
+        // System admins can see all activities
+        if ($user->can('manage system settings')) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($user) {
+            $q->where('target_audience', 'national');
+
+            if ($user->company_id) {
+                $q->orWhere(function ($sub) use ($user) {
+                    $sub->where('target_audience', 'company')
+                        ->where(function ($sq) use ($user) {
+                            $sq->whereJsonContains('entity_ids', $user->company_id)
+                               ->orWhere('entity_id', $user->company_id);
+                        });
+                });
+            }
+
+            if ($user->battalion_id) {
+                $q->orWhere(function ($sub) use ($user) {
+                    $sub->where('target_audience', 'battalion')
+                        ->where(function ($sq) use ($user) {
+                            $sq->whereJsonContains('entity_ids', $user->battalion_id)
+                               ->orWhere('entity_id', $user->battalion_id);
+                        });
+                });
+            }
+
+            if ($user->denomination_id) {
+                $q->orWhere(function ($sub) use ($user) {
+                    $sub->where('target_audience', 'denomination')
+                        ->where(function ($sq) use ($user) {
+                            $sq->whereJsonContains('entity_ids', $user->denomination_id)
+                               ->orWhere('entity_id', $user->denomination_id);
+                        });
+                });
+            }
+        });
     }
 }

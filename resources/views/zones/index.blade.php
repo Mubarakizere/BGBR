@@ -6,17 +6,26 @@
     <div class="py-8" x-data="{ openModal: false, editing: null }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            {{-- Page Title Bar --}}
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            {{-- Page Title Bar & Search --}}
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
                     <h1 class="text-2xl font-extrabold text-text tracking-tight">Zones</h1>
                     <p class="text-sm text-muted mt-1">Manage geographic zones for battalion grouping</p>
                 </div>
-                <button @click="editing = null; openModal = true"
-                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-200">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                    Add Zone
-                </button>
+                <div class="flex flex-col sm:flex-row items-center gap-3">
+                    <form action="{{ route('zones.index') }}" method="GET" class="relative w-full sm:w-64">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search zones..." 
+                               class="w-full pl-10 pr-4 py-2 bg-surface border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-muted/50 text-text">
+                        <svg class="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </form>
+                    <button @click="editing = null; openModal = true"
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all duration-200 shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        Add Zone
+                    </button>
+                </div>
             </div>
 
             {{-- Zones Table --}}

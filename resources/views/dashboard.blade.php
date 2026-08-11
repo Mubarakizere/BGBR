@@ -166,7 +166,7 @@
             </div>
 
             <!-- Dynamic Content Feeds -->
-            @if((isset($latestAnnouncements) && $latestAnnouncements->isNotEmpty()) || (isset($upcomingActivities) && $upcomingActivities->isNotEmpty()) || (isset($recentMembers) && $recentMembers->isNotEmpty()) || (isset($pendingUsersList) && $pendingUsersList->isNotEmpty()) || (isset($pendingReportsList) && $pendingReportsList->isNotEmpty()))
+            @if((isset($latestAnnouncements) && $latestAnnouncements->isNotEmpty()) || (isset($upcomingActivities) && $upcomingActivities->isNotEmpty()) || (isset($recentActivities) && $recentActivities->isNotEmpty()) || (isset($recentMembers) && $recentMembers->isNotEmpty()) || (isset($pendingUsersList) && $pendingUsersList->isNotEmpty()) || (isset($pendingReportsList) && $pendingReportsList->isNotEmpty()))
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 
                 @if(isset($latestAnnouncements) && $latestAnnouncements->isNotEmpty())
@@ -205,6 +205,35 @@
                         @foreach($upcomingActivities as $activity)
                         <div class="p-4 hover:bg-background/50 transition-colors flex items-center gap-4">
                             <div class="flex-shrink-0 w-12 h-12 bg-success/10 rounded-xl flex flex-col items-center justify-center text-success">
+                                <span class="text-xs font-bold uppercase">{{ \Carbon\Carbon::parse($activity->date)->format('M') }}</span>
+                                <span class="text-lg font-black leading-none">{{ \Carbon\Carbon::parse($activity->date)->format('d') }}</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-text">{{ $activity->title }}</h4>
+                                <p class="text-xs text-muted mt-0.5 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                    {{ $activity->location ?? 'TBA' }}
+                                </p>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                @if(isset($recentActivities) && $recentActivities->isNotEmpty())
+                <div class="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
+                    <div class="px-6 py-4 border-b border-border bg-background/50 flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-text flex items-center gap-2">
+                            <svg class="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Recent Activities
+                        </h3>
+                        <a href="{{ Route::has('activities.index') ? route('activities.index') : '#' }}" class="text-sm text-primary font-semibold hover:underline">View All</a>
+                    </div>
+                    <div class="divide-y divide-border">
+                        @foreach($recentActivities as $activity)
+                        <div class="p-4 hover:bg-background/50 transition-colors flex items-center gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 bg-secondary/10 rounded-xl flex flex-col items-center justify-center text-secondary">
                                 <span class="text-xs font-bold uppercase">{{ \Carbon\Carbon::parse($activity->date)->format('M') }}</span>
                                 <span class="text-lg font-black leading-none">{{ \Carbon\Carbon::parse($activity->date)->format('d') }}</span>
                             </div>

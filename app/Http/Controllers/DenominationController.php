@@ -8,10 +8,17 @@ use Illuminate\Support\Facades\Gate;
 
 class DenominationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         Gate::authorize('viewAny', Denomination::class);
-        $denominations = Denomination::orderBy('name')->paginate(15)->withQueryString();
+        $query = Denomination::query();
+        
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('region', 'like', '%' . $request->search . '%');
+        }
+
+        $denominations = $query->orderBy('name')->paginate(15)->withQueryString();
         return view('denominations.index', compact('denominations'));
     }
 

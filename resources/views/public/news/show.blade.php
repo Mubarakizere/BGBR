@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', $article->title . ' — BGBR Rwanda')
+@section('title', $article->title . ' — Boys and Girls Brigade Rwanda')
 @section('meta_description', Str::limit($article->excerpt ?? strip_tags($article->content), 160))
 
 @section('styles')

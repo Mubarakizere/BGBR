@@ -29,6 +29,6 @@ return [
     | Contact Form Settings
     |--------------------------------------------------------------------------
     */
-    'contact_email' => env('CONTACT_FORM_RECIPIENT', 'info@bgbr.rw'),
+    'contact_email' => env('CONTACT_FORM_RECIPIENT', 'info@boysandgirlsbrigade.rw'),
     'contact_name'  => env('CONTACT_FORM_RECIPIENT_NAME', 'BGBR Staff'),
 ];

@@ -46,8 +46,8 @@ class ParticipationController extends Controller
 
         $activity->members()->attach($member->id, [
             'id' => Str::uuid(),
-            'fee_paid' => false,
-            'payment_date' => null,
+            'fee_paid' => $activity->participation_fee <= 0,
+            'payment_date' => $activity->participation_fee <= 0 ? now()->toDateString() : null,
             'eligible' => true,
             'eligibility_notes' => null,
             'registered_by' => $request->user()->id,
@@ -93,8 +93,8 @@ class ParticipationController extends Controller
 
             $activity->members()->attach($member->id, [
                 'id' => Str::uuid(),
-                'fee_paid' => false,
-                'payment_date' => null,
+                'fee_paid' => $activity->participation_fee <= 0,
+                'payment_date' => $activity->participation_fee <= 0 ? now()->toDateString() : null,
                 'eligible' => true,
                 'eligibility_notes' => null,
                 'registered_by' => $request->user()->id,
@@ -223,14 +223,23 @@ class ParticipationController extends Controller
             return back()->with('error', 'You are already registered for this activity.');
         }
 
+        if ($activity->participation_fee > 0) {
+            $request->validate([
+                'payment_proof' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            ]);
+            $path = $request->file('payment_proof')->store('payment_proofs', 'public');
+        } else {
+            $path = null;
+        }
+
         $activity->members()->attach($member->id, [
             'id' => Str::uuid(),
-            'fee_paid' => false,
-            'payment_date' => null,
+            'fee_paid' => $activity->participation_fee <= 0,
+            'payment_date' => $activity->participation_fee <= 0 ? now()->toDateString() : null,
             'eligible' => true,
             'eligibility_notes' => null,
             'registered_by' => $user->id,
-            'payment_proof_path' => null,
+            'payment_proof_path' => $path,
         ]);
 
         return back()->with('success', 'You have successfully registered for this activity.');

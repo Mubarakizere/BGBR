@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Gallery — BGBR Rwanda')
+@section('title', 'Gallery — Boys and Girls Brigade Rwanda')
 @section('meta_description', 'Photo gallery of the Boys\' and Girls\' Brigade Rwanda activities, events, and programs.')
 
 @section('styles')
@@ -152,7 +152,7 @@
 @section('content')
     <div class="pub-page-hero">
         <h1>Photo Gallery</h1>
-        <p>Capturing moments of faith, fellowship, and growth across BGBR Rwanda.</p>
+        <p>Capturing moments of faith, fellowship, and growth across Boys and Girls Brigade Rwanda.</p>
     </div>
 
     <section class="pub-section">

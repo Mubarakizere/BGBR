@@ -8,10 +8,18 @@ use Illuminate\Support\Facades\Gate;
 
 class ZoneController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         Gate::authorize('viewAny', Zone::class);
-        $zones = Zone::withCount('battalions')->orderBy('name')->paginate(15)->withQueryString();
+        
+        $query = Zone::withCount('battalions');
+        
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+        }
+
+        $zones = $query->orderBy('name')->paginate(15)->withQueryString();
         return view('zones.index', compact('zones'));
     }
 

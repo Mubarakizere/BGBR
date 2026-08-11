@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'BGBR Rwanda') }}</title>
+    <title>{{ config('app.name', 'Boys and Girls Brigade Rwanda') }}</title>
 
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="{{ asset('manifest.json') }}">

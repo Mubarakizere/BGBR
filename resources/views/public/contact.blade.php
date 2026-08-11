@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Contact Us — BGBR Rwanda')
+@section('title', 'Contact Us — Boys and Girls Brigade Rwanda')
 @section('meta_description', 'Get in touch with the Boys\' and Girls\' Brigade Rwanda. We\'d love to hear from you.')
 
 @section('styles')
@@ -162,7 +162,7 @@
                         </div>
                         <div>
                             <h4>Email</h4>
-                            <p><a href="mailto:info@bgbr.rw">info@bgbr.rw</a></p>
+                            <p><a href="mailto:info@boysandgirlsbrigade.rw">info@boysandgirlsbrigade.rw</a></p>
                         </div>
                     </div>
                     <div class="contact-info-card">
@@ -171,7 +171,7 @@
                         </div>
                         <div>
                             <h4>Phone</h4>
-                            <p><a href="tel:+250780000000">+250 780 000 000</a></p>
+                            <p><a href="tel:078************">078************</a></p>
                         </div>
                     </div>
                     <div class="contact-info-card">

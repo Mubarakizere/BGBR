@@ -2,7 +2,7 @@
     <!-- Header -->
     <div class="text-center mb-6">
         <h2 class="text-2xl font-extrabold text-text tracking-tight">Create Account</h2>
-        <p class="text-sm text-muted mt-1.5 font-medium">Join the BGBR Rwanda portal</p>
+        <p class="text-sm text-muted mt-1.5 font-medium">Join the Boys and Girls Brigade Rwanda portal</p>
     </div>
 
     <form method="POST" action="{{ route('register') }}" class="space-y-3">
@@ -27,7 +27,7 @@
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-muted group-focus-within:text-secondary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                 </div>
-                <input id="email" class="pl-11 block w-full border-border focus:border-secondary focus:ring-secondary rounded-xl shadow-sm text-text sm:text-sm transition-all duration-200 py-2.5 bg-background focus:bg-surface" type="email" name="email" :value="old('email')" required autocomplete="username" placeholder="officer@bgbr.rw" />
+                <input id="email" class="pl-11 block w-full border-border focus:border-secondary focus:ring-secondary rounded-xl shadow-sm text-text sm:text-sm transition-all duration-200 py-2.5 bg-background focus:bg-surface" type="email" name="email" :value="old('email')" required autocomplete="username" placeholder="officer@gmail.com" />
             </div>
             <x-input-error :messages="$errors->get('email')" class="mt-2 text-danger" />
         </div>

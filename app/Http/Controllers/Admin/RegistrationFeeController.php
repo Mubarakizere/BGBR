@@ -26,8 +26,16 @@ class RegistrationFeeController extends Controller
                 }
             });
         }
+
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->whereHas('user', function ($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('email', 'like', '%' . $searchTerm . '%');
+            });
+        }
         
-        $fees = $query->orderBy('created_at', 'desc')->paginate(20);
+        $fees = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
         
         return view('admin.fees.index', compact('fees'));
     }

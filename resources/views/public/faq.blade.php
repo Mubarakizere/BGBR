@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'FAQ — BGBR Rwanda')
+@section('title', 'FAQ — Boys and Girls Brigade Rwanda')
 @section('meta_description', 'Frequently asked questions about the Boys\' and Girls\' Brigade Rwanda.')
 
 @section('styles')
@@ -126,7 +126,7 @@
 @section('content')
     <div class="pub-page-hero">
         <h1>Frequently Asked Questions</h1>
-        <p>Find answers to common questions about BGBR Rwanda.</p>
+        <p>Find answers to common questions about Boys and Girls Brigade Rwanda.</p>
     </div>
 
     <section class="pub-section">

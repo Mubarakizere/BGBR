@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'News — BGBR Rwanda')
+@section('title', 'News — Boys and Girls Brigade Rwanda')
 @section('meta_description', 'Latest news, updates, and stories from the Boys\' and Girls\' Brigade Rwanda.')
 
 @section('styles')
@@ -92,7 +92,7 @@
 @section('content')
     <div class="pub-page-hero">
         <h1>News & Updates</h1>
-        <p>Stay informed with the latest from BGBR Rwanda.</p>
+        <p>Stay informed with the latest from Boys and Girls Brigade Rwanda.</p>
     </div>
 
     <section class="pub-section">

@@ -506,7 +506,11 @@
                 <li><a href="{{ route('site.news') }}" class="{{ request()->routeIs('site.news*') ? 'active' : '' }}">News</a></li>
                 <li><a href="{{ route('site.gallery') }}" class="{{ request()->routeIs('site.gallery') ? 'active' : '' }}">Gallery</a></li>
                 <li><a href="{{ route('site.faq') }}" class="{{ request()->routeIs('site.faq') ? 'active' : '' }}">FAQ</a></li>
-                <li><a href="{{ route('login') }}">Portal Login</a></li>
+                @auth
+                    <li><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                @else
+                    <li><a href="{{ route('login') }}">Portal Login</a></li>
+                @endauth
                 <li><a href="{{ route('site.contact') }}" class="pub-nav-cta">Contact Us</a></li>
             </ul>
 
@@ -527,7 +531,11 @@
             <a href="{{ route('site.news') }}" class="{{ request()->routeIs('site.news*') ? 'active' : '' }}">News</a>
             <a href="{{ route('site.gallery') }}" class="{{ request()->routeIs('site.gallery') ? 'active' : '' }}">Gallery</a>
             <a href="{{ route('site.faq') }}" class="{{ request()->routeIs('site.faq') ? 'active' : '' }}">FAQ</a>
-            <a href="{{ route('login') }}">Portal Login</a>
+            @auth
+                <a href="{{ route('dashboard') }}">Dashboard</a>
+            @else
+                <a href="{{ route('login') }}">Portal Login</a>
+            @endauth
             <a href="{{ route('site.donate') }}" class="{{ request()->routeIs('site.donate') ? 'active' : '' }}">Donate</a>
             <a href="{{ route('site.contact') }}" class="{{ request()->routeIs('site.contact') ? 'active' : '' }}">Contact Us</a>
         </div>
@@ -565,8 +573,8 @@
             </div>
             <div>
                 <h3>Contact</h3>
-                <a href="mailto:info@bgbr.rw">info@bgbr.rw</a>
-                <a href="tel:+250780000000">+250 780 000 000</a>
+                <a href="mailto:info@boysandgirlsbrigade.rw">info@boysandgirlsbrigade.rw</a>
+                <a href="tel:078************">078************</a>
                 <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;margin-top:8px;line-height:1.6;">Kigali, Rwanda</p>
             </div>
         </div>

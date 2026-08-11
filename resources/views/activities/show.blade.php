@@ -47,7 +47,7 @@
                                     {{ $activity->location }}
                                 </span>
                                 @endif
-                                <span class="flex items-center gap-1.5">
+                                <span class="flex items-center gap-1.5" title="{{ $activity->payment_address ?? 'No payment instructions provided' }}">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     {{ number_format($activity->participation_fee, 0) }} RWF per participant
                                 </span>
@@ -162,6 +162,16 @@
                             <p class="text-sm text-muted whitespace-pre-line">{{ $activity->requirements }}</p>
                         </div>
                         @endif
+
+                        @if($activity->payment_address)
+                        <div class="bg-primary/5 rounded-xl p-5 border border-primary/20 md:col-span-2">
+                            <h4 class="text-sm font-bold text-text mb-2 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                Payment Instructions
+                            </h4>
+                            <p class="text-sm text-muted whitespace-pre-line">{{ $activity->payment_address }}</p>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -172,7 +182,7 @@
             @endphp
             @if($myMember)
             @php
-                $myPivot = $activity->members()->where('member_id', $myMember->id)->first();
+                $myPivot = $activity->members()->withoutGlobalScope(\App\Models\Scopes\TenantScope::class)->where('member_id', $myMember->id)->first();
                 $isRegistered = $myPivot !== null;
                 $isEligible = true;
             @endphp
@@ -185,14 +195,52 @@
                 @if(!$isRegistered)
                     @if($isEligible && $activity->status !== 'completed' && $activity->status !== 'cancelled')
                     <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-                        <p class="text-sm text-muted">You are not yet registered for this activity.</p>
-                        <form method="POST" action="{{ route('activities.participants.self-register', $activity) }}">
-                            @csrf
-                            <button type="submit" class="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-5 rounded-xl text-sm transition shadow-lg shadow-primary/20">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-                                Register to Participate
-                            </button>
-                        </form>
+                        @if($activity->participation_fee > 0)
+                            <div x-data="{ showModal: false }">
+                                <button type="button" @click="showModal = true" class="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-5 rounded-xl text-sm transition shadow-lg shadow-primary/20">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                                    Register & Upload Proof
+                                </button>
+
+                                    <div x-show="showModal" style="display: none;" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                                        <div @click.outside="showModal = false" class="bg-surface rounded-2xl border border-border shadow-2xl p-6 max-w-md w-full mx-4">
+                                            <h3 class="text-xl font-bold text-text mb-4 flex items-center gap-2">
+                                                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                Payment & Registration
+                                            </h3>
+                                            @if($activity->payment_address)
+                                                <div class="mb-4 p-4 bg-primary/10 border border-primary/20 rounded-xl">
+                                                    <p class="text-sm font-bold text-primary mb-1">How to pay ({{ number_format($activity->participation_fee, 0) }} RWF):</p>
+                                                    <p class="text-sm text-muted whitespace-pre-line">{{ $activity->payment_address }}</p>
+                                                </div>
+                                            @else
+                                                <p class="text-sm text-muted mb-4">Participation fee is {{ number_format($activity->participation_fee, 0) }} RWF.</p>
+                                            @endif
+                                            
+                                            <form method="POST" action="{{ route('activities.participants.self-register', $activity) }}" enctype="multipart/form-data">
+                                                @csrf
+                                                <div class="mb-6">
+                                                    <label class="block text-sm font-bold text-text mb-2">Upload Payment Proof</label>
+                                                    <input type="file" name="payment_proof" required accept=".jpg,.jpeg,.png,.pdf" class="w-full text-sm border border-border rounded-xl px-3 py-2 bg-background focus:ring-2 focus:ring-primary/30 outline-none transition">
+                                                    <p class="text-xs text-muted mt-2">Required for registration. Max size: 5MB.</p>
+                                                </div>
+                                                <div class="flex justify-end gap-3">
+                                                    <button type="button" @click="showModal = false" class="px-5 py-2.5 rounded-xl font-bold text-sm text-muted hover:bg-background border border-border transition-colors">Cancel</button>
+                                                    <button type="submit" class="px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-primary hover:bg-primary/90 transition-colors shadow-md">Submit Registration</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                            </div>
+                        @else
+                            <form method="POST" action="{{ route('activities.participants.self-register', $activity) }}">
+                                @csrf
+                                <button type="submit" class="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-5 rounded-xl text-sm transition shadow-lg shadow-primary/20">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                                    Register to Participate
+                                </button>
+                            </form>
+                        @endif
                     </div>
                     @elseif($activity->status === 'completed' || $activity->status === 'cancelled')
                     <p class="text-sm text-muted">This activity is {{ $activity->status }}. Registration is no longer available.</p>
@@ -221,6 +269,12 @@
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01"></path></svg>
                                     Fee Unpaid ({{ number_format($activity->participation_fee, 0) }} RWF)
                                 </span>
+                                @if($activity->payment_address)
+                                <div class="mt-2 p-3 bg-secondary/5 border border-secondary/20 rounded-lg max-w-sm">
+                                    <p class="text-xs text-text font-bold mb-1">How to pay:</p>
+                                    <p class="text-xs text-muted whitespace-pre-line">{{ $activity->payment_address }}</p>
+                                </div>
+                                @endif
                             @endif
                         </div>
 
@@ -552,16 +606,16 @@
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="flex items-center justify-end gap-2">
                                         @if($member->pivot->payment_proof_path)
-                                            <a href="{{ Storage::url($member->pivot->payment_proof_path) }}" target="_blank" class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-white bg-primary/10 hover:bg-primary px-3 py-1.5 rounded-lg transition-all" title="View Proof">
+                                            <button type="button" @click="proofUrl = '{{ Storage::url($member->pivot->payment_proof_path) }}'; showProofModal = true" class="inline-flex items-center gap-1 text-xs font-bold text-primary hover:text-white bg-primary/10 hover:bg-primary px-3 py-1.5 rounded-lg transition-all" title="View Proof">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                                 View Proof
-                                            </a>
+                                            </button>
                                         @endif
                                         @can('markPayment', App\Models\Activity::class)
                                             @if(!$member->pivot->fee_paid)
                                             <form method="POST" action="{{ route('activities.participants.pay', [$activity, $member]) }}">
                                                 @csrf @method('PATCH')
-                                                <button type="button" @click="$dispatch('open-approve-modal', { action: '{{ route('activities.participants.pay', [$activity, $member]) }}', method: 'PATCH', message: 'Mark fee as paid for {{ $member->name }}? This will create a national account deposit of {{ number_format($activity->participation_fee, 0) }} RWF.' })" class="inline-flex items-center gap-1 text-xs font-bold text-success hover:text-white bg-success/10 hover:bg-success px-3 py-1.5 rounded-lg transition-all">
+                                                <button type="button" @click="$dispatch('open-approve-modal', { action: '{{ route('activities.participants.pay', [$activity, $member]) }}', method: 'PATCH', message: 'Mark fee as paid for {{ addslashes($member->name) }}? This will create a national account deposit of {{ number_format($activity->participation_fee, 0) }} RWF.' })" class="inline-flex items-center gap-1 text-xs font-bold text-success hover:text-white bg-success/10 hover:bg-success px-3 py-1.5 rounded-lg transition-all">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                                     {{ $member->pivot->payment_proof_path ? 'Confirm' : 'Mark Paid' }}
                                                 </button>
@@ -572,7 +626,7 @@
                                         @can('registerParticipant', App\Models\Activity::class)
                                         <form method="POST" action="{{ route('activities.participants.remove', [$activity, $member]) }}">
                                             @csrf @method('DELETE')
-                                            <button type="button" @click="$dispatch('open-delete-modal', { action: '{{ route('activities.participants.remove', [$activity, $member]) }}', message: 'Remove {{ $member->name }} from this activity?' })" class="inline-flex items-center gap-1 text-xs font-bold text-danger hover:text-white bg-danger/10 hover:bg-danger px-3 py-1.5 rounded-lg transition-all">
+                                            <button type="button" @click="$dispatch('open-delete-modal', { action: '{{ route('activities.participants.remove', [$activity, $member]) }}', message: 'Remove {{ addslashes($member->name) }} from this activity?' })" class="inline-flex items-center gap-1 text-xs font-bold text-danger hover:text-white bg-danger/10 hover:bg-danger px-3 py-1.5 rounded-lg transition-all">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                 Remove
                                             </button>
@@ -598,6 +652,41 @@
             </div>
             @endif {{-- end admin/officer check for participants table --}}
 
+            {{-- Proof Modal --}}
+            <div x-show="showProofModal" style="display: none;" class="fixed inset-0 z-[120] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+                <div @click.outside="showProofModal = false" class="bg-surface rounded-2xl border border-border shadow-2xl overflow-hidden max-w-3xl w-full flex flex-col max-h-[90vh]">
+                    <div class="p-4 border-b border-border flex items-center justify-between bg-background/50">
+                        <h3 class="font-bold text-text flex items-center gap-2">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            Payment Proof
+                        </h3>
+                        <button @click="showProofModal = false" class="text-muted hover:text-danger transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    <div class="p-0 bg-black/5 flex-1 overflow-auto flex items-center justify-center min-h-[300px]">
+                        <template x-if="proofUrl">
+                            <div class="w-full h-full flex flex-col items-center justify-center">
+                                <template x-if="proofUrl.toLowerCase().endsWith('.pdf')">
+                                    <div class="w-full h-full flex flex-col">
+                                        <div class="bg-primary/10 p-3 text-center border-b border-primary/20 flex justify-between items-center px-6">
+                                            <span class="text-sm font-bold text-primary">PDF Document</span>
+                                            <a :href="proofUrl" target="_blank" class="text-xs font-bold bg-primary text-white px-3 py-1.5 rounded-lg shadow-sm hover:bg-primary/90 transition">Open in New Tab (if blocked)</a>
+                                        </div>
+                                        <iframe :src="proofUrl" class="w-full h-[600px] max-h-[70vh] border-0 flex-1" title="Payment Proof"></iframe>
+                                    </div>
+                                </template>
+                                <template x-if="!proofUrl.toLowerCase().endsWith('.pdf')">
+                                    <div class="p-4 flex items-center justify-center w-full h-full">
+                                        <img :src="proofUrl" class="max-w-full max-h-[70vh] object-contain rounded-xl shadow-lg" alt="Payment Proof">
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -607,6 +696,8 @@
                 regMode: 'single',
                 feeFilter: 'all',
                 bulkPayIds: [],
+                showProofModal: false,
+                proofUrl: '',
 
                 togglePayId(id) {
                     const idx = this.bulkPayIds.indexOf(id);

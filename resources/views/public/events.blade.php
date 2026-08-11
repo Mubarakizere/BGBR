@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', 'Events — BGBR Rwanda')
+@section('title', 'Events — Boys and Girls Brigade Rwanda')
 @section('meta_description', 'Upcoming and past events from the Boys\' and Girls\' Brigade Rwanda.')
 
 @section('styles')

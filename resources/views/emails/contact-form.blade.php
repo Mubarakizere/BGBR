@@ -22,7 +22,7 @@
 <body>
     <div class="wrapper">
         <div class="header">
-            <h1>BGBR Rwanda</h1>
+            <h1>Boys and Girls Brigade Rwanda</h1>
             <p>New Contact Form Submission</p>
         </div>
         <div class="body">
@@ -71,7 +71,7 @@
             </div>
         </div>
         <div class="footer">
-            <p>&copy; {{ date('Y') }} BGBR Rwanda &mdash; This is an automated message from the website contact form.</p>
+            <p>&copy; {{ date('Y') }} Boys and Girls Brigade Rwanda &mdash; This is an automated message from the website contact form.</p>
         </div>
     </div>
 </body>

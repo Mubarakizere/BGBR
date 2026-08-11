@@ -197,6 +197,7 @@ class ActivityController extends Controller
             'target_audience'  => 'required|in:national,denomination,battalion,company',
             'entity_ids'       => 'nullable|array',
             'entity_ids.*'     => 'uuid',
+            'payment_address'  => 'nullable|string',
         ]);
 
         $level     = $data['target_audience'];
@@ -329,6 +330,7 @@ class ActivityController extends Controller
             'target_audience'  => 'required|in:national,denomination,battalion,company',
             'entity_ids'       => 'nullable|array',
             'entity_ids.*'     => 'uuid',
+            'payment_address'  => 'nullable|string',
         ]);
 
         $level     = $data['target_audience'];

@@ -18,7 +18,7 @@
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-muted group-focus-within:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg>
                 </div>
-                <input id="email" class="pl-11 block w-full border-border focus:border-primary focus:ring-primary rounded-xl shadow-sm text-text sm:text-sm transition-all duration-200 py-2.5 bg-background focus:bg-surface" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="officer@bgbr.rw" />
+                <input id="email" class="pl-11 block w-full border-border focus:border-primary focus:ring-primary rounded-xl shadow-sm text-text sm:text-sm transition-all duration-200 py-2.5 bg-background focus:bg-surface" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="officer@gmail.com" />
             </div>
             <x-input-error :messages="$errors->get('email')" class="mt-2 text-danger" />
         </div>

@@ -58,10 +58,24 @@ class DashboardController extends Controller
             $latestAnnouncements = Announcement::where('is_approved', true)->latest()->take(3)->get();
         }
 
-        // Activities
+        // Upcoming Activities
         $upcomingActivities = collect();
-        if ($user->can('participate in activities') || $user->can('manage activities')) {
-            $upcomingActivities = Activity::where('date', '>=', now()->toDateString())->orderBy('date', 'asc')->take(3)->get();
+        if ($user->can('participate in activities') || $user->can('manage activities') || $user->can('view activities')) {
+            $upcomingActivities = Activity::forUser($user)
+                ->where('date', '>=', now()->toDateString())
+                ->orderBy('date', 'asc')
+                ->take(3)
+                ->get();
+        }
+
+        // Recent Past Activities
+        $recentActivities = collect();
+        if ($user->can('participate in activities') || $user->can('manage activities') || $user->can('view activities')) {
+            $recentActivities = Activity::forUser($user)
+                ->where('date', '<', now()->toDateString())
+                ->orderBy('date', 'desc')
+                ->take(3)
+                ->get();
         }
 
         // Recent Members
@@ -83,7 +97,8 @@ class DashboardController extends Controller
         }
 
         // Calendar Activities (all activities for current month)
-        $calendarActivities = Activity::whereMonth('date', Carbon::now()->month)
+        $calendarActivities = Activity::forUser($user)
+            ->whereMonth('date', Carbon::now()->month)
             ->whereYear('date', Carbon::now()->year)
             ->get(['id', 'title', 'date', 'location']);
 
@@ -113,6 +128,7 @@ class DashboardController extends Controller
             'chartData',
             'latestAnnouncements',
             'upcomingActivities',
+            'recentActivities',
             'recentMembers',
             'pendingUsersList',
             'pendingReportsList',

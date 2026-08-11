@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>@yield('title') - {{ config('app.name', 'BGBR Rwanda') }}</title>
+        <title>@yield('title') - {{ config('app.name', 'Boys and Girls Brigade Rwanda') }}</title>
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800&display=swap" rel="stylesheet" />
@@ -35,7 +35,7 @@
                 
                 <div class="relative z-10 text-white/70 text-sm font-medium flex items-center gap-4">
                     <img src="{{ asset('images/logo.jpg') }}" alt="BGBR Logo" class="w-12 h-auto object-contain rounded-lg bg-white p-1" />
-                    <span>&copy; {{ date('Y') }} BGBR Rwanda.</span>
+                    <span>&copy; {{ date('Y') }} Boys and Girls Brigade Rwanda.</span>
                 </div>
             </div>
 
