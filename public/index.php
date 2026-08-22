@@ -10,6 +10,13 @@ if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php'))
     require $maintenance;
 }
 
+// ──── SITE LOCK: Payment required ────
+if (file_exists(__DIR__.'/../storage/framework/site_locked')) {
+    http_response_code(402);
+    require __DIR__.'/../resources/views/site-locked.blade.php';
+    exit;
+}
+
 // Register the Composer autoloader...
 require __DIR__.'/../vendor/autoload.php';
 
